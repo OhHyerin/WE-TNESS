@@ -54,3 +54,30 @@
 ## 프로젝트 상세 설명
 
 // 개발 환경, 기술 스택, 시스템 구성도, ERD, 기능 상세 설명 등
+
+## 협업 규칙 
+## Git
+**브랜치**
+
+- main (메인브랜치)
+    - develop (메인브랜치) (개발할때는 main이라고 생각)
+        - front (메인브랜치)
+            - feat-f/* (보조브랜치)
+        - back (메인브랜치)
+            - feat-b/* (보조브랜치)
+- * : 기능이름
+
+**Commit**
+
+- 커밋 메세지
+    - *type : *commit message *footer
+- type
+    - feat : 새로운 기능 추가
+    - fix : 버그 수정
+    - docs : 문서 수정
+    - style : 코드 포매팅, 세미콜론 누락, 코드 변경이 없는 경우
+    - refactor : 코드 리펙토링
+    - test : 테스트 코드, 리펙토링 테스트 코드 추가
+    - chore : 빌드 업무 수정, 패키지 매니저 수정
+- footer
+    - Jira 내부 Issue tracker id 기술
