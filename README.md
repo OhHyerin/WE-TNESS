@@ -110,3 +110,10 @@
     - chore : 빌드 업무 수정, 패키지 매니저 수정
 - footer
     - Jira 내부 Issue tracker id 기술
+
+## Jira
+- 매주 월요일 스프린트 등록
+- 오전 스크럼 때 상기시켜주기
+- 작업 후 done
+- 용어 정리 [https://velog.io/@kjh1551/JIRA-학습-정리](https://velog.io/@kjh1551/JIRA-%ED%95%99%EC%8A%B5-%EC%A0%95%EB%A6%AC)
+
