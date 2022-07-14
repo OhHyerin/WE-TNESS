@@ -55,6 +55,20 @@
 
 // 개발 환경, 기술 스택, 시스템 구성도, ERD, 기능 상세 설명 등
 
+주제 : 비대면으로 쉽게 즐길 수 있는 webRTC + 모션인식 운동 서비스
+
+서비스명 : 위트니스(WE-tness)
+
+역할배분
+Backend : 오혜린, 김윤석, 류현수
+Frontend : 배준성, 이동근
+Infra : 오혜린, 김윤석, 류현수
+
+개발 스택
+BE : Java, SpringBoot, Swagger, JPA
+FE : HTML5, CSS3, Javascript, React, Redux
+Infra : Mysql, +추가
+
 ## 협업 툴
 
 - Git
