@@ -18,8 +18,8 @@
 
 ## 프로젝트 소개
 
-* 프로젝트명: 위트니스(Witness)
-* 서비스 특징: 웹/모바일(웹 기술) 프로젝트를 위한 스켈레톤 프로젝트
+* 프로젝트명: 위트니스(WE-tness)
+* 서비스 특징: 웹/모바일(웹 기술) 프로젝트
 * 주요 기능
   - 회원 관리
   - 화상 미팅룸
@@ -55,7 +55,7 @@
 
 // 개발 환경, 기술 스택, 시스템 구성도, ERD, 기능 상세 설명 등
 
-주제 : 비대면으로 쉽게 즐길 수 있는 webRTC + 모션인식 운동 서비스
+주제 : 비대면으로 쉽게 즐길 수 있는 webRTC + 모션인식 운동 플랫폼
 
 서비스명 : 위트니스(WE-tness)
 
@@ -72,8 +72,8 @@ Infra : Mysql, +추가
 ## 협업 툴
 
 - Git
-- Notion
-- JIRA
+- [Notion](https://cultured-paperback-2ca.notion.site/PJT-A205-WE-tness-7265acea434749f09da369df24d0ed16)
+- [JIRA](https://jira.ssafy.com/secure/RapidBoard.jspa?rapidView=12402&projectKey=S07P11A205&view=planning&issueLimit=100)
 - MatterMost
 - Webex
 
@@ -96,7 +96,11 @@ Infra : Mysql, +추가
 
 - Webex
   - 기획회의
-  - 매일 스크럼
+  - 일일 스크럼
+
+- MatterMost 
+  - bot기능으로 commit 및 이슈생성 과정 기록
+  - 팀원소통
 
 ## 협업 규칙 
 ## Git
@@ -130,4 +134,7 @@ Infra : Mysql, +추가
 - 오전 스크럼 때 상기시켜주기
 - 작업 후 done
 - 용어 정리 [https://velog.io/@kjh1551/JIRA-학습-정리](https://velog.io/@kjh1551/JIRA-%ED%95%99%EC%8A%B5-%EC%A0%95%EB%A6%AC)
-
+- 구조
+  - Epic
+  - Story
+  - Sprint
