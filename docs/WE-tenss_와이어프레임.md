@@ -6,7 +6,7 @@
 
 ### 메인페이지 - 로그인 되어있을 때
 
-![Untitled](와이어프레임/Untitled.png)
+![Untitled](WE-tenss_와이어프레임.assets/Untitled.png)
 
 ### 메인페이지 - 로그인 되어있지 않을 때
 
