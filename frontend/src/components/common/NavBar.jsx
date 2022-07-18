@@ -1,17 +1,31 @@
+import { useSelector } from "react-redux"
 import {
   Link,
 } from "react-router-dom"
 import styled from "styled-components"
+import SearchForm from "../search/SearchForm"
 
 const Nav = styled.div`
   display: flex;
   gap: 10px;
 `
 
-export default function NavBar (props) {
+export default function NavBar () {
+  const isLogin = useSelector((state) => state.user.isLogin)
   return (
     <Nav>
       <Link to="/">Home</Link>
+      <SearchForm></SearchForm>
+      <div>
+        {
+          isLogin
+          ? <h2>Logout</h2>
+          : <div>
+              <Link to="/signup">회원가입</Link>
+              <Link to="/login">로그인</Link>
+            </div>
+        }
+      </div>
     </Nav>
   )
 }
