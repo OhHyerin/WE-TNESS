@@ -1,9 +1,15 @@
-import Home from "./pages/common/Home";
+import {
+  Outlet,
+} from "react-router-dom"
+import NavBar from "./components/common/NavBar"
 
 function App() {
   return (
     <div className="App">
-      <Home></Home>
+      <NavBar>
+      </NavBar>
+
+      <Outlet></Outlet>
     </div>
   );
 }
