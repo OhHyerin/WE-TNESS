@@ -67,7 +67,7 @@ Infra : 오혜린, 김윤석, 류현수
 개발 스택  
 BE : Java, SpringBoot, Swagger, JPA  
 FE : HTML5, CSS3, Javascript, React, Redux  
-Infra : Mysql, +추가  
+Infra : Mysql, aws ec2, docker, jenkins +추가
   
 ## 협업 툴
 
