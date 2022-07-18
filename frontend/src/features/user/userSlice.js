@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
   isLogin: false,
+  nickname: '동근',
 }
 
 export const counterSlice = createSlice({

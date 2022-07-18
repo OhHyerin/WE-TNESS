@@ -10,6 +10,7 @@ import Home from './pages/common/Home';
 import Signup from "./pages/accounts/Signup"
 import Login from "./pages/accounts/Login"
 import Room from "./pages/common/Room"
+import UserHistory from './pages/accounts/UserHistory';
 import { store } from './store'
 import { Provider } from 'react-redux'
 
@@ -22,6 +23,7 @@ root.render(
           <Route path="" element={<Home></Home>}></Route>
           <Route path="signup" element={<Signup></Signup>}></Route>
           <Route path="login" element={<Login></Login>}></Route>
+          <Route path=":userNickname" element={<UserHistory></UserHistory>}></Route>
           <Route path=":roomId" element={<Room/>}></Route>
         </Route>
       </Routes>
