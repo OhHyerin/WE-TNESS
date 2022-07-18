@@ -73,7 +73,7 @@ Infra : Mysql, +추가
 
 - Git
 - [Notion](https://cultured-paperback-2ca.notion.site/PJT-A205-WE-tness-7265acea434749f09da369df24d0ed16)
-- [JIRA](https://jira.ssafy.com/secure/RapidBoard.jspa?rapidView=12402&projectKey=S07P11A205&view=planning&issueLimit=100)
+- [JIRA](https://jira.ssafy.com/secure/RapidBoard.jspa?rapidView=12681&projectKey=S07P12A205&view=planning&issueLimit=100)
 - MatterMost
 - Webex
 
