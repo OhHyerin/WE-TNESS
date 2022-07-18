@@ -1,15 +1,15 @@
-import {
-  Outlet,
-} from "react-router-dom"
-import NavBar from "../../components/common/NavBar"
+import { useNavigate } from "react-router-dom"
 
 export default function Home () {
+  const navigate = useNavigate()
   return (
     <div>
-      <NavBar>
-      </NavBar>
-
-      <Outlet></Outlet>
+      <div>
+        <button
+          onClick={() => {navigate("/3")}}
+        >방 입장
+        </button>
+      </div>
   </div>
   )
 }
