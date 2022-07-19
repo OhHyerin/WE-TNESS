@@ -15,7 +15,9 @@ export default function Room() {
         }}>
         로그인 해봐요
       </button>
-      <KakaoLoginBar href={KAKAO_AUTH_URL}/>
+      <a href={KAKAO_AUTH_URL}>
+        <KakaoLoginBar/>
+      </a>
     </div>
   );
 }
