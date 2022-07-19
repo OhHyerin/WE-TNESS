@@ -8,7 +8,7 @@ import Signup from './pages/accounts/Signup';
 import Login from './pages/accounts/Login';
 import Room from './pages/common/Room';
 import UserHistory from './pages/accounts/UserHistory';
-import { store } from './store';
+import store from './store';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
