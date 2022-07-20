@@ -11,7 +11,6 @@ const Nav = styled.div`
 
 export default function NavBar() {
   const isLogin = useSelector(state => state.user.isLogin);
-  const userNickname = useSelector(state => state.user.nickname);
 
   return (
     <Nav>
@@ -20,7 +19,6 @@ export default function NavBar() {
       <div>
         {isLogin ? (
           <div>
-            <Link to={`/${userNickname}`}>내 운동 현황</Link>
             <AccountMenu />
           </div>
         ) : (
