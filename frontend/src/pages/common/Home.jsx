@@ -7,7 +7,7 @@ export default function Home() {
       <div>
         <button
           onClick={() => {
-            navigate('room/3');
+            navigate('/3');
           }}>
           방 입장
         </button>
