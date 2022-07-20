@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../features/user/userSlice';
+import { login, testLogin } from '../../features/user/userSlice';
 import KAKAO_AUTH_URL from '../../api/Oauth';
 import FormBox from '../../components/common/FormBox'
 import InputBox from '../../components/common/InputBox';
@@ -72,13 +72,14 @@ export default function Login() {
           </InputBox>
           <SubmitBtn>
             로그인
-          </SubmitBtn>  
+          </SubmitBtn>
         </LoginForm>
 
         <hr/>
         <a href={KAKAO_AUTH_URL}>
           <KakaoLoginBar/>
         </a>
+        <SubmitBtn onClick={() => {dispatch(testLogin())}}>Test Login</SubmitBtn>
         <p>가입하실래요? <Link to="/signup">로그인</Link> </p>
       </FormBox>
     </div>
