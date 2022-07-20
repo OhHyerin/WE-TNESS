@@ -69,23 +69,23 @@ export default function AccountMenu() {
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-        <MenuItem>{/* <Avatar />  */}내 운동 현황</MenuItem>
+        <Link to={`/history/${userNickname}`}>
+          <MenuItem>내 운동 현황</MenuItem>
+        </Link>
         <Link to="/ranking">
           <MenuItem>랭킹 페이지</MenuItem>
         </Link>
-        <Link to>
+        <Link to={`/mypage/${userNickname}`}>
           <MenuItem>마이 페이지</MenuItem>
         </Link>
-        <Link to>
+        <Link to={`/adminuser`}>
           <MenuItem>관리자 페이지</MenuItem>
         </Link>
-        <MenuItem>
-          <button
-            onClick={() => {
-              dispatch(logout());
-            }}>
-            로그아웃
-          </button>
+        <MenuItem
+          onClick={() => {
+            dispatch(logout());
+          }}>
+          로그아웃
         </MenuItem>
       </Menu>
     </React.Fragment>
