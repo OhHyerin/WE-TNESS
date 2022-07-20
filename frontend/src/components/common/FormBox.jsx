@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const InpuBox = styled.div`
+const FormBox = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -8,4 +8,4 @@ const InpuBox = styled.div`
   margin-top: 50px;
 `
 
-export default InpuBox;
+export default FormBox;
