@@ -9,12 +9,15 @@ export const counterSlice = createSlice({
   name: 'counter',
   initialState,
   reducers: {
-    switchLoginState: state => {
+    login: state => {
+      state.isLogin = !state.isLogin;
+    },
+    logout: state => {
       state.isLogin = !state.isLogin;
     },
   },
 });
 
-export const { switchLoginState } = counterSlice.actions;
+export const { login, logout } = counterSlice.actions;
 
 export default counterSlice.reducer;
