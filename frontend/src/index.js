@@ -9,6 +9,7 @@ import Login from './pages/accounts/Login';
 import Room from './pages/common/Room';
 import UserHistory from './pages/accounts/UserHistory';
 import store from './store';
+import Ranking from './pages/common/Ranking';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -21,6 +22,7 @@ root.render(
           <Route path="login" element={<Login></Login>}></Route>
           <Route path=":userNickname" element={<UserHistory></UserHistory>}></Route>
           <Route path=":roomId" element={<Room />}></Route>
+          <Route path="ranking" element={<Ranking />}></Route>
         </Route>
       </Routes>
     </Provider>
