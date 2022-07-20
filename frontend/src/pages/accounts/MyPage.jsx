@@ -1,9 +1,8 @@
 import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
-import LoginPleasePage from './LoginPleasePage';
+import { Link, Navigate } from 'react-router-dom';
 
 export default function MyPage() {
-  const isLogin = useSelector(state => state.user.isLogin);
+  const isLogin = useSelector(state => state.user.isAuthenticated);
   if (isLogin) {
     return (
       <div>
@@ -12,5 +11,5 @@ export default function MyPage() {
       </div>
     );
   }
-  return <LoginPleasePage />;
+  return <Navigate to='/login'/>;
 }

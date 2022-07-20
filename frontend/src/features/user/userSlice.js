@@ -69,9 +69,6 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    setIsPossibleNickName: state => {
-      state.isNicknameChecked = false;
-    },
     testLogin: state => {
       state.isAuthenticated = !state.isAuthenticated
     }
@@ -105,6 +102,6 @@ export const userSlice = createSlice({
 });
 
 export { login, logout, signup, checkNickname }
-export const { setIsPossibleNickName, testLogin } = userSlice.actions;
+export const { testLogin } = userSlice.actions;
 
 export default userSlice.reducer;

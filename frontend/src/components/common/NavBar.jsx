@@ -10,7 +10,7 @@ const Nav = styled.div`
 `;
 
 export default function NavBar() {
-  const isLogin = useSelector(state => state.user.isAuthenticated);
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const userNickname = useSelector(state => state.user.nickname);
 
   return (
@@ -18,9 +18,9 @@ export default function NavBar() {
       <Link to="/">Home</Link>
       <SearchForm></SearchForm>
       <div>
-        {isLogin ? (
+        {isAuthenticated ? (
           <div>
-            <Link to={`/${userNickname}`}>내 운동 현황</Link>
+            <Link to={`/history/${userNickname}`}>내 운동 현황</Link>
             <AccountMenu />
           </div>
         ) : (
