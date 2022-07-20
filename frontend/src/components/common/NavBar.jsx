@@ -1,8 +1,8 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { logout } from '../../features/user/userSlice';
 import SearchForm from '../search/SearchForm';
+import AccountMenu from './Dropdown';
 
 const Nav = styled.div`
   display: flex;
@@ -12,7 +12,7 @@ const Nav = styled.div`
 export default function NavBar() {
   const isLogin = useSelector(state => state.user.isLogin);
   const userNickname = useSelector(state => state.user.nickname);
-  const dispatch = useDispatch();
+
   return (
     <Nav>
       <Link to="/">Home</Link>
@@ -21,14 +21,7 @@ export default function NavBar() {
         {isLogin ? (
           <div>
             <Link to={`/${userNickname}`}>내 운동 현황</Link>
-            <div>
-              <button
-                onClick={() => {
-                  dispatch(logout());
-                }}>
-                Logout
-              </button>
-            </div>
+            <AccountMenu />
           </div>
         ) : (
           <div>
