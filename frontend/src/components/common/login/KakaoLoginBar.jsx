@@ -5,7 +5,6 @@ const KakaoLoginBar = styled.img.attrs({
   src: `${kakaoImg}`
 })`
   margin: 10px auto;
-  /* padding: -10px; */
   color: transparent;
   width: 300px;
   height: 45px;
