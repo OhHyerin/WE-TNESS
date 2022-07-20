@@ -9,7 +9,6 @@ import Login from './pages/accounts/Login';
 import Room from './pages/common/Room';
 import UserHistory from './pages/accounts/UserHistory';
 import store from './store';
-import Ranking from './pages/common/Ranking';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
