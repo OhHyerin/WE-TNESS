@@ -1,5 +1,6 @@
 package backend.service;
 
+import backend.exception.UnauthorizedException;
 import backend.repository.JwtRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
