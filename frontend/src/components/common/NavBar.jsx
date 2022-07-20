@@ -10,7 +10,7 @@ const Nav = styled.div`
 `;
 
 export default function NavBar() {
-  const isLogin = useSelector(state => state.user.isAuthenticated);
+  const isLogin = useSelector(state => state.user.isLogin);
   const userNickname = useSelector(state => state.user.nickname);
   const dispatch = useDispatch();
   return (

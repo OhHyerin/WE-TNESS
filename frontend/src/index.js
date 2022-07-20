@@ -20,8 +20,7 @@ root.render(
           <Route path="signup" element={<Signup></Signup>}></Route>
           <Route path="login" element={<Login></Login>}></Route>
           <Route path=":userNickname" element={<UserHistory></UserHistory>}></Route>
-          <Route path="room/:roomId" element={<Room />}></Route>
-          <Route path="ranking" element={<Ranking />}></Route>
+          <Route path=":roomId" element={<Room />}></Route>
         </Route>
       </Routes>
     </Provider>
