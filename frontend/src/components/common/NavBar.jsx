@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { switchLoginState } from '../../features/user/userSlice';
+import { logout } from '../../features/user/userSlice';
 import SearchForm from '../search/SearchForm';
 
 const Nav = styled.div`
@@ -24,7 +24,7 @@ export default function NavBar() {
             <div>
               <button
                 onClick={() => {
-                  dispatch(switchLoginState());
+                  dispatch(logout());
                 }}>
                 Logout
               </button>
