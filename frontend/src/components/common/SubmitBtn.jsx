@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-const SubmitBtn = styled.div`
+const SubmitBtn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;

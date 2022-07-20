@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../../features/user/userSlice';
 import KAKAO_AUTH_URL from '../../api/Oauth';
 import FormBox from '../../components/common/FormBox'
@@ -15,40 +16,56 @@ const LoginForm = styled.form`
 `
 
 export default function Login() {
-  const [inputId, setInputId] = useState('')
-  const [inputPw, setInputPw] = useState('')
+  const navigate = useNavigate();
+
+  const [inputEmail, setInputEmail] = useState('')
+  const [inputPassword, setInputPassword] = useState('')
 
   const dispatch = useDispatch();
 
-  const handleInputId = e => {
-    setInputId(e.target.value)
+  const handleInputEmail = e => {
+    setInputEmail(e.target.value)
   };
 
-  const handleInputPw = e => {
-    setInputPw(e.target.value)
+  const handleInputPassword = e => {
+    setInputPassword(e.target.value)
   };
+
+  function handleSubmit (e) {
+    e.preventDefault()
+    const payload = {
+      inputEmail,
+      inputPassword
+    }
+    dispatch(login(payload))
+      .then(() => {
+        navigate('/')
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
 
   return (
     <div>
       <FormBox>
         <h1>로그인페이지임당</h1>
-        <LoginForm>
-          <label>아이디</label>
+        <LoginForm
+          onSubmit={handleSubmit}
+        >
+          <label>이메일</label>
           <input
             type='text'
-            value={inputId}
-            onChange={handleInputId}
+            value={inputEmail}
+            onChange={handleInputEmail}
           />
           <label>비밀번호</label>
           <input
             type='password'
-            value={inputPw}
-            onChange={handleInputPw}
+            value={inputPassword}
+            onChange={handleInputPassword}
           />
-          <SubmitBtn
-            onClick={() => {
-              dispatch(login())
-            }}>
+          <SubmitBtn>
             로그인 해봐요
           </SubmitBtn>  
         </LoginForm>
