@@ -4,10 +4,10 @@ import { setToken, removeToken } from '../../api/Token';
 
 const login = createAsyncThunk(
   'login',
-  async (inputInfo, { rejectWithValue }) => {
-    console.log(inputInfo)
+  async (payload, { rejectWithValue }) => {
+    console.log(payload)
     try {
-      const response = await axios.post('/login', inputInfo);
+      const response = await axios.post('/login', payload);
       console.log(response)
       // setToken()
       return response;
@@ -32,9 +32,9 @@ const logout = createAsyncThunk(
 
 const signup = createAsyncThunk(
   'signup',
-  async (inputInfo, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/signup', inputInfo);
+      const response = await axios.post('/signup', payload);
       console.log(response)
       // setToken()
       return response;
@@ -46,7 +46,8 @@ const signup = createAsyncThunk(
 
 const checkNickname = createAsyncThunk(
   'checkNickname',
-  async (nickname, { rejectWithValue }) => {
+  async (payload, { rejectWithValue }) => {
+    const {nickname} = payload
     try {
       const response = await axios.get(`/nicknamecheck/${nickname}`);
       return response;
@@ -100,7 +101,7 @@ export const userSlice = createSlice({
   },
 });
 
-export { login, logout, signup }
+export { login, logout, signup, checkNickname }
 export const { setIsPossibleNickName } = userSlice.actions;
 
 export default userSlice.reducer;

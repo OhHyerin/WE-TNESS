@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { login } from '../../features/user/userSlice';
 import KAKAO_AUTH_URL from '../../api/Oauth';
 import FormBox from '../../components/common/FormBox'
+import InputBox from '../../components/common/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import KakaoLoginBar from '../../components/common/login/KakaoLoginBar';
 
@@ -18,24 +19,24 @@ const LoginForm = styled.form`
 export default function Login() {
   const navigate = useNavigate();
 
-  const [inputEmail, setInputEmail] = useState('')
-  const [inputPassword, setInputPassword] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const dispatch = useDispatch();
 
-  const handleInputEmail = e => {
-    setInputEmail(e.target.value)
+  const handleEmail = e => {
+    setEmail(e.target.value)
   };
 
-  const handleInputPassword = e => {
-    setInputPassword(e.target.value)
+  const handlePassword = e => {
+    setPassword(e.target.value)
   };
 
   function handleSubmit (e) {
     e.preventDefault()
     const payload = {
-      inputEmail,
-      inputPassword
+      email,
+      password
     }
     dispatch(login(payload))
       .then(() => {
@@ -53,26 +54,32 @@ export default function Login() {
         <LoginForm
           onSubmit={handleSubmit}
         >
-          <label>이메일</label>
-          <input
-            type='text'
-            value={inputEmail}
-            onChange={handleInputEmail}
-          />
-          <label>비밀번호</label>
-          <input
-            type='password'
-            value={inputPassword}
-            onChange={handleInputPassword}
-          />
+          <InputBox>
+            <label>이메일</label>
+            <input
+              type='text'
+              value={email}
+              onChange={handleEmail}
+            />
+          </InputBox>
+          <InputBox>
+            <label>비밀번호</label>
+            <input
+              type='password'
+              value={password}
+              onChange={handlePassword}
+            />
+          </InputBox>
           <SubmitBtn>
-            로그인 해봐요
+            로그인
           </SubmitBtn>  
         </LoginForm>
 
+        <hr/>
         <a href={KAKAO_AUTH_URL}>
           <KakaoLoginBar/>
         </a>
+        <p>가입하실래요? <Link to="/signup">로그인</Link> </p>
       </FormBox>
     </div>
   );
