@@ -78,7 +78,7 @@ export default function AccountMenu() {
         <Link to={`/mypage/${userNickname}`}>
           <MenuItem>마이 페이지</MenuItem>
         </Link>
-        <Link to={`/adminuser`}>
+        <Link to={`/admin/user`}>
           <MenuItem>관리자 페이지</MenuItem>
         </Link>
         <MenuItem

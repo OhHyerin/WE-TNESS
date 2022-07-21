@@ -9,9 +9,9 @@ const Nav = styled.div`
 export default function adminNav() {
   return (
     <Nav>
-      <Link to="/adminuser">유저</Link>
-      <Link to="/adminroom">방</Link>
-      <Link to="/adminreport">신고</Link>
+      <Link to="/admin/user">유저</Link>
+      <Link to="/admin/room">방</Link>
+      <Link to="/admin/report">신고</Link>
     </Nav>
   );
 }
