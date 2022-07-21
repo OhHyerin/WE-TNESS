@@ -1,11 +1,23 @@
-import React, {useState} from 'react'
+import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
+import Radio from "@mui/material/Radio";
+import { RadioGroup } from '@mui/material';
+import FormControlLabel from "@mui/material/FormControlLabel";
+import OutlinedInput from '@mui/material/FilledInput';
+import TextField from '@mui/material/TextField';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import InputAdornment from '@mui/material/InputAdornment';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { signup, checkNickname } from '../../features/user/userSlice'
-import FormBox from "../../components/common/FormBox";
-import InputBox from '../../components/common/InputBox';
+import FormBox from "../../components/common/auth/FormBox";
+import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
+import AddressForm from '../../components/common/auth/AddressForm';
 
 const SignupForm = styled.form`
   display: flex;
@@ -15,15 +27,19 @@ const SignupForm = styled.form`
 `
 
 export default function Signup() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const dispatch = useDispatch()
 
-  const isPossibleNickname = useSelector(state => state.user.isPossibleNickName);
-
+  const isPossibleNickname = useSelector(state => state.user.isPossibleNickname);
+  const addressCode = useSelector(state => state.user.addressCode)
+  
   const [nickname, setNickname] = useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [gender, setGender] = useState("female")
+  const [isCheckNN, setIsCheckNN] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const onNicknameHandler = e => {
     setNickname(e.currentTarget.value)
@@ -37,28 +53,41 @@ export default function Signup() {
   const onConfirmPasswordHandler = e => {
     setConfirmPassword(e.currentTarget.value)
   }
-
-  function onSubmitHandler (e) {
-    e.prventDefault()
-
-    const payload = {
-      email,
-      password,
-      confirmPassword,
-      nickname,
-    }
-    dispatch(signup(payload))
-      .then(() => {
-        navigate('/')
-      })
+  function onGenderHandeler (e) {
+    setGender(e.target.value)
   }
-
+  
   function onCheckNicknameHandler (e) {
     e.preventDefault()
     const payload = {
       nickname
     }
+    setIsCheckNN(true)
     dispatch(checkNickname(payload))
+  }
+
+  function onSubmitHandler (e) {
+    e.preventDefault()
+    const payload = {
+      email,
+      password,
+      confirmPassword,
+      nickname,
+      gender,
+      addressCode,
+    }
+    console.log(payload)
+    dispatch(signup(payload))
+      .then(() => {
+        navigate('/')
+      })
+      .catch(err => {
+        console.log(err)
+      })
+  }
+
+  function handleClickShowPassword() {
+    setShowPassword(!showPassword)
   }
 
   return (
@@ -69,53 +98,82 @@ export default function Signup() {
           onSubmit={onSubmitHandler}
         >
           <InputBox>
-            <label>닉네임</label>
-            <input
-              type="text"
-              placeholder="닉네임"
+            <TextField
+              error={isCheckNN && !isPossibleNickname}
+              label="*닉네임"
               value={nickname}
               onChange={onNicknameHandler}
+              helperText={isCheckNN ? (isPossibleNickname ? "사용 가능한 닉네임입니다." : "사용중인 닉네임입니다.") : null}
             />
           </InputBox>
-          <SubmitBtn
-            onClick={onCheckNicknameHandler}
-          >
-            닉네임 확인하기
-          </SubmitBtn>
-          {{isPossibleNickname} ? (
-            <span>사용가능한 닉네임입니다.</span>
-            ) : (
-            <span>사용중인 닉네임입니다.</span>
-            )
-          }
-          <InputBox> 
-            <label>이메일</label>
-            <input
+          { nickname ? (
+            <SubmitBtn onClick={onCheckNicknameHandler}>
+              닉네임 확인하기
+            </SubmitBtn>
+          ) : (
+            <SubmitBtn disabled deactive={!nickname}>
+              닉네임확인하기
+            </SubmitBtn>
+          )}
+          <InputBox>
+            <TextField
               type="email"
-              placeholder="test@example.com"
+              label="*이메일"
               value={email}
               onChange={onEmailHandler}
             />
           </InputBox>
           <InputBox>
-            <label>비밀번호</label>
-            <input
+            <FormControl>
+              <InputLabel htmlFor="outlined-adornment-password">*비밀번호</InputLabel>
+              <OutlinedInput
+                type={showPassword?"text":"password"}
+                value={password}
+                onChange={onPasswordHandler}
+                endAdornment={
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="toggle password visibility"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                }
+              />
+            </FormControl>
+          </InputBox>
+          <InputBox>
+            <TextField
+              error={password !== confirmPassword}
               type="password"
-              placeholder="비밀번호"
-              value={password}
-              onChange={onPasswordHandler}
+              label="*비밀번호 확인"
+              value={confirmPassword}
+              onChange={onConfirmPasswordHandler}
+              helperText={password!==confirmPassword?"비밀번호 확인이 일치하지 않습니다.":null}
             />
           </InputBox>
           <InputBox>
-            <label>비밀번호 확인</label>
-            <input
-              type="password"
-              placeholder="비밀번호 확인"
-              value={confirmPassword}
-              onChange={onConfirmPasswordHandler}
-            />
+            <label >성별</label>
+            <RadioGroup
+              value={gender}
+              onChange={onGenderHandeler}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "end",
+              }}
+            >
+              <FormControlLabel value="female" control={<Radio />} label="여성" />
+              <FormControlLabel value="male" control={<Radio />} label="남성" />
+            </RadioGroup>
           </InputBox>
-          <SubmitBtn>
+          <InputBox>
+            <label>주소</label>
+            <AddressForm/>
+          </InputBox>
+          <SubmitBtn disabled={!isPossibleNickname} deactive={!isPossibleNickname}>
             회원가입
           </SubmitBtn>
         </SignupForm>
