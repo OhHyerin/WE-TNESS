@@ -4,10 +4,10 @@ import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { login, testLogin } from '../../features/user/userSlice';
 import KAKAO_AUTH_URL from '../../api/Oauth';
-import FormBox from '../../components/common/FormBox'
-import InputBox from '../../components/common/InputBox';
+import FormBox from '../../components/common/auth/FormBox'
+import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
-import KakaoLoginBar from '../../components/common/login/KakaoLoginBar';
+import KakaoLoginBar from '../../components/common/auth/KakaoLoginBar';
 
 const LoginForm = styled.form`
   display: flex;

@@ -61,8 +61,9 @@ const initialState = {
   user: {},
   isAuthenticated: false,
   isAdmin: false,
-  isPossibleNickName: false,
+  isPossibleNickname: false,
   isLoading: false,
+  bcode: '',
 };
 
 export const userSlice = createSlice({
