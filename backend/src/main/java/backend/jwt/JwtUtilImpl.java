@@ -8,18 +8,14 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.stereotype.Component;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-@Service
+@Component
 public class JwtUtilImpl implements JwtUtil {
 
     public static final Logger logger = LoggerFactory.getLogger(JwtUtilImpl.class);
@@ -90,20 +86,20 @@ public class JwtUtilImpl implements JwtUtil {
         return value;
     }
 
-    @Override
-    public String getUserId() {
-        return (String) this.get("user").get("userid");
-    }
+//    @Override
+//    public String getUserId() {
+//        return (String) this.get("user").get("userid");
+//    }
 
     //전달 받은 토큰이 제대로 생성된것인지 확인하고 문제가 있다면 UnauthorizedException을 발생
-    @Override
-    public boolean isUsable(String jwt) {
-        try{
-            Jws<Claims> claims = Jwts.parser().setSigningKey(this.generateKey()).parseClaimsJws(jwt);
-            return true;
-        }catch (Exception e){
-            logger.error(e.getMessage());
-            return false;
-        }
-    }
+//    @Override
+//    public boolean isUsable(String jwt) {
+//        try{
+//            Jws<Claims> claims = Jwts.parser().setSigningKey(this.generateKey()).parseClaimsJws(jwt);
+//            return true;
+//        }catch (Exception e){
+//            logger.error(e.getMessage());
+//            return false;
+//        }
+//    }
 }
