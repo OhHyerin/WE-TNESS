@@ -1,10 +1,11 @@
 package backend.jwt;
 
 import java.util.Map;
+import backend.model.User;
 
-public interface JwtRepository {
+public interface JwtUtil{
 
-    <T>String create(String key, T data, String subject);
+    <T>String createToken(User user);
     Map<String, Object> get(String key);
     String getUserId();
     boolean isUsable(String jwt);
