@@ -22,18 +22,18 @@ root.render(
     <Provider store={store}>
       <Routes>
         <Route path="/" element={<App />}>
-          <Route path="" element={<HomePage/>}></Route>
-          <Route path="signup" element={<SignupPage/>}></Route>
-          <Route path="login" element={<LoginPage/>}></Route>
-          <Route path="history/:userNickname" element={<HistoryPage/>}></Route>
-          <Route path="room/:roomId" element={<RoomPage/>}></Route>
-          <Route path="ranking" element={<RankPage/>}></Route>
-          <Route path="mypage/:userNickname" element={<MyPage/>}></Route>
-          <Route path="edit" element={<EditPage/>}></Route>
-          <Route path='admin/'>
-            <Route path="user" element={<AdminUserPage/>}></Route>
-            <Route path="room" element={<AdminRoomPage/>}></Route>
-            <Route path="report" element={<AdminReportPage/>}></Route>
+          <Route path="" element={<HomePage />}></Route>
+          <Route path="signup" element={<SignupPage />}></Route>
+          <Route path="login" element={<LoginPage />}></Route>
+          <Route path="history/:userNickname" element={<HistoryPage />}></Route>
+          <Route path="room/:roomId" element={<RoomPage />}></Route>
+          <Route path="ranking" element={<RankPage />}></Route>
+          <Route path="mypage/:userNickname" element={<MyPage />}></Route>
+          <Route path="edit" element={<EditPage />}></Route>
+          <Route path="admin/">
+            <Route path="user" element={<AdminUserPage />}></Route>
+            <Route path="room" element={<AdminRoomPage />}></Route>
+            <Route path="report" element={<AdminReportPage />}></Route>
           </Route>
         </Route>
       </Routes>
