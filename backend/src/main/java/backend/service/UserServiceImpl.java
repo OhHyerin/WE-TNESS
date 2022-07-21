@@ -20,6 +20,31 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public void updateUser(Long id, User reqDto) {
+        User user = userRepository.findOne(id);
+        if(reqDto.getPassword()!=null){
+            user.setPassword(reqDto.getPassword());
+        }
+        if(reqDto.getSidoCode()!=null){
+            user.setSidoCode(reqDto.getSidoCode());
+        }
+        if(reqDto.getGugunCode()!=null){
+            user.setGugunCode(reqDto.getGugunCode());
+        }
+        if(reqDto.getGender()!=null){
+            user.setGender(reqDto.getGender());
+        }
+        if(reqDto.getHeight()!=0){
+            user.setHeight(reqDto.getHeight());
+        }
+        if(reqDto.getWeight()!=0){
+            user.setWeight(reqDto.getWeight());
+        }
+
+    }
+
+    @Override
+    @Transactional
     public boolean checkEmailDuplicate(String email) {
         return userRepository.existsByEmail(email);
     }

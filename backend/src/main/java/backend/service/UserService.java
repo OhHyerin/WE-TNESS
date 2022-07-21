@@ -10,4 +10,6 @@ public interface UserService {
     boolean checkNicknameDuplicate(String nickname);
 
      void registerUser(User user);
+
+     void updateUser(Long id, User user);
 }
