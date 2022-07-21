@@ -16,23 +16,23 @@ public class JwtInterceptor implements HandlerInterceptor {
 
     JwtUtil jwtUtil;
 
-    @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        if (!(handler instanceof HandlerMethod)) {
-            return true;
-        }
-
-        String token = request.getHeader("JWT");
-
-        try {
-            Map<String, Object> payload = jwtUtil.get(token);
-            request.setAttribute("nickname", payload.get("nickname"));
-            request.setAttribute("email", payload.get("email"));
-
-        } catch (Exception e) {
-            throw new Exception();
-        }
-
-        return true;
-    }
+//    @Override
+//    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+//        if (!(handler instanceof HandlerMethod)) {
+//            return true;
+//        }
+//
+//        String token = request.getHeader("JWT");
+//
+//        try {
+//            Map<String, Object> payload = jwtUtil.get(token);
+//            request.setAttribute("nickname", payload.get("nickname"));
+//            request.setAttribute("email", payload.get("email"));
+//
+//        } catch (Exception e) {
+//            throw new Exception();
+//        }
+//
+//        return true;
+//    }
 }
