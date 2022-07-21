@@ -1,4 +1,4 @@
-package backend.repository;
+package backend.jwt;
 
 import java.util.Map;
 

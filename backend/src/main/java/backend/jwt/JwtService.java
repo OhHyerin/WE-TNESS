@@ -1,7 +1,6 @@
-package backend.service;
+package backend.jwt;
 
 import backend.exception.UnauthorizedException;
-import backend.repository.JwtRepository;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -14,7 +13,6 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
 
