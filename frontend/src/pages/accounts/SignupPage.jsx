@@ -10,7 +10,7 @@ import { signup, checkNickname } from '../../features/user/userSlice'
 import FormBox from "../../components/common/auth/FormBox";
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
-import Postcode from '../../components/common/auth/Postcode';
+import AddressForm from '../../components/common/auth/AddressForm';
 
 const SignupForm = styled.form`
   display: flex;
@@ -20,8 +20,8 @@ const SignupForm = styled.form`
 `
 
 export default function Signup() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const dispatch = useDispatch()
 
   const isPossibleNickname = useSelector(state => state.user.isPossibleNickname);
   
@@ -31,6 +31,8 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [gender, setGender] = useState("female")
   const [isCheck, setIsCheck] = useState(false)
+
+  const addressCode = useSelector(state => state.user.addressCode)
 
   const onNicknameHandler = e => {
     setNickname(e.currentTarget.value)
@@ -44,23 +46,10 @@ export default function Signup() {
   const onConfirmPasswordHandler = e => {
     setConfirmPassword(e.currentTarget.value)
   }
-
-  function onSubmitHandler (e) {
-    e.prventDefault()
-
-    const payload = {
-      email,
-      password,
-      confirmPassword,
-      nickname,
-      gender,
-    }
-    dispatch(signup(payload))
-      .then(() => {
-        navigate('/')
-      })
+  function onGenderHandeler (e) {
+    setGender(e.target.value)
   }
-
+  
   function onCheckNicknameHandler (e) {
     e.preventDefault()
     const payload = {
@@ -69,10 +58,25 @@ export default function Signup() {
     setIsCheck(true)
     dispatch(checkNickname(payload))
   }
-
-  function onGenderHandeler (e) {
-    setGender(e.target.value)
-    console.log(gender)
+  
+  function onSubmitHandler (e) {
+    e.preventDefault()
+    const payload = {
+      email,
+      password,
+      confirmPassword,
+      nickname,
+      gender,
+      addressCode,
+    }
+    console.log(payload)
+    dispatch(signup(payload))
+      .then(() => {
+        navigate('/')
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   return (
@@ -84,7 +88,6 @@ export default function Signup() {
         >
           <InputBox>
             <TextField
-              id="outlined-multiline-flexible"
               label="*닉네임"
               value={nickname}
               onChange={onNicknameHandler}
@@ -108,7 +111,6 @@ export default function Signup() {
           }
           <InputBox>
             <TextField
-              id="outlined-multiline-flexible"
               type="email"
               label="*이메일"
               value={email}
@@ -117,8 +119,7 @@ export default function Signup() {
           </InputBox>
           <InputBox>
             <TextField
-              id="outlined-multiline-flexible"
-              type="email"
+              type="password"
               label="*비밀번호"
               value={password}
               onChange={onPasswordHandler}
@@ -126,8 +127,7 @@ export default function Signup() {
           </InputBox>
           <InputBox>
             <TextField
-              id="outlined-multiline-flexible"
-              type="email"
+              type="password"
               label="*비밀번호 확인"
               value={confirmPassword}
               onChange={onConfirmPasswordHandler}
@@ -149,8 +149,8 @@ export default function Signup() {
             </RadioGroup>
           </InputBox>
           <InputBox>
-            <label >주소</label>
-            <Postcode/>
+            <label>주소</label>
+            <AddressForm/>
           </InputBox>
           <SubmitBtn>
             회원가입
