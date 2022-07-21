@@ -26,8 +26,9 @@ public class User {
     private double weight;
     private String social;
     private String role;
-    //TODO change field name to socialToken
-    private String socialCode;
+    private String socialToken;
+    private String refreshToken;
+
     private boolean banState;
     private Date banDate;
 
