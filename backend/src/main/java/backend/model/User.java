@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import java.util.Date;
 @Entity
@@ -18,8 +17,8 @@ public class User {
     private String password;
     private String nickname;
 
-    private String siCode;
-    private String gunCode;
+    private String sidoCode;
+    private String gugunCode;
 
     private String gender;
     private double height;

@@ -11,9 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.swing.text.html.Option;
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.Date;
 
 
@@ -35,8 +33,8 @@ public class JpaUserRepositoryTest {
         user.setEmail("test1@gmail.com");
         user.setPassword("1111");
         user.setNickname("테스트A2");
-        user.setSiCode("aaa");
-        user.setGunCode("bbb");
+        user.setSidoCode("aaa");
+        user.setGugunCode("bbb");
         user.setGender("male");
         user.setHeight(120);
         user.setWeight(120);
