@@ -27,7 +27,7 @@ public class User {
     private String social;
     private String role;
     //TODO change field name to socialToken
-    private String socialCode;
+    private String socialToken;
     private boolean banState;
     private Date banDate;
 

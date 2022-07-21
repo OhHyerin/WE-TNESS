@@ -1,8 +1,11 @@
 package backend.repository;
 
 import backend.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -15,20 +18,23 @@ import java.util.Date;
 
 
 @RunWith(SpringRunner.class)
+//@Slf4j
 @SpringBootTest
 public class JpaUserRepositoryTest {
 
     @Autowired
     JpaUserRepository jpaUserRepository;
 
+    Logger log = (Logger) LoggerFactory.getLogger(JpaUserRepositoryTest.class);
+
     @Test
     @Transactional
     @Rollback(value = false)
     public void testUserSave() {
         User user = new User();
-        user.setEmail("test@gmail.com");
+        user.setEmail("test1@gmail.com");
         user.setPassword("1111");
-        user.setNickname("테스트A");
+        user.setNickname("테스트A2");
         user.setSiCode("aaa");
         user.setGunCode("bbb");
         user.setGender("male");
@@ -36,7 +42,7 @@ public class JpaUserRepositoryTest {
         user.setWeight(120);
         user.setSocial("test");
         user.setRole("test");
-        user.setSocialCode("test");
+        user.setSocialToken("test");
         user.setBanState(true);
         user.setBanDate(new Date());
 
@@ -49,6 +55,22 @@ public class JpaUserRepositoryTest {
     public void testUserUpdate() {
       User user = jpaUserRepository.findOne(1L);
       user.setBanDate(new Date());
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    public void testUserDuplicatedEmail(){
+        boolean possible = jpaUserRepository.existsByEmail("test23456@gmail.com");
+        log.info("Email Duplicated possible - " + possible);
+    }
+
+    @Test
+    @Transactional
+    @Rollback(value = false)
+    public void testUserDuplicatedNickname(){
+        boolean possible = jpaUserRepository.existsByNickname("테스트A3");
+        log.info("Nickname Duplicated possible - " + possible);
     }
 
 }

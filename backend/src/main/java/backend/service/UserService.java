@@ -15,4 +15,15 @@ public class UserService {
     public void registerUser(User user) {
         userRepository.save(user);
     }
+
+    @Transactional
+    public boolean checkEmailDuplicate(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    @Transactional
+    public boolean checkNicknameDuplicate(String nickname){
+        return userRepository.existsByNickname(nickname);
+    }
+
 }
