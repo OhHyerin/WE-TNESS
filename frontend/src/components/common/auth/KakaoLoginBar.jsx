@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import kakaoImg from '../../../images/kakao/kakao_login_medium_wide.png'
+import kakaoImg from '../../../assets/images/kakao/kakao_login_medium_wide.png'
 
 const KakaoLoginBar = styled.img.attrs({
   src: `${kakaoImg}`
