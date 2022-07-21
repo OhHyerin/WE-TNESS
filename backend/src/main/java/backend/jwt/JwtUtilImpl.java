@@ -1,6 +1,7 @@
 package backend.jwt;
 
 import backend.exception.UnauthorizedException;
+import backend.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -12,24 +13,48 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.crypto.dsig.spec.HMACParameterSpec;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 @Service
-public class JwtService implements JwtRepository {
+public class JwtUtilImpl implements JwtUtil {
 
-    public static final Logger logger = LoggerFactory.getLogger(JwtService.class);
+    public static final Logger logger = LoggerFactory.getLogger(JwtUtilImpl.class);
 
     private static final String SALT = "wetnessSecret";
-    private static final int EXPIRE_MINUTES = 120;
+    // token 유효기간 2시간
+    private static final int EXPIRE_MINUTES = 1000*60*60*2;
+
 
     @Override
-    public <T> String create(String key, T data, String subject) {
-        String jwt = Jwts.builder().setHeaderParam("typ", "JWT").setHeaderParam("regDate", System.currentTimeMillis())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * EXPIRE_MINUTES)).setSubject(subject)
-                .claim(key, data).signWith(SignatureAlgorithm.HS256, this.generateKey()).compact();
-        return null;
+    public <T> String createToken(User user) {
+
+        // 헤더 생성
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("typ", "JWT");
+        headers.put("regDate", System.currentTimeMillis());
+        headers.put("alg", "HS256");
+
+        // 페이로드 생성
+        Map<String, Object> payloads = new HashMap<>();
+        payloads.put("issuer","wetness");
+        payloads.put("nickname", user.getNickname());
+        payloads.put("email",user.getEmail());
+        //payloads.put("id",user.getId());
+
+
+        String jwt = Jwts.builder()
+                .setHeader(headers)
+                .setClaims(payloads)
+                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_MINUTES))
+                .setSubject("user")
+                .signWith(SignatureAlgorithm.HS256, generateKey())
+                .compact();
+
+        return jwt;
     }
 
     private byte[] generateKey(){
@@ -49,13 +74,13 @@ public class JwtService implements JwtRepository {
 
     @Override
     public Map<String, Object> get(String key) {
-        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes())
-                .getRequest();
-        String jwt = request.getHeader("access-token");
-        Jws<Claims> claims = null;
+
+        Jws<Claims> claims;
 
         try{
-            claims = Jwts.parser().setSigningKey(SALT.getBytes("UTF-8")).parseClaimsJws(jwt);
+            claims = Jwts.parser()
+                    .setSigningKey(SALT.getBytes("UTF-8"))
+                    .parseClaimsJws(key);
         }catch (Exception e){
             logger.error(e.getMessage());
             throw new UnauthorizedException();
