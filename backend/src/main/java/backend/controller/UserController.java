@@ -41,4 +41,12 @@ public class UserController {
         return ResponseEntity.ok().body(new DuplicateCheckResDto(possible));
     }
 
+    @PutMapping
+    @ApiOperation(value="회원정보 수정")
+    public ResponseEntity<BaseResponseEntity> updateUser(@RequestBody User user){
+        userService.updateUser(user.getId(), user);
+
+        return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+    }
+
 }
