@@ -25,9 +25,7 @@ export default function AddressForm() {
 
   function showCodeHandler(e) {
     e.preventDefault()
-    const tmp = !showCode
-    setShowCode(tmp)
-    return true
+    setShowCode(!showCode)
   }
   return(
   <div>

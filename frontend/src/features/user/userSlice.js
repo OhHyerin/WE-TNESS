@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios'
 import { setToken, removeToken } from '../../api/Token';
+import BASE_URL from '../../api/local';
 
 const login = createAsyncThunk(
   'login',
   async (payload, { rejectWithValue }) => {
     console.log(payload)
     try {
-      const response = await axios.post('/login', payload);
+      const response = await axios.post(`${BASE_URL}/login`, payload);
       console.log(response)
       // setToken()
       return response;
