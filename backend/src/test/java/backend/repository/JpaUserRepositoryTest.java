@@ -36,7 +36,7 @@ public class JpaUserRepositoryTest {
         user.setWeight(120);
         user.setSocial("test");
         user.setRole("test");
-        user.setSocialCode("test");
+        user.setSocialToken("test");
         user.setBanState(true);
         user.setBanDate(new Date());
 
