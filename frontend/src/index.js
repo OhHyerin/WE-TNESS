@@ -15,6 +15,7 @@ import Edit from './pages/accounts/Edit';
 import AdminUser from './pages/admin/AdminUser';
 import AdminRoom from './pages/admin/AdminRoom';
 import AdminReport from './pages/admin/AdminReport';
+import './styles/common.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
