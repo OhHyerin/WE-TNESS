@@ -1,4 +1,4 @@
-package backend.model.response;
+package com.wetness.model.response;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

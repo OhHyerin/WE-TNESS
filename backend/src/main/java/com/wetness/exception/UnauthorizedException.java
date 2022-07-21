@@ -1,4 +1,4 @@
-package backend.exception;
+package com.wetness.exception;
 
 public class UnauthorizedException extends RuntimeException{
     private static final long serialVersionUID = -2238030302650813813L;

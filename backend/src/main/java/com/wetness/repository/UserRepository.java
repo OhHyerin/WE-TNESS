@@ -1,8 +1,6 @@
-package backend.repository;
+package com.wetness.repository;
 
-import backend.model.User;
-
-import java.util.Optional;
+import com.wetness.model.User;
 
 public interface UserRepository {
 

@@ -1,6 +1,6 @@
-package backend.service;
+package com.wetness.service;
 
-import backend.model.User;
+import com.wetness.model.User;
 
 public interface UserService {
 

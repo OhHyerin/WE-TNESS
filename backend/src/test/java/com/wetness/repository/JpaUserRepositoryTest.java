@@ -1,7 +1,6 @@
-package backend.repository;
+package com.wetness.repository;
 
-import backend.model.User;
-import lombok.extern.slf4j.Slf4j;
+import com.wetness.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

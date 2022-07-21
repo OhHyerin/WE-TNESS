@@ -1,7 +1,7 @@
-package backend.service;
+package com.wetness.service;
 
-import backend.model.User;
-import backend.repository.UserRepository;
+import com.wetness.model.User;
+import com.wetness.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package backend;
+package com.wetness;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

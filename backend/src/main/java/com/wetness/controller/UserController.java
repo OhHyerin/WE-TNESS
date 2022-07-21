@@ -1,18 +1,14 @@
-package backend.controller;
+package com.wetness.controller;
 
-import backend.model.User;
-import backend.model.request.JoinUserDto;
-import backend.model.response.BaseResponseEntity;
-import backend.model.response.DuplicateCheckResDto;
-import backend.service.UserService;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wetness.model.User;
+import com.wetness.model.request.JoinUserDto;
+import com.wetness.model.response.BaseResponseEntity;
+import com.wetness.model.response.DuplicateCheckResDto;
+import com.wetness.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/user")

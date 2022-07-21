@@ -1,6 +1,5 @@
-package backend.config;
+package com.wetness.config;
 
-import backend.jwt.JwtInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

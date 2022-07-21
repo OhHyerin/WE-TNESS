@@ -1,8 +1,7 @@
-package backend.jwt;
+package com.wetness.jwt;
 
 import java.util.Map;
-import backend.model.User;
-import org.springframework.stereotype.Component;
+import com.wetness.model.User;
 
 
 public interface JwtUtil{

@@ -1,6 +1,6 @@
-package backend.model.request;
+package com.wetness.model.request;
 
-import backend.model.User;
+import com.wetness.model.User;
 import lombok.Data;
 
 @Data

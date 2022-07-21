@@ -1,7 +1,7 @@
-package backend.jwt;
+package com.wetness.jwt;
 
-import backend.exception.UnauthorizedException;
-import backend.model.User;
+import com.wetness.exception.UnauthorizedException;
+import com.wetness.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;

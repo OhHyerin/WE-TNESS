@@ -1,4 +1,4 @@
-package backend.model;
+package com.wetness.model;
 
 import lombok.Data;
 

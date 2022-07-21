@@ -1,15 +1,11 @@
-package backend.repository;
+package com.wetness.repository;
 
-import backend.model.User;
+import com.wetness.model.User;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.criterion.Projection;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
