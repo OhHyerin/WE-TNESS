@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios'
-import { setToken, removeToken } from '../../api/Token';
-import BASE_URL from '../../api/local';
+import { setToken, removeToken } from '../Token';
+import api from '../../api/index'
 
 const login = createAsyncThunk(
   'login',
   async (payload, { rejectWithValue }) => {
     console.log(payload)
     try {
-      const response = await axios.post(`${BASE_URL}/login`, payload);
+      const response = await axios.post(api.login(), payload);
       console.log(response)
       // setToken()
       return response;
@@ -22,7 +22,7 @@ const logout = createAsyncThunk(
   'logout',
   async (state, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/logout');
+      const response = await axios.post(api.logout());
       removeToken();
       return response;
     } catch (err) {
@@ -35,7 +35,7 @@ const signup = createAsyncThunk(
   'signup',
   async (payload, { rejectWithValue }) => {
     try {
-      const response = await axios.post('/signup', payload);
+      const response = await axios.post(api.signup(), payload);
       console.log(response)
       // setToken()
       return response;
@@ -50,7 +50,7 @@ const checkNickname = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const {nickname} = payload
     try {
-      const response = await axios.get(`/nicknamecheck/${nickname}`);
+      const response = await axios.get(api.nicknameCheck(nickname));
       return response;
     } catch (err) {
       return rejectWithValue(err.response);

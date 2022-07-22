@@ -1,4 +1,4 @@
-import BASE_URL from "./local";
+import BASE_URL from "./index";
 
 const REST_API_KEY = "29dadde0d935d3a4bda24a96faa5ed64";
 const REDIRECT_URI =  `${BASE_URL}`;
