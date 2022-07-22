@@ -58,6 +58,18 @@ const checkNickname = createAsyncThunk(
   }
 );
 
+const petchHistory = createAsyncThunk(
+  'petchHistory',
+  async () => {
+    try {
+      const response = await axios.get();
+      return response
+    } catch (err) {
+      return null
+    }
+  }
+)
+
 const initialState = {
   user: {},
   isAuthenticated: false,
@@ -65,6 +77,9 @@ const initialState = {
   isPossibleNickname: false,
   isLoading: false,
   addressCode: '',
+  history: {
+    getAwardList: [1, 2]
+  },
 };
 
 export const userSlice = createSlice({
@@ -103,10 +118,13 @@ export const userSlice = createSlice({
     [checkNickname.rejected]: state => {
       state.isPossibleNickName = false;
     },
+    [petchHistory.fulfilled]: (state, action) => {
+      state.history = action.payload.data;
+    }
   },
 });
 
-export { login, logout, signup, checkNickname }
+export { login, logout, signup, checkNickname, petchHistory }
 export const { testLogin, petchAddressCode } = userSlice.actions;
 
 export default userSlice.reducer;
