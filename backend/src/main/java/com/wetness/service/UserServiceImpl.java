@@ -32,14 +32,16 @@ public class UserServiceImpl implements UserService {
             user.setRole("normal");
 
             //Extra Info
-            if (joinUserDto.getSidoCode() != null && !joinUserDto.getSidoCode().isEmpty()) {
-                user.setSidoCode(joinUserDto.getSidoCode());
+            if (joinUserDto.getAddressCode() != null && joinUserDto.getAddressCode().length() == 10) {
+                String originalCode = joinUserDto.getAddressCode();
+                String sidoCode = originalCode.substring(0, 2) + "00000000";
+                String gugunCode = originalCode.substring(0, 5) + "00000";
+                user.setSidoCode(sidoCode);
+                user.setGugunCode(gugunCode);
             }
-            if (joinUserDto.getGugunCode() != null && !joinUserDto.getGugunCode().isEmpty()) {
-                user.setSidoCode(joinUserDto.getGugunCode());
-            }
-            if (joinUserDto.getGender() != null && !joinUserDto.getGender().isEmpty()) {
-                user.setSidoCode(joinUserDto.getSidoCode());
+            if (joinUserDto.getGender() != null &&
+                    (joinUserDto.getGender().equals("male") || joinUserDto.getGender().equals("female"))) {
+                user.setGender(joinUserDto.getGender());
             }
             if (joinUserDto.getHeight() != null && joinUserDto.getHeight() != 0.0) {
                 user.setHeight(joinUserDto.getHeight());
