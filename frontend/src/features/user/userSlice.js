@@ -120,23 +120,13 @@ export const userSlice = createSlice({
     [checkNickname.rejected]: state => {
       state.isPossibleNickName = false;
     },
-<<<<<<< HEAD
     [fetchFollowList.fulfilled]: (state, action) => {
       state.followList = action.payload
-=======
-    [petchHistory.fulfilled]: (state, action) => {
-      state.history = action.payload.data;
->>>>>>> 9e526caddbc226e0daf7f5790bd8861bdcfbd286
     }
   },
 });
 
-<<<<<<< HEAD
 export { login, logout, signup, checkNickname, fetchFollowList }
 export const { testLogin, fetchAddressCode } = userSlice.actions;
-=======
-export { login, logout, signup, checkNickname, petchHistory }
-export const { testLogin, petchAddressCode } = userSlice.actions;
->>>>>>> 9e526caddbc226e0daf7f5790bd8861bdcfbd286
 
 export default userSlice.reducer;
