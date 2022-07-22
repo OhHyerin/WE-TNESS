@@ -28,7 +28,7 @@ root.render(
           <Route path="history/:userNickname" element={<HistoryPage />}></Route>
           <Route path="room/:roomId" element={<RoomPage />}></Route>
           <Route path="ranking" element={<RankPage />}></Route>
-          <Route path="mypage/:userNickname" element={<MyPage />}></Route>
+          <Route path="mypage" element={<MyPage />}></Route>
           <Route path="edit" element={<EditPage />}></Route>
           <Route path="admin/">
             <Route path="user" element={<AdminUserPage />}></Route>

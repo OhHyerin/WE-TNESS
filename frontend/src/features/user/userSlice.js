@@ -58,6 +58,17 @@ const checkNickname = createAsyncThunk(
   }
 );
 
+<<<<<<< HEAD
+const fetchFollowList = createAsyncThunk(
+  'fetchFollowList',
+  async (payload, { rejectWithValue }) => {
+    const {nickname} = payload
+    try {
+      const response = await axios.get(api.fetchFollowList(nickname));
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response);
+=======
 const petchHistory = createAsyncThunk(
   'petchHistory',
   async () => {
@@ -66,12 +77,14 @@ const petchHistory = createAsyncThunk(
       return response
     } catch (err) {
       return null
+>>>>>>> 9e526caddbc226e0daf7f5790bd8861bdcfbd286
     }
   }
 )
 
 const initialState = {
-  user: {},
+  currentUser: {},
+  followList: {},
   isAuthenticated: false,
   isAdmin: false,
   isPossibleNickname: false,
@@ -89,7 +102,7 @@ export const userSlice = createSlice({
     testLogin: state => {
       state.isAuthenticated = !state.isAuthenticated
     },
-    petchAddressCode: (state, action) => {
+    fetchAddressCode: (state, action) => {
       state.addressCode = action.payload
     }
   },
@@ -118,13 +131,23 @@ export const userSlice = createSlice({
     [checkNickname.rejected]: state => {
       state.isPossibleNickName = false;
     },
+<<<<<<< HEAD
+    [fetchFollowList.fulfilled]: (state, action) => {
+      state.followList = action.payload
+=======
     [petchHistory.fulfilled]: (state, action) => {
       state.history = action.payload.data;
+>>>>>>> 9e526caddbc226e0daf7f5790bd8861bdcfbd286
     }
   },
 });
 
+<<<<<<< HEAD
+export { login, logout, signup, checkNickname, fetchFollowList }
+export const { testLogin, fetchAddressCode } = userSlice.actions;
+=======
 export { login, logout, signup, checkNickname, petchHistory }
 export const { testLogin, petchAddressCode } = userSlice.actions;
+>>>>>>> 9e526caddbc226e0daf7f5790bd8861bdcfbd286
 
 export default userSlice.reducer;

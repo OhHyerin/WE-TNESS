@@ -75,7 +75,7 @@ export default function AccountMenu() {
         <Link to="/ranking">
           <MenuItem>랭킹 페이지</MenuItem>
         </Link>
-        <Link to={`/mypage/${userNickname}`}>
+        <Link to={`/mypage`}>
           <MenuItem>마이 페이지</MenuItem>
         </Link>
         <Link to={`/admin/user`}>
