@@ -2,7 +2,7 @@ import styled from "styled-components";
 import React,{useState} from "react";
 import DaumPostcode from "react-daum-postcode";
 import { useDispatch } from "react-redux";
-import { petchAddressCode } from "../../../features/user/userSlice";
+import { fetchAddressCode } from "../../../features/user/userSlice";
 
 const LabelBox = styled.div`
   display: flex;
@@ -20,7 +20,7 @@ export default function AddressForm() {
     console.log(data);
     setZipcode(data.zonecode);
     setRoadAddress(data.roadAddress);
-    dispatch(petchAddressCode(data.bcode))
+    dispatch(fetchAddressCode(data.bcode))
   }
 
   function showCodeHandler(e) {

@@ -36,8 +36,8 @@ export default function Signup() {
   const [nickname, setNickname] = useState("")
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [gender, setGender] = useState("female")
+  const [pwdVerify, setPwdVerify] = useState("")
+  const [gender, setGender] = useState("")
   const [isCheckNN, setIsCheckNN] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -50,8 +50,8 @@ export default function Signup() {
   const onPasswordHandler = e => {
     setPassword(e.currentTarget.value)
   }
-  const onConfirmPasswordHandler = e => {
-    setConfirmPassword(e.currentTarget.value)
+  const onPwdVerifyHandler = e => {
+    setPwdVerify(e.currentTarget.value)
   }
   function onGenderHandeler (e) {
     setGender(e.target.value)
@@ -71,7 +71,7 @@ export default function Signup() {
     const payload = {
       email,
       password,
-      confirmPassword,
+      pwdVerify,
       nickname,
       gender,
       addressCode,
@@ -146,12 +146,12 @@ export default function Signup() {
           </InputBox>
           <InputBox>
             <TextField
-              error={password !== confirmPassword}
+              error={password !== pwdVerify}
               type="password"
               label="*비밀번호 확인"
-              value={confirmPassword}
-              onChange={onConfirmPasswordHandler}
-              helperText={password!==confirmPassword?"비밀번호 확인이 일치하지 않습니다.":null}
+              value={pwdVerify}
+              onChange={onPwdVerifyHandler}
+              helperText={password!==pwdVerify?"비밀번호 확인이 일치하지 않습니다.":null}
             />
           </InputBox>
           <InputBox>
