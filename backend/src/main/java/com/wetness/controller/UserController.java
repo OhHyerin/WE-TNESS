@@ -1,5 +1,6 @@
 package com.wetness.controller;
 
+import com.wetness.jwt.JwtUtil;
 import com.wetness.model.User;
 import com.wetness.model.request.JoinUserDto;
 import com.wetness.model.response.BaseResponseEntity;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     private final UserService userService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/join")
     @ApiOperation(value = "회원가입")
@@ -28,6 +30,18 @@ public class UserController {
             return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
         }
         return ResponseEntity.internalServerError().body(new BaseResponseEntity(500, "Fail"));
+    }
+
+    //TODO sql error 처리 추가 필요
+    @PostMapping("/login")
+    @ApiOperation(value = "로그인")
+    public ResponseEntity<BaseResponseEntity> loginUser(@RequestBody User user) {
+        User loginUser = userService.findLoginUser(user.getEmail(), user.getPassword());
+        if (loginUser != null) {
+            String token = jwtUtil.createToken(loginUser);
+            return ResponseEntity.ok().body(new BaseResponseEntity(200, token));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
 
@@ -50,8 +64,8 @@ public class UserController {
     }
 
     @PutMapping
-    @ApiOperation(value="회원정보 수정")
-    public ResponseEntity<BaseResponseEntity> updateUser(@RequestBody User user){
+    @ApiOperation(value = "회원정보 수정")
+    public ResponseEntity<BaseResponseEntity> updateUser(@RequestBody User user) {
         userService.updateUser(user.getId(), user);
 
         return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));

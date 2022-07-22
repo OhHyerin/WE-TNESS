@@ -23,25 +23,34 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateUser(Long id, User reqDto) {
         User user = userRepository.findOne(id);
-        if(reqDto.getPassword()!=null){
+        if (reqDto.getPassword() != null) {
             user.setPassword(reqDto.getPassword());
         }
-        if(reqDto.getSidoCode()!=null){
+        if (reqDto.getSidoCode() != null) {
             user.setSidoCode(reqDto.getSidoCode());
         }
-        if(reqDto.getGugunCode()!=null){
+        if (reqDto.getGugunCode() != null) {
             user.setGugunCode(reqDto.getGugunCode());
         }
-        if(reqDto.getGender()!=null){
+        if (reqDto.getGender() != null) {
             user.setGender(reqDto.getGender());
         }
-        if(reqDto.getHeight()!=0){
+        if (reqDto.getHeight() != 0) {
             user.setHeight(reqDto.getHeight());
         }
-        if(reqDto.getWeight()!=0){
+        if (reqDto.getWeight() != 0) {
             user.setWeight(reqDto.getWeight());
         }
 
+    }
+
+    @Override
+    public User findLoginUser(String email, String password) {
+        User findUser = userRepository.findByEmail(email);
+        if (findUser != null && findUser.getPassword().equals(password)) {
+            return findUser;
+        }
+        return null;
     }
 
     @Override

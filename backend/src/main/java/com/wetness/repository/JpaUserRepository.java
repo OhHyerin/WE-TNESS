@@ -22,6 +22,12 @@ public class JpaUserRepository implements UserRepository {
         return em.find(User.class, id);
     }
 
+    @Override
+    public User findByEmail(String email) {
+        return em.createQuery("select u from User u where u.email = :email", User.class)
+                .setParameter("email", email)
+                .getSingleResult();
+    }
 
     public boolean existsByEmail(String email) {
         List<User> result = em.createQuery("select u from User u where u.email = :email", User.class)
