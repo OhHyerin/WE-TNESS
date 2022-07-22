@@ -1,6 +1,7 @@
 package com.wetness.service;
 
 import com.wetness.model.User;
+import com.wetness.model.response.FindEmailResDto;
 
 public interface UserService {
 
@@ -13,5 +14,6 @@ public interface UserService {
 
      void updateUser(Long id, User user);
 
+     FindEmailResDto findByEmail(String nickname);
     User findLoginUser(String email, String password);
 }

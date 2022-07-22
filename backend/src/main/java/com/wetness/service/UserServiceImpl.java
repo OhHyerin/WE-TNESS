@@ -1,6 +1,7 @@
 package com.wetness.service;
 
 import com.wetness.model.User;
+import com.wetness.model.response.FindEmailResDto;
 import com.wetness.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,6 +51,13 @@ public class UserServiceImpl implements UserService {
             return findUser;
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public FindEmailResDto findByEmail(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        return new FindEmailResDto(user.getEmail());
     }
 
     @Override

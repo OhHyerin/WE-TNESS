@@ -5,6 +5,7 @@ import com.wetness.model.User;
 import com.wetness.model.request.JoinUserDto;
 import com.wetness.model.response.BaseResponseEntity;
 import com.wetness.model.response.DuplicateCheckResDto;
+import com.wetness.model.response.FindEmailResDto;
 import com.wetness.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -44,7 +45,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/emailcheck/{email}")
+    @GetMapping("/duplicatedEmail/{email}")
     @ApiOperation(value = "이메일 중복확인")
     public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@PathVariable String email) {
         boolean possible = userService.checkEmailDuplicate(email);
@@ -53,7 +54,7 @@ public class UserController {
         return ResponseEntity.ok().body(new DuplicateCheckResDto(possible));
     }
 
-    @GetMapping("/nicknamecheck/{nickname}")
+    @GetMapping("/duplicatedNickname/{nickname}")
     @ApiOperation(value = "닉네임 중복확인")
     public ResponseEntity<DuplicateCheckResDto> duplicatedNickname(@PathVariable String nickname) {
         boolean possible = userService.checkNicknameDuplicate(nickname);
@@ -68,6 +69,16 @@ public class UserController {
         userService.updateUser(user.getId(), user);
 
         return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+    }
+
+    @PostMapping("/findEmail")
+    @ApiOperation(value="이메일 찾기")
+    public ResponseEntity<FindEmailResDto> findId(@RequestParam("nickname") String nickname){
+        System.out.println("sendPwd Nickname : "+nickname);
+
+        FindEmailResDto resDto = userService.findByEmail(nickname);
+
+        return ResponseEntity.status(200).body(resDto);
     }
 
 }
