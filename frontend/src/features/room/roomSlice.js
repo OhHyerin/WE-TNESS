@@ -5,6 +5,7 @@ const initialState = {
   rooms: {},
   workouts: [],
   searchResult: {},
+  showPrivate: true,
   isRoomsLoaded: false,
   isWorkoutsLoaded: false,
   isSearched: false,
@@ -49,6 +50,9 @@ export const roomSlice = createSlice({
     testWorkout: state => {
       state.workouts = ['전체', '운동1', '운동2', '운동3'];
     },
+    testShowPrivate: state => {
+      state.showPrivate = !state.showPrivate;
+    },
   },
   extraReducers: {
     [getAllRooms.pending]: state => {
@@ -73,6 +77,6 @@ export const roomSlice = createSlice({
 });
 
 export { getAllRooms, getWorksouts, searchRooms };
-export const { testWorkout } = roomSlice.actions;
+export const { testWorkout, testShowPrivate } = roomSlice.actions;
 
 export default roomSlice.reducer;
