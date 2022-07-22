@@ -1,13 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios'
 import { setToken, removeToken } from '../../api/Token';
+import BASE_URL from '../../api/local';
 
 const login = createAsyncThunk(
   'login',
   async (payload, { rejectWithValue }) => {
     console.log(payload)
     try {
-      const response = await axios.post('/login', payload);
+      const response = await axios.post(`${BASE_URL}/login`, payload);
       console.log(response)
       // setToken()
       return response;
@@ -61,8 +62,9 @@ const initialState = {
   user: {},
   isAuthenticated: false,
   isAdmin: false,
-  isPossibleNickName: false,
+  isPossibleNickname: false,
   isLoading: false,
+  addressCode: '',
 };
 
 export const userSlice = createSlice({
@@ -71,6 +73,9 @@ export const userSlice = createSlice({
   reducers: {
     testLogin: state => {
       state.isAuthenticated = !state.isAuthenticated
+    },
+    petchAddressCode: (state, action) => {
+      state.addressCode = action.payload
     }
   },
   extraReducers: {
@@ -102,6 +107,6 @@ export const userSlice = createSlice({
 });
 
 export { login, logout, signup, checkNickname }
-export const { testLogin } = userSlice.actions;
+export const { testLogin, petchAddressCode } = userSlice.actions;
 
 export default userSlice.reducer;
