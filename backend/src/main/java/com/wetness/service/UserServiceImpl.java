@@ -1,9 +1,12 @@
 package com.wetness.service;
 
 import com.wetness.model.User;
+import com.wetness.model.request.JoinUserDto;
+import com.wetness.model.response.BaseResponseEntity;
 import com.wetness.model.response.FindEmailResDto;
 import com.wetness.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,8 +18,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void registerUser(User user) {
-        userRepository.save(user);
+    public boolean registerUser(JoinUserDto joinUserDto) {
+        if (joinUserDto.getPassword().equals(joinUserDto.getPwdVerify()) &&
+                checkEmailDuplicate(joinUserDto.getEmail()) &&
+                checkNicknameDuplicate(joinUserDto.getNickname())) {
+            User user = new User();
+
+            //Essential Info
+            user.setEmail(joinUserDto.getEmail());
+            user.setPassword(joinUserDto.getPassword());
+            user.setNickname(joinUserDto.getNickname());
+            user.setSocial("0");
+            user.setRole("normal");
+
+            //Extra Info
+            if (joinUserDto.getSidoCode() != null && !joinUserDto.getSidoCode().isEmpty()) {
+                user.setSidoCode(joinUserDto.getSidoCode());
+            }
+            if (joinUserDto.getGugunCode() != null && !joinUserDto.getGugunCode().isEmpty()) {
+                user.setSidoCode(joinUserDto.getGugunCode());
+            }
+            if (joinUserDto.getGender() != null && !joinUserDto.getGender().isEmpty()) {
+                user.setSidoCode(joinUserDto.getSidoCode());
+            }
+            if (joinUserDto.getHeight() != null && joinUserDto.getHeight() != 0.0) {
+                user.setHeight(joinUserDto.getHeight());
+            }
+            if (joinUserDto.getWeight() != null && joinUserDto.getWeight() != 0.0) {
+                user.setWeight(joinUserDto.getWeight());
+            }
+
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 
     @Override

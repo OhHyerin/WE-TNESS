@@ -23,10 +23,7 @@ public class UserController {
     @PostMapping("/join")
     @ApiOperation(value = "회원가입")
     public ResponseEntity<BaseResponseEntity> registerUser(@RequestBody JoinUserDto joinUserDto) {
-        if (joinUserDto.getPassword().equals(joinUserDto.getPwdVerify()) &&
-                userService.checkEmailDuplicate(joinUserDto.getEmail()) &&
-                userService.checkNicknameDuplicate(joinUserDto.getNickname())) {
-            userService.registerUser(joinUserDto.generateUser());
+        if (userService.registerUser(joinUserDto)) {
             return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
         }
         return ResponseEntity.internalServerError().body(new BaseResponseEntity(500, "Fail"));

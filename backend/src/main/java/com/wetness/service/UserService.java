@@ -1,6 +1,7 @@
 package com.wetness.service;
 
 import com.wetness.model.User;
+import com.wetness.model.request.JoinUserDto;
 import com.wetness.model.response.FindEmailResDto;
 
 public interface UserService {
@@ -10,7 +11,7 @@ public interface UserService {
 
     boolean checkNicknameDuplicate(String nickname);
 
-     void registerUser(User user);
+     boolean registerUser(JoinUserDto joinUserDto);
 
      void updateUser(Long id, User user);
 
