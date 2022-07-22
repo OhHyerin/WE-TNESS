@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
@@ -42,5 +43,14 @@ public class JpaUserRepository implements UserRepository {
                 .getResultList();
         return result.isEmpty();
     }
+
+    @Override
+    public User findByNickname(String nickname) {
+        User result = em.createQuery("select u from User u where u.nickname = :nickname", User.class)
+                .setParameter("nickname", nickname)
+                .getResultList().get(0);
+        return result;
+    }
+
 
 }
