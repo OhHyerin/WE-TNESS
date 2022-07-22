@@ -65,7 +65,7 @@ public class UserController {
         return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
     }
 
-    @PostMapping("/login/{auth}")
+    @GetMapping("/login/{auth}")
     @ApiOperation(value = "소셜 로그인")
     public ResponseEntity<Map<String,Object>> loginSocial(@PathVariable("auth") String auth, @RequestParam(value = "code") String code) throws IOException {
         // social 종류 : 카카오(2), 구글(3), 페이스북(4) 등
@@ -86,7 +86,7 @@ public class UserController {
         if (user!=null){
             String jwt = jwtUtil.createToken(user);
             result.put("exist_user", true);
-            result.put("JWT", jwt);
+            result.put("jwt", jwt);
             return ResponseEntity.ok().body(result);
         }
 
@@ -96,6 +96,7 @@ public class UserController {
         user.setGender("gender");
         user.setSocial(Integer.toString(social));
         user.setSocialToken(token);
+        user.setRole("member");
         byte[] array = new byte[10];
         user.setNickname(new String(array, Charset.forName("UTF-8")));
 

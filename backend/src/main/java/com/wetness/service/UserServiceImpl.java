@@ -15,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -89,10 +90,10 @@ public class UserServiceImpl implements UserService {
             BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(urlConnection.getOutputStream()));
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
-            // Client_id 추가 필요
-            sb.append("&client_id=2aad40910868e3c5fa9594f8de34a07b");
-            // 프론트에 문의 필요
-            sb.append("&redirect_uri=http://localhost:8080/wetness/login/kakao");
+            // Client_id = REST_API_KEY 수정 필요
+            sb.append("&client_id=cddf8fe3437329bf32a17342aa27ea7e");
+            // 초기 프론트에서 설정한 Redirect_uri
+            sb.append("&redirect_uri=http://localhost:8080/user/login/kakao");
             sb.append("&code=" + code);
 
             bw.write(sb.toString());
