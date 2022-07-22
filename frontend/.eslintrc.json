@@ -54,6 +54,15 @@
         "ignoreStrings": true,
         "ignoreTemplateLiterals": true
       }
-    ] // prettier의 printWidth 옵션 대신 사용
+    ], // prettier의 printWidth 옵션 대신 사용
+    "import/no-anonymous-default-export": ["error", {
+      "allowArray": false,
+      "allowArrowFunction": false,
+      "allowAnonymousClass": false,
+      "allowAnonymousFunction": false,
+      "allowCallExpression": true, // The true value here is for backward compatibility
+      "allowLiteral": false,
+      "allowObject": true
+    }] // default export 관련
   }
 }
