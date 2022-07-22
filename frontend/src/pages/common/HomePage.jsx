@@ -12,7 +12,10 @@ export default function Home() {
       <div>
         <Banner />
         <RankingPreview />
-        <RoomFilter1 />
+        <>
+          {/* 운동 목록 */}
+          <RoomFilter1 />
+        </>
         <RoomList />
         <button
           onClick={() => {
