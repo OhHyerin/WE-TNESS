@@ -58,13 +58,42 @@ const checkNickname = createAsyncThunk(
   }
 );
 
+const fetchFollowList = createAsyncThunk(
+  'fetchFollowList',
+  async (payload, { rejectWithValue }) => {
+    const {nickname} = payload
+    try {
+      const response = await axios.get(api.fetchFollowList(nickname));
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response);
+    }
+  }
+)
+
+const fetchHistory = createAsyncThunk(
+  'fetchHistory',
+  async () => {
+    try {
+      const response = await axios.get();
+      return response
+    } catch (err) {
+      return null
+    }
+  }
+)
+
 const initialState = {
-  user: {},
+  currentUser: {},
+  followList: {},
   isAuthenticated: false,
   isAdmin: false,
   isPossibleNickname: false,
   isLoading: false,
   addressCode: '',
+  history: {
+    getAwardList: [1, 2]
+  },
 };
 
 export const userSlice = createSlice({
@@ -74,7 +103,7 @@ export const userSlice = createSlice({
     testLogin: state => {
       state.isAuthenticated = !state.isAuthenticated
     },
-    petchAddressCode: (state, action) => {
+    fetchAddressCode: (state, action) => {
       state.addressCode = action.payload
     }
   },
@@ -103,10 +132,13 @@ export const userSlice = createSlice({
     [checkNickname.rejected]: state => {
       state.isPossibleNickName = false;
     },
+    [fetchFollowList.fulfilled]: (state, action) => {
+      state.followList = action.payload
+    }
   },
 });
 
-export { login, logout, signup, checkNickname }
-export const { testLogin, petchAddressCode } = userSlice.actions;
+export { login, logout, signup, checkNickname, fetchFollowList, fetchHistory }
+export const { testLogin, fetchAddressCode } = userSlice.actions;
 
 export default userSlice.reducer;
