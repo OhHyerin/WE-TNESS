@@ -58,7 +58,6 @@ const checkNickname = createAsyncThunk(
   }
 );
 
-<<<<<<< HEAD
 const fetchFollowList = createAsyncThunk(
   'fetchFollowList',
   async (payload, { rejectWithValue }) => {
@@ -68,16 +67,6 @@ const fetchFollowList = createAsyncThunk(
       return response;
     } catch (err) {
       return rejectWithValue(err.response);
-=======
-const petchHistory = createAsyncThunk(
-  'petchHistory',
-  async () => {
-    try {
-      const response = await axios.get();
-      return response
-    } catch (err) {
-      return null
->>>>>>> 9e526caddbc226e0daf7f5790bd8861bdcfbd286
     }
   }
 )
