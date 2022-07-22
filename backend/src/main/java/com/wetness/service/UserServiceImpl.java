@@ -55,9 +55,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public FindEmailResDto findByEmail(String nickname) {
+    public User findByNickname(String nickname) {
         User user = userRepository.findByNickname(nickname);
-        return new FindEmailResDto(user.getEmail());
+        return user;
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        User user = userRepository.findByEmail(email);
+        return user;
     }
 
     @Override

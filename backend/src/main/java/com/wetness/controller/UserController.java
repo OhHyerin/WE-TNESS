@@ -6,9 +6,14 @@ import com.wetness.model.request.JoinUserDto;
 import com.wetness.model.response.BaseResponseEntity;
 import com.wetness.model.response.DuplicateCheckResDto;
 import com.wetness.model.response.FindEmailResDto;
+import com.wetness.service.MailService;
 import com.wetness.service.UserService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,8 +22,18 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
+    public static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private static final String SUCCESS = "success";
+    private static final String FAIL = "fail";
+
+    @Autowired
     private final UserService userService;
+    @Autowired
     private final JwtUtil jwtUtil;
+
+    @Autowired
+    MailService mailService;
+
 
     @PostMapping("/join")
     @ApiOperation(value = "회원가입")
@@ -76,9 +91,26 @@ public class UserController {
     public ResponseEntity<FindEmailResDto> findId(@RequestParam("nickname") String nickname){
         System.out.println("sendPwd Nickname : "+nickname);
 
-        FindEmailResDto resDto = userService.findByEmail(nickname);
+        User user = userService.findByNickname(nickname);
+        FindEmailResDto resDto = new FindEmailResDto(user.getEmail());
 
         return ResponseEntity.status(200).body(resDto);
+    }
+
+    @GetMapping("/sendPw")
+    @ApiOperation(value="비밀번호 찾기를 위한 이메일 인증")
+    public ResponseEntity<String> sendPwd(@RequestParam("email") String email){
+        System.out.println("sendPwd EMAIL : " + email);
+
+        try{
+            mailService.sendMail(email);
+            return ResponseEntity.status(200).body(SUCCESS);
+        } catch (Exception e){
+            e.printStackTrace();
+            return ResponseEntity.status(300).body(FAIL);
+        }
+
+
     }
 
 }
