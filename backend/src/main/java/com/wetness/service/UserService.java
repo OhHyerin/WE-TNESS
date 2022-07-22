@@ -12,4 +12,6 @@ public interface UserService {
      void registerUser(User user);
 
      void updateUser(Long id, User user);
+
+    User findLoginUser(String email, String password);
 }
