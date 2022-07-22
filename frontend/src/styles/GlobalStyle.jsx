@@ -1,3 +1,6 @@
+import { createGlobalStyle } from 'styled-components';
+
+const GlobalStyle = createGlobalStyle`
 /* 컬러 설정 */
 :root {
   --primary-color: #4287f5;
@@ -12,3 +15,6 @@
   color: inherit;
   flex-shrink: 0;
 }
+`;
+
+export default GlobalStyle;
