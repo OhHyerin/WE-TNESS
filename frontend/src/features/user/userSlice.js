@@ -62,8 +62,9 @@ const initialState = {
   user: {},
   isAuthenticated: false,
   isAdmin: false,
-  isPossibleNickName: false,
+  isPossibleNickname: false,
   isLoading: false,
+  addressCode: '',
 };
 
 export const userSlice = createSlice({
@@ -72,6 +73,9 @@ export const userSlice = createSlice({
   reducers: {
     testLogin: state => {
       state.isAuthenticated = !state.isAuthenticated
+    },
+    petchAddressCode: (state, action) => {
+      state.addressCode = action.payload
     }
   },
   extraReducers: {
@@ -103,6 +107,6 @@ export const userSlice = createSlice({
 });
 
 export { login, logout, signup, checkNickname }
-export const { testLogin } = userSlice.actions;
+export const { testLogin, petchAddressCode } = userSlice.actions;
 
 export default userSlice.reducer;

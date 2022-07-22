@@ -5,12 +5,12 @@ const SubmitBtn = styled.button`
   justify-content: center;
   align-items: center;
   padding: 12px 130px;
-  background-color: violet;
+  background-color: ${props => props.deactive? "gray" : "violet"};
   box-sizing: content-box;
   border: violet;
   border-radius: 5px;
   :hover {
-    cursor: pointer;
+    cursor: ${props => props.deactive ? null : "pointer"};
   }
 `
 
