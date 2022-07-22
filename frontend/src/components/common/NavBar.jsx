@@ -6,12 +6,19 @@ import AccountMenu from './Dropdown';
 
 const Nav = styled.div`
   display: flex;
+  justify-content: space-between;
+  height: 45px;
+  padding: 2px;
   gap: 10px;
+  background: var(--primary-color);
+`;
+
+const LoginMenu = styled.div`
+  width: 120px;
 `;
 
 export default function NavBar() {
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const userNickname = useSelector(state => state.user.nickname);
 
   return (
     <Nav>
@@ -19,15 +26,14 @@ export default function NavBar() {
       <SearchForm></SearchForm>
       <div>
         {isAuthenticated ? (
-          <div>
-            <Link to={`/history/${userNickname}`}>내 운동 현황</Link>
+          <LoginMenu>
             <AccountMenu />
-          </div>
+          </LoginMenu>
         ) : (
-          <div>
+          <LoginMenu>
             <Link to="/signup">회원가입</Link>
             <Link to="/login">로그인</Link>
-          </div>
+          </LoginMenu>
         )}
       </div>
     </Nav>
