@@ -24,6 +24,7 @@ export default function Signup() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [isCheck, setIsCheck] = useState(false)
 
   const onNicknameHandler = e => {
     setNickname(e.currentTarget.value)
@@ -58,6 +59,7 @@ export default function Signup() {
     const payload = {
       nickname
     }
+    setIsCheck(true)
     dispatch(checkNickname(payload))
   }
 
@@ -82,11 +84,12 @@ export default function Signup() {
           >
             닉네임 확인하기
           </SubmitBtn>
-          {{isPossibleNickname} ? (
-            <span>사용가능한 닉네임입니다.</span>
+          { isCheck ? ( 
+            isPossibleNickname ? (
+              <span>사용가능한 닉네임입니다.</span>
             ) : (
-            <span>사용중인 닉네임입니다.</span>
-            )
+              <span>사용중인 닉네임입니다.</span>
+            )) : null
           }
           <InputBox> 
             <label>이메일</label>
