@@ -15,6 +15,7 @@ public interface UserService {
 
      void updateUser(Long id, User user);
 
-     FindEmailResDto findByEmail(String nickname);
+     User findByNickname(String nickname);
+     User findByEmail(String email);
     User findLoginUser(String email, String password);
 }
