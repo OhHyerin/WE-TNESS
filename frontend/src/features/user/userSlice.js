@@ -71,6 +71,18 @@ const fetchFollowList = createAsyncThunk(
   }
 )
 
+const fetchHistory = createAsyncThunk(
+  'fetchHistory',
+  async () => {
+    try {
+      const response = await axios.get();
+      return response
+    } catch (err) {
+      return null
+    }
+  }
+)
+
 const initialState = {
   currentUser: {},
   followList: {},
@@ -126,7 +138,7 @@ export const userSlice = createSlice({
   },
 });
 
-export { login, logout, signup, checkNickname, fetchFollowList }
+export { login, logout, signup, checkNickname, fetchFollowList, fetchHistory }
 export const { testLogin, fetchAddressCode } = userSlice.actions;
 
 export default userSlice.reducer;

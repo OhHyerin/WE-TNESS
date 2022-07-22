@@ -5,19 +5,19 @@ import AwardList from '../../components/history/Award/AwardList';
 import RecordList from '../../components/history/Match/RecordList'
 import HistoryList from '../../components/history/History/HistoryList';
 import DiaryList from '../../components/history/Diary/DiaryList'
-import { petchHistory } from '../../features/user/userSlice';
+// import { fetchHistory } from '../../features/user/userSlice';
 
 
 export default function HistoryPage() {
   const params = useParams();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   const nickname = params.userNickname
 
   // useEffect(() => {
-  //   // dispatch(petchHistory())
+  //   // dispatch(fetchHistory())
   // });
 
   if (isAuthenticated) {
