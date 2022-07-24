@@ -3,12 +3,9 @@ package com.wetness.controller;
 import com.wetness.jwt.JwtUtil;
 import com.wetness.model.User;
 import com.wetness.model.request.JoinUserDto;
-import com.wetness.model.response.BaseResponseEntity;
-import com.wetness.model.response.DuplicateCheckResDto;
-import com.wetness.model.response.FindEmailResDto;
+import com.wetness.model.response.*;
 import com.wetness.service.MailService;
 import com.wetness.service.UserService;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,13 +23,9 @@ public class UserController {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
 
-    @Autowired
     private final UserService userService;
-    @Autowired
     private final JwtUtil jwtUtil;
-
-    @Autowired
-    MailService mailService;
+    private final MailService mailService;
 
 
     @PostMapping("/join")
@@ -47,11 +40,16 @@ public class UserController {
     //TODO sql error 처리 추가 필요
     @PostMapping("/login")
     @ApiOperation(value = "로그인")
-    public ResponseEntity<BaseResponseEntity> loginUser(@RequestBody User user) {
-        User loginUser = userService.findLoginUser(user.getEmail(), user.getPassword());
+    public ResponseEntity<?> loginUser(@RequestBody User user) {
+        User loginUser = userService.loginUser(user.getEmail(), user.getPassword());
         if (loginUser != null) {
-            String token = jwtUtil.createToken(loginUser);
-            return ResponseEntity.ok().body(new BaseResponseEntity(200, token));
+            String accessToken = jwtUtil.createAccessToken(loginUser);
+            String refreshToken = jwtUtil.createRefreshToken();
+
+            userService.saveRefreshToken(loginUser.getNickname(), refreshToken);
+
+            LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken, new UserResponseDto(loginUser.getEmail(), loginUser.getNickname()));
+            return ResponseEntity.ok().body(loginDto);
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
@@ -84,9 +82,9 @@ public class UserController {
     }
 
     @PostMapping("/findEmail")
-    @ApiOperation(value="이메일 찾기")
-    public ResponseEntity<FindEmailResDto> findId(@RequestParam("nickname") String nickname){
-        System.out.println("sendPwd Nickname : "+nickname);
+    @ApiOperation(value = "이메일 찾기")
+    public ResponseEntity<FindEmailResDto> findId(@RequestParam("nickname") String nickname) {
+        System.out.println("sendPwd Nickname : " + nickname);
 
         User user = userService.findByNickname(nickname);
         FindEmailResDto resDto = new FindEmailResDto(user.getEmail());
@@ -95,19 +93,17 @@ public class UserController {
     }
 
     @GetMapping("/sendPw")
-    @ApiOperation(value="비밀번호 찾기를 위한 이메일 인증")
-    public ResponseEntity<String> sendPwd(@RequestParam("email") String email){
+    @ApiOperation(value = "비밀번호 찾기를 위한 이메일 인증")
+    public ResponseEntity<String> sendPwd(@RequestParam("email") String email) {
         System.out.println("sendPwd EMAIL : " + email);
 
-        try{
+        try {
             mailService.sendMail(email);
             return ResponseEntity.status(200).body(SUCCESS);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(300).body(FAIL);
         }
-
-
     }
 
 }

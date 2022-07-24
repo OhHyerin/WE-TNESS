@@ -24,9 +24,11 @@ public class JwtUtilImpl implements JwtUtil {
     // token 유효기간 2시간
     private static final int EXPIRE_MINUTES = 1000*60*60*2;
 
+    // refresh token 유효기간 일주일
+    private static final int REFRESH_EXPIRE_MINUTES = 1000*60*60*24*7;
 
     @Override
-    public <T> String createToken(User user) {
+    public String createAccessToken(User user) {
 
         // 헤더 생성
         Map<String, Object> headers = new HashMap<>();
@@ -52,6 +54,31 @@ public class JwtUtilImpl implements JwtUtil {
 
         return jwt;
     }
+
+    @Override
+    public String createRefreshToken() {
+
+        // 헤더 생성
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("typ", "JWT");
+        headers.put("regDate", System.currentTimeMillis());
+        headers.put("alg", "HS256");
+
+        // 페이로드 생성
+        Map<String, Object> payloads = new HashMap<>();
+        payloads.put("issuer","wetness");
+
+        String jwt = Jwts.builder()
+                .setHeader(headers)
+                .setClaims(payloads)
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRE_MINUTES))
+                .setSubject("user")
+                .signWith(SignatureAlgorithm.HS256, generateKey())
+                .compact();
+
+        return jwt;
+    }
+
 
     private byte[] generateKey(){
         byte[] key = null;

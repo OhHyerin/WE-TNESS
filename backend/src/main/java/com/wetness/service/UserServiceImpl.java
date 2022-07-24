@@ -2,12 +2,9 @@ package com.wetness.service;
 
 import com.wetness.model.User;
 import com.wetness.model.request.JoinUserDto;
-import com.wetness.model.response.BaseResponseEntity;
-import com.wetness.model.response.FindEmailResDto;
 import com.wetness.repository.UserRepository;
 import com.wetness.util.InputUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -94,12 +91,22 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findLoginUser(String email, String password) {
+    @Transactional
+    public User loginUser(String email, String password) {
         User findUser = userRepository.findByEmail(email);
         if (findUser != null && findUser.getPassword().equals(password)) {
             return findUser;
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+    public void saveRefreshToken(String nickname, String refreshToken) {
+        User findUser = userRepository.findByNickname(nickname);
+        if (findUser != null) {
+            findUser.setRefreshToken(refreshToken);
+        }
     }
 
     @Override
