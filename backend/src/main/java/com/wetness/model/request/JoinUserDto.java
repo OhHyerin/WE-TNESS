@@ -14,8 +14,7 @@ public class JoinUserDto {
     private String nickname;
 
     //Extra Info
-    private String sidoCode;
-    private String gugunCode;
+    private String addressCode;
     private String gender;
     private Double height;
     private Double weight;
