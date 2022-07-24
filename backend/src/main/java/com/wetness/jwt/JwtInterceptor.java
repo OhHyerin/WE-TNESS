@@ -1,5 +1,6 @@
 package com.wetness.jwt;
 
+import com.wetness.exception.NoJwtTokenException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
@@ -23,14 +24,17 @@ public class JwtInterceptor implements HandlerInterceptor {
 
         final String accessToken = request.getHeader("JWT");
 
-        if (accessToken != null && jwtUtil.isUsable(accessToken)) {
+        if (accessToken == null) {
+            throw new NoJwtTokenException();
+        }
+
+        if (jwtUtil.isUsable(accessToken)) {
             Map<String, Object> payload = jwtUtil.get(accessToken);
             request.setAttribute("nickname", payload.get("nickname"));
             request.setAttribute("email", payload.get("email"));
-        } else {
-            //TODO 에러처리 변경
-            throw new RuntimeException("인증 토큰이 없습니다.");
+            return true;
         }
-        return true;
+
+        return false;
     }
 }

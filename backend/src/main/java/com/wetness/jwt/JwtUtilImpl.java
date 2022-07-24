@@ -2,10 +2,7 @@ package com.wetness.jwt;
 
 import com.wetness.exception.UnauthorizedException;
 import com.wetness.model.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -124,6 +121,8 @@ public class JwtUtilImpl implements JwtUtil {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(this.generateKey()).parseClaimsJws(jwt);
             return true;
+        } catch (ExpiredJwtException | SignatureException e) {
+            throw e;
         } catch (Exception e) {
             logger.error(e.getMessage());
             return false;
