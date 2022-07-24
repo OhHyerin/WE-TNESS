@@ -110,6 +110,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public String getRefreshToken(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        return user.getRefreshToken();
+    }
+
+    @Override
     @Transactional
     public User findByNickname(String nickname) {
         User user = userRepository.findByNickname(nickname);

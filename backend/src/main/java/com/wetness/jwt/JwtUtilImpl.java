@@ -22,10 +22,10 @@ public class JwtUtilImpl implements JwtUtil {
 
     private static final String SALT = "wetnessSecret";
     // token 유효기간 2시간
-    private static final int EXPIRE_MINUTES = 1000*60*60*2;
+    private static final int EXPIRE_MINUTES = 1000 * 60 * 60 * 2;
 
     // refresh token 유효기간 일주일
-    private static final int REFRESH_EXPIRE_MINUTES = 1000*60*60*24*7;
+    private static final int REFRESH_EXPIRE_MINUTES = 1000 * 60 * 60 * 24 * 7;
 
     @Override
     public String createAccessToken(User user) {
@@ -38,9 +38,9 @@ public class JwtUtilImpl implements JwtUtil {
 
         // 페이로드 생성
         Map<String, Object> payloads = new HashMap<>();
-        payloads.put("issuer","wetness");
+        payloads.put("issuer", "wetness");
         payloads.put("nickname", user.getNickname());
-        payloads.put("email",user.getEmail());
+        payloads.put("email", user.getEmail());
         //payloads.put("id",user.getId());
 
 
@@ -66,7 +66,7 @@ public class JwtUtilImpl implements JwtUtil {
 
         // 페이로드 생성
         Map<String, Object> payloads = new HashMap<>();
-        payloads.put("issuer","wetness");
+        payloads.put("issuer", "wetness");
 
         String jwt = Jwts.builder()
                 .setHeader(headers)
@@ -80,14 +80,14 @@ public class JwtUtilImpl implements JwtUtil {
     }
 
 
-    private byte[] generateKey(){
+    private byte[] generateKey() {
         byte[] key = null;
-        try{
+        try {
             key = SALT.getBytes("UTF-8");
-        }catch (UnsupportedEncodingException e){
-            if(logger.isInfoEnabled()){
+        } catch (UnsupportedEncodingException e) {
+            if (logger.isInfoEnabled()) {
                 e.printStackTrace();
-            } else{
+            } else {
                 logger.error("Making JWT Key Error ::: {}", e.getMessage());
             }
         }
@@ -100,11 +100,11 @@ public class JwtUtilImpl implements JwtUtil {
 
         Jws<Claims> claims;
 
-        try{
+        try {
             claims = Jwts.parser()
                     .setSigningKey(SALT.getBytes("UTF-8"))
                     .parseClaimsJws(key);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error(e.getMessage());
             throw new UnauthorizedException();
         }
@@ -119,14 +119,14 @@ public class JwtUtilImpl implements JwtUtil {
 //    }
 
     //전달 받은 토큰이 제대로 생성된것인지 확인하고 문제가 있다면 UnauthorizedException을 발생
-//    @Override
-//    public boolean isUsable(String jwt) {
-//        try{
-//            Jws<Claims> claims = Jwts.parser().setSigningKey(this.generateKey()).parseClaimsJws(jwt);
-//            return true;
-//        }catch (Exception e){
-//            logger.error(e.getMessage());
-//            return false;
-//        }
-//    }
+    @Override
+    public boolean isUsable(String jwt) {
+        try {
+            Jws<Claims> claims = Jwts.parser().setSigningKey(this.generateKey()).parseClaimsJws(jwt);
+            return true;
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            return false;
+        }
+    }
 }

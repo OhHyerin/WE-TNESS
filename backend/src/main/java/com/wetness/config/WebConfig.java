@@ -1,5 +1,6 @@
 package com.wetness.config;
 
+import com.wetness.jwt.JwtInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
@@ -9,13 +10,16 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
 
-    private final String[] Exclude_Paths = {"/", "/login", "/join"};
+    private static final String[] Exclude_Paths =
+            {"/", "/user/login", "/user/join", "/user/duplicateEmail/*", "/user/duplicateNickname/*",
+             "/user/refresh"};
+    private final JwtInterceptor jwtInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-//        registry
-//                .addInterceptor(new JwtInterceptor());
-//                .addPathPatterns("/**")
-//                .excludePathPatterns(Exclude_Paths);
+        registry
+                .addInterceptor(jwtInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(Exclude_Paths);
     }
 }

@@ -3,6 +3,7 @@ package com.wetness.controller;
 import com.wetness.jwt.JwtUtil;
 import com.wetness.model.User;
 import com.wetness.model.request.JoinUserDto;
+import com.wetness.model.request.RefreshTokenDto;
 import com.wetness.model.response.*;
 import com.wetness.service.MailService;
 import com.wetness.service.UserService;
@@ -104,6 +105,22 @@ public class UserController {
             e.printStackTrace();
             return ResponseEntity.status(300).body(FAIL);
         }
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
+        String refreshToken = refreshTokenDto.getRefreshToken();
+        String nickname = refreshTokenDto.getNickname();
+        if (jwtUtil.isUsable(refreshToken)) {
+            String savedRefreshToken = userService.getRefreshToken(nickname);
+            if (refreshToken.equals(savedRefreshToken)) {
+                User loginUser = userService.findByNickname(nickname);
+                String accessToken = jwtUtil.createAccessToken(loginUser);
+                LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken, new UserResponseDto(loginUser.getEmail(), loginUser.getNickname()));
+                return ResponseEntity.ok().body(loginDto);
+            }
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
 }

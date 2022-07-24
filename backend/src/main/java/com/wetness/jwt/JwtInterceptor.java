@@ -13,7 +13,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class JwtInterceptor implements HandlerInterceptor {
 
-    JwtUtil jwtUtil;
+    final JwtUtil jwtUtil;
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -21,17 +21,16 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        String token = request.getHeader("JWT");
+        final String accessToken = request.getHeader("JWT");
 
-        try {
-            Map<String, Object> payload = jwtUtil.get(token);
+        if (accessToken != null && jwtUtil.isUsable(accessToken)) {
+            Map<String, Object> payload = jwtUtil.get(accessToken);
             request.setAttribute("nickname", payload.get("nickname"));
             request.setAttribute("email", payload.get("email"));
-
-        } catch (Exception e) {
-            throw new Exception();
+        } else {
+            //TODO 에러처리 변경
+            throw new RuntimeException("인증 토큰이 없습니다.");
         }
-
         return true;
     }
 }

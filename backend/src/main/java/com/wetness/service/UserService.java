@@ -21,4 +21,6 @@ public interface UserService {
     User loginUser(String nickname, String password);
 
     void saveRefreshToken(String nickname, String refreshToken);
+
+    String getRefreshToken(String nickname);
 }
