@@ -5,6 +5,7 @@ import com.wetness.model.request.JoinUserDto;
 import com.wetness.model.response.BaseResponseEntity;
 import com.wetness.model.response.FindEmailResDto;
 import com.wetness.repository.UserRepository;
+import com.wetness.util.InputUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -19,35 +20,46 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean registerUser(JoinUserDto joinUserDto) {
-        if (joinUserDto.getPassword().equals(joinUserDto.getPwdVerify()) &&
-                checkEmailDuplicate(joinUserDto.getEmail()) &&
-                checkNicknameDuplicate(joinUserDto.getNickname())) {
+        final String inputPassword = joinUserDto.getPassword();
+        final String inputPwdVerify = joinUserDto.getPwdVerify();
+        final String inputEmail = joinUserDto.getEmail();
+        final String inputNickName = joinUserDto.getNickname();
+        final String inputAddressCode = joinUserDto.getAddressCode();
+        final String inputGender = joinUserDto.getGender();
+        final Double inputHeight = joinUserDto.getHeight();
+        final Double inputWeight = joinUserDto.getWeight();
+
+        if (InputUtil.checkValidEmail(inputEmail) &&
+                InputUtil.checkValidPassword(inputPassword) &&
+                InputUtil.checkValidNickname(inputNickName) &&
+                inputPassword.equals(inputPwdVerify) &&
+                checkEmailDuplicate(inputEmail) &&
+                checkNicknameDuplicate(inputNickName)) {
             User user = new User();
 
             //Essential Info
-            user.setEmail(joinUserDto.getEmail());
-            user.setPassword(joinUserDto.getPassword());
-            user.setNickname(joinUserDto.getNickname());
+            user.setEmail(inputEmail);
+            user.setPassword(inputPassword);
+            user.setNickname(inputNickName);
             user.setSocial("0");
             user.setRole("normal");
 
             //Extra Info
-            if (joinUserDto.getAddressCode() != null && joinUserDto.getAddressCode().length() == 10) {
-                String originalCode = joinUserDto.getAddressCode();
-                String sidoCode = originalCode.substring(0, 2) + "00000000";
-                String gugunCode = originalCode.substring(0, 5) + "00000";
+            if (inputAddressCode != null && inputAddressCode.length() == 10) {
+                String sidoCode = inputAddressCode.substring(0, 2) + "00000000";
+                String gugunCode = inputAddressCode.substring(0, 5) + "00000";
                 user.setSidoCode(sidoCode);
                 user.setGugunCode(gugunCode);
             }
-            if (joinUserDto.getGender() != null &&
-                    (joinUserDto.getGender().equals("male") || joinUserDto.getGender().equals("female"))) {
-                user.setGender(joinUserDto.getGender());
+            if (inputGender != null &&
+                    (inputGender.equals("male") || inputGender.equals("female"))) {
+                user.setGender(inputGender);
             }
-            if (joinUserDto.getHeight() != null && joinUserDto.getHeight() != 0.0) {
-                user.setHeight(joinUserDto.getHeight());
+            if (inputHeight != null && inputHeight != 0.0) {
+                user.setHeight(inputHeight);
             }
-            if (joinUserDto.getWeight() != null && joinUserDto.getWeight() != 0.0) {
-                user.setWeight(joinUserDto.getWeight());
+            if (inputWeight != null && inputWeight != 0.0) {
+                user.setWeight(inputWeight);
             }
 
             userRepository.save(user);
