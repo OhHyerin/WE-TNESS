@@ -2,7 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
 const initialState = {
-  rooms: {},
+  rooms: [],
   workouts: [],
   searchResult: {},
   workout: '전체',
@@ -44,7 +44,7 @@ const searchRooms = createAsyncThunk('searchRooms', async (payload, { rejectWith
   }
 });
 
-export const roomSlice = createSlice({
+export const RoomSlice = createSlice({
   name: 'room',
   initialState,
   reducers: {
@@ -56,6 +56,13 @@ export const roomSlice = createSlice({
     },
     testRadioChange: (state, action) => {
       state.workout = action.payload;
+    },
+    testRoomList: state => {
+      state.rooms = [
+        ...state.rooms,
+        { name: 'test1', scope: 'public', workout: '운동1', started: true, numOfPeople: 1 },
+        { name: 'test2', scope: 'private', workout: '운동2', started: true, numOfPeople: 2 },
+      ];
     },
   },
   extraReducers: {
@@ -81,6 +88,6 @@ export const roomSlice = createSlice({
 });
 
 export { getAllRooms, getWorksouts, searchRooms };
-export const { testWorkout, testShowPrivate, testRadioChange } = roomSlice.actions;
+export const { testWorkout, testShowPrivate, testRadioChange, testRoomList } = RoomSlice.actions;
 
-export default roomSlice.reducer;
+export default RoomSlice.reducer;
