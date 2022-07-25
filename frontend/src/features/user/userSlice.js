@@ -46,18 +46,36 @@ const fetchFollowList = createAsyncThunk(
 
 const fetchHistory = createAsyncThunk(
   'fetchHistory',
-  async () => {
+  async (state, { rejectWithValue }) => {
     try {
-      const response = await axios.get();
+      const response = await axios.get('');
       return response
     } catch (err) {
-      return null
+      return rejectWithValue(err.response);
+    }
+  }
+)
+
+const kakaoLogin = createAsyncThunk(
+  'kakaoLogin',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(api.kakao(), payload)
+      return response
+    } catch (err) {
+      return rejectWithValue(err.response); 
     }
   }
 )
 
 const initialState = {
   currentUser: {},
+  kakaoInfo: {
+    exist_user: false,
+    jwt : "",
+	  original_nickname : "",
+  },
+  isModal: false,
   followList: {},
   isAuthenticated: false,
   isAdmin: false,
@@ -74,7 +92,9 @@ export const UserSlice = createSlice({
     testLogin: state => {
       state.isAuthenticated = !state.isAuthenticated
     },
-
+    toggleIsModal: state => {
+      state.isModal = !state.isModal
+    }
   },
   extraReducers: {
     [login.fulfilled]: state => {
@@ -88,11 +108,14 @@ export const UserSlice = createSlice({
     },
     [fetchFollowList.fulfilled]: (state, action) => {
       state.followList = action.payload
-    }
+    },
+    [kakaoLogin.fulfilled]: (state, action) => {
+      state.kakaoInfo = action.payload
+    },
   },
 });
 
-export { login, logout, fetchFollowList, fetchHistory }
-export const { testLogin } = UserSlice.actions;
+export { login, logout, fetchFollowList, fetchHistory, kakaoLogin }
+export const { testLogin, toggleIsModal } = UserSlice.actions;
 
 export default UserSlice.reducer;
