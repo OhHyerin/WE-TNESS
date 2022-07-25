@@ -57,6 +57,13 @@ export const RoomSlice = createSlice({
     testRadioChange: (state, action) => {
       state.workout = action.payload;
     },
+    testRoomList: state => {
+      state.rooms = [
+        ...state.rooms,
+        { name: 'test1', scope: 'public', workout: '운동1', started: true, numOfPeople: 1 },
+        { name: 'test2', scope: 'private', workout: '운동2', started: true, numOfPeople: 2 },
+      ];
+    },
   },
   extraReducers: {
     [getAllRooms.pending]: state => {
@@ -81,6 +88,6 @@ export const RoomSlice = createSlice({
 });
 
 export { getAllRooms, getWorksouts, searchRooms };
-export const { testWorkout, testShowPrivate, testRadioChange } = roomSlice.actions;
+export const { testWorkout, testShowPrivate, testRadioChange, testRoomList } = RoomSlice.actions;
 
-export default roomSlice.reducer;
+export default RoomSlice.reducer;
