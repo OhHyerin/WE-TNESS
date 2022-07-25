@@ -25,7 +25,7 @@ export default function BodyFrom() {
             onChange={onHeightHandler}
             endAdornment={<InputAdornment position="end">cm</InputAdornment>}
           />
-          <FormHelperText id="standard-weight-helper-text">Height</FormHelperText>
+          <FormHelperText>Height</FormHelperText>
         </FormControl>
       <label>몸무게</label>
       <FormControl variant="standard" sx={{ m: 1, mt: 3, width: '25ch' }}>
@@ -34,7 +34,7 @@ export default function BodyFrom() {
             onChange={onWeightHandeler}
             endAdornment={<InputAdornment position="end">kg</InputAdornment>}
           />
-          <FormHelperText id="standard-weight-helper-text">Weight</FormHelperText>
+          <FormHelperText>Weight</FormHelperText>
         </FormControl>
     </InputBox>
   )
