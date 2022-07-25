@@ -2,7 +2,7 @@ import styled from "styled-components";
 import React,{useState} from "react";
 import DaumPostcode from "react-daum-postcode";
 import { useDispatch } from "react-redux";
-import { fetchAddressCode } from "../../../features/user/userSlice";
+import { fetchAddressCode } from "../../../features/user/SignupSlice";
 
 const LabelBox = styled.div`
   display: flex;
