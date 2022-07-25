@@ -6,16 +6,19 @@ import CardMedia from '@mui/material/CardMedia';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
-export default function RoomCard() {
+export default function RoomCard(props) {
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ maxWidth: 345, minWidth: 300 }}>
       <CardMedia component="img" height="140" image="" alt="" />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          제목
+          {props.room.name}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          설명
+          <div>{props.room.scope}</div>
+          <div>{props.room.workout}</div>
+          {props.room.started ? <div>진행중</div> : <div>대기중</div>}
+          <div>{props.room.numOfPeople} / 6 </div>
         </Typography>
       </CardContent>
       <CardActions>
