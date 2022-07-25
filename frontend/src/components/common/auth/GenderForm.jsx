@@ -7,7 +7,7 @@ import { fetchGender } from "../../../features/user/SignupSlice";
 
 export default function GenderForm() {
   const dispatch = useDispatch();
-  const userInfo = useSelector(state => state.signup.userInfo);
+  const gender = useSelector(state => state.signup.userInfo?.gender);
 
   function onGenderHandeler (e) {
     dispatch(fetchGender(e.target.value))
@@ -16,7 +16,7 @@ export default function GenderForm() {
     <div>
       <label >성별</label>
       <RadioGroup
-        value={userInfo.gender}
+        value={gender}
         onChange={onGenderHandeler}
         style={{
           display: "flex",

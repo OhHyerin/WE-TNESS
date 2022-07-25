@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import OutlinedInput from '@mui/material/FilledInput';
+import FilledInput from '@mui/material/FilledInput';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
@@ -74,6 +74,9 @@ export default function Signup() {
   function handleClickShowPassword() {
     setShowPassword(!showPassword)
   }
+  const handleMouseDownPassword = event => {
+    event.preventDefault();
+  };
 
   return (
     <div>
@@ -110,25 +113,25 @@ export default function Signup() {
           </InputBox>
           <InputBox>
             <FormControl>
-              <InputLabel htmlFor="outlined-adornment-password">*비밀번호</InputLabel>
-              <OutlinedInput
+              <InputLabel>*비밀번호</InputLabel>
+              <FilledInput
                 type={showPassword?"text":"password"}
                 value={userInfo.password}
                 onChange={onPasswordHandler}
                 endAdornment={
                   <InputAdornment position="end">
                     <IconButton
-                      aria-label="toggle password visibility"
                       onClick={handleClickShowPassword}
-                      edge="end"
-                    >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      onMouseDown={handleMouseDownPassword}
+                      >
+                    {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 }
               />
             </FormControl>
           </InputBox>
+          
           <InputBox>
             <TextField
               error={userInfo.password !== userInfo.pwdVerify}
