@@ -31,33 +31,6 @@ const logout = createAsyncThunk(
   }
 );
 
-const signup = createAsyncThunk(
-  'signup',
-  async (payload, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(api.signup(), payload);
-      console.log(response)
-      // setToken()
-      return response;
-    } catch (err) {
-      return rejectWithValue(err.response);
-    }
-  }
-);
-
-const checkNickname = createAsyncThunk(
-  'checkNickname',
-  async (payload, { rejectWithValue }) => {
-    const {nickname} = payload
-    try {
-      const response = await axios.get(api.nicknameCheck(nickname));
-      return response;
-    } catch (err) {
-      return rejectWithValue(err.response);
-    }
-  }
-);
-
 const fetchFollowList = createAsyncThunk(
   'fetchFollowList',
   async (payload, { rejectWithValue }) => {
@@ -73,50 +46,57 @@ const fetchFollowList = createAsyncThunk(
 
 const fetchHistory = createAsyncThunk(
   'fetchHistory',
-  async () => {
+  async (state, { rejectWithValue }) => {
     try {
-      const response = await axios.get();
+      const response = await axios.get('');
       return response
     } catch (err) {
-      return null
+      return rejectWithValue(err.response);
+    }
+  }
+)
+
+const kakaoLogin = createAsyncThunk(
+  'kakaoLogin',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(api.kakao(), payload)
+      return response
+    } catch (err) {
+      return rejectWithValue(err.response); 
     }
   }
 )
 
 const initialState = {
   currentUser: {},
+  kakaoInfo: {
+    exist_user: false,
+    jwt : "",
+	  original_nickname : "",
+  },
+  isModal: false,
   followList: {},
   isAuthenticated: false,
   isAdmin: false,
-  isPossibleNickname: false,
   isLoading: false,
-  addressCode: '',
   history: {
     getAwardList: [1, 2]
   },
 };
 
-export const userSlice = createSlice({
+export const UserSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
     testLogin: state => {
       state.isAuthenticated = !state.isAuthenticated
     },
-    fetchAddressCode: (state, action) => {
-      state.addressCode = action.payload
+    toggleIsModal: state => {
+      state.isModal = !state.isModal
     }
   },
   extraReducers: {
-    [signup.pending]: state => {
-      state.isLoading = true;
-    },
-    [signup.fulfilled]: state => {
-      state.isLoading = false;
-    },
-    [signup.rejected]: state => {
-      state.isLoading = false;
-    },
     [login.fulfilled]: state => {
       state.isAuthenticated = true;
     },
@@ -126,19 +106,16 @@ export const userSlice = createSlice({
     [logout.fulfilled]: state => {
       state.isAuthenticated = false;
     },
-    [checkNickname.fulfilled]: state => {
-      state.isPossibleNickName = true;
-    },
-    [checkNickname.rejected]: state => {
-      state.isPossibleNickName = false;
-    },
     [fetchFollowList.fulfilled]: (state, action) => {
       state.followList = action.payload
-    }
+    },
+    [kakaoLogin.fulfilled]: (state, action) => {
+      state.kakaoInfo = action.payload
+    },
   },
 });
 
-export { login, logout, signup, checkNickname, fetchFollowList, fetchHistory }
-export const { testLogin, fetchAddressCode } = userSlice.actions;
+export { login, logout, fetchFollowList, fetchHistory, kakaoLogin }
+export const { testLogin, toggleIsModal } = UserSlice.actions;
 
-export default userSlice.reducer;
+export default UserSlice.reducer;

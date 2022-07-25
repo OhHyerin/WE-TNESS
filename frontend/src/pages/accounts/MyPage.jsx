@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, Navigate } from 'react-router-dom';
 import FormBox from '../../components/common/auth/FormBox';
 import FollowForm from '../../components/myPage/FollowForm';
-import { fetchFollowList } from '../../features/user/userSlice'
+import { fetchFollowList } from '../../features/user/UserSlice'
 
 export default function MyPage() {
   const dispatch = useDispatch();
