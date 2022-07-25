@@ -22,7 +22,13 @@ export default function RoomList() {
     <div>
       <h2>방 리스트</h2>
       <button onClick={handleAddTest}>add test</button>
-      <List>{rooms.map(room => (room.scope === 'public' || showPrivate ? <RoomCard room={room} /> : null))}</List>
+      <List>
+        {rooms.map(room =>
+          (room.scope === 'public' || showPrivate) && (workout === '전체' ? true : workout === room.workout) ? (
+            <RoomCard room={room} />
+          ) : null
+        )}
+      </List>
     </div>
   );
 }
