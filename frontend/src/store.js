@@ -1,10 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit';
 import userReducer from './features/user/userSlice.js';
-import roomReducer from './features/room/roomSlice.js';
+import RoomReducer from './features/room/RoomSlice.js';
 
 const store = configureStore({
   reducer: {
-    room: roomReducer,
+    room: RoomReducer,
     user: userReducer,
   },
 });

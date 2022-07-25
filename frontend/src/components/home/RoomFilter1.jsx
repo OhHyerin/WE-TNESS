@@ -7,7 +7,7 @@ import FormLabel from '@mui/material/FormLabel';
 import Radio from '@mui/material/Radio';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-import { testRadioChange, testWorkout } from '../../features/room/roomSlice';
+import { testRadioChange, testWorkout } from '../../features/room/RoomSlice';
 
 export default function RoomFilter1() {
   const workouts = useSelector(state => state.room.workouts);

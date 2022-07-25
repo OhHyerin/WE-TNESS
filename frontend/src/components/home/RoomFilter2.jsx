@@ -4,7 +4,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 
-import { testShowPrivate } from '../../features/room/roomSlice';
+import { testShowPrivate } from '../../features/room/RoomSlice';
 
 export default function RoomFilter2() {
   const showPrivate = useSelector(state => state.room.showPrivate);
