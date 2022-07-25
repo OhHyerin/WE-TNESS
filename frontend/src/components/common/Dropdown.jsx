@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { logout } from '../../features/user/userSlice';
+import { logout } from '../../features/user/UserSlice';
 
 export default function AccountMenu() {
   const userNickname = useSelector(state => state.user.nickname);
