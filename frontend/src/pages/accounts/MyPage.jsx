@@ -12,8 +12,8 @@ export default function MyPage() {
     dispatch(fetchFollowList());
   })
 
-  const isLogin = useSelector(state => state.user.isAuthenticated);
-  if (isLogin) {
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  if (isAuthenticated) {
     return (
       <div>
         <FormBox>
