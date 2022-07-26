@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-import { checkNickname, fetchNickname, fetchEmail, fetchUserInfo} from '../../features/user/SignupSlice'
+import { checkNickname, fetchNickname, fetchEmail, fetchUserInfo, changePassword} from '../../features/user/SignupSlice'
 import { edit } from '../../features/user/UserSlice'
 import FormBox from "../../components/common/auth/FormBox";
 import InputBox from '../../components/common/auth/InputBox';
@@ -81,70 +82,85 @@ export default function EditPage() {
       })
   }
 
-  return (
-    <div>
-      <Modal
-        open={isPasswordEdit}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
-      >
-        <Box sx={style}>
-          <h1>비밀번호 변경</h1>
-          <PasswordForm></PasswordForm>
-        </Box>
-      </Modal>
+  function onChangePassword () {
+    const payload = {
+      "password": userInfo.password,
+      "pwdVerify": userInfo.pwdVerify
+    }
+    dispatch(changePassword(payload))
+  }
 
-      <FormBox>
-        <h1>회원정보 수정</h1>
-        <SignupForm
-          onSubmit={onSubmitHandler}
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  if (isAuthenticated) {
+    return (
+      <div>
+        <Modal
+          open={isPasswordEdit}
+          onClose={handleClose}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
         >
-          <InputBox>
-            <TextField
-              error={isCheckNN && !isPossibleNickname}
-              label="*닉네임"
-              value={userInfo.nickname}
-              onChange={onNicknameHandler}
-              helperText={isCheckNN ? (isPossibleNickname ? "사용 가능한 닉네임입니다." : "사용중인 닉네임입니다.") : null}
-            />
-          </InputBox>
-          { userInfo.nickname ? (
-            <SubmitBtn onClick={onCheckNicknameHandler}>
-              닉네임 확인하기
-            </SubmitBtn>
-          ) : (
-            <SubmitBtn disabled deactive={!userInfo.nickname}>
-              닉네임확인하기
-            </SubmitBtn>
-          )}
-          <InputBox>
-            <TextField
-              type="email"
-              label="*이메일"
-              value={userInfo.email}
-              onChange={onEmailHandler}
-            />
-          </InputBox>
-          <InputBox>
-            <GenderForm></GenderForm>
-          </InputBox>
-          <InputBox>
-            <label>주소</label>
-            <AddressForm/>
-          </InputBox>
-          <BodyForm></BodyForm>
-          <SubmitBtn
-            disabled={!isPossibleNickname}
-            deactive={!isPossibleNickname}
+          <Box sx={style}>
+            <h1>비밀번호 변경</h1>
+            <form onSubmit={onChangePassword}>
+              <PasswordForm></PasswordForm>
+              <SubmitBtn>변경하기</SubmitBtn>
+            </form>
+          </Box>
+        </Modal>
+  
+        <FormBox>
+          <h1>회원정보 수정</h1>
+          <SignupForm
+            onSubmit={onSubmitHandler}
           >
-            수정하기
-          </SubmitBtn>
-        </SignupForm>
-        <LabelBox>
-          <Button onClick={handleOpen}>비밀번호 변경</  Button>
-        </LabelBox>
-      </FormBox>
-    </div>
-  );
+            <InputBox>
+              <TextField
+                error={isCheckNN && !isPossibleNickname}
+                label="*닉네임"
+                value={userInfo.nickname}
+                onChange={onNicknameHandler}
+                helperText={isCheckNN ? (isPossibleNickname ? "사용 가능한 닉네임입니다." : "사용중인 닉네임입니다.") : null}
+              />
+            </InputBox>
+            { userInfo.nickname ? (
+              <SubmitBtn onClick={onCheckNicknameHandler}>
+                닉네임 확인하기
+              </SubmitBtn>
+            ) : (
+              <SubmitBtn disabled deactive={!userInfo.nickname}>
+                닉네임확인하기
+              </SubmitBtn>
+            )}
+            <InputBox>
+              <TextField
+                type="email"
+                label="*이메일"
+                value={userInfo.email}
+                onChange={onEmailHandler}
+              />
+            </InputBox>
+            <InputBox>
+              <GenderForm></GenderForm>
+            </InputBox>
+            <InputBox>
+              <label>주소</label>
+              <AddressForm/>
+            </InputBox>
+            <BodyForm></BodyForm>
+            <SubmitBtn
+              disabled={!isPossibleNickname}
+              deactive={!isPossibleNickname}
+            >
+              수정하기
+            </SubmitBtn>
+          </SignupForm>
+          <LabelBox>
+            <Button onClick={handleOpen}>비밀번호 변경</  Button>
+          </LabelBox>
+        </FormBox>
+      </div>
+    );
+  }
+  return <Navigate to='/login'/>;
 }

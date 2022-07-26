@@ -7,6 +7,7 @@ const SIGNUP_URL = '/join'
 const EDIT_URL = ''
 const CHECK_NICKNAME_URL = '/duplicatedNickname'
 const FETCH_FOLLOW_LIST_URL = ''
+const CHANGE_PASSWORD = ''
 
 export default {
   login: () => API_BASE_URL + LOGIN_URL,
@@ -15,5 +16,6 @@ export default {
   signup: () => API_BASE_URL + SIGNUP_URL,
   edit: () => API_BASE_URL + EDIT_URL,
   checkNickname: nickname => API_BASE_URL + CHECK_NICKNAME_URL + `/${nickname}`,
-  fetchFollowList: () => API_BASE_URL + FETCH_FOLLOW_LIST_URL
+  fetchFollowList: () => API_BASE_URL + FETCH_FOLLOW_LIST_URL,
+  changePassword: () => API_BASE_URL + CHANGE_PASSWORD
 }

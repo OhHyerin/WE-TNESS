@@ -41,6 +41,19 @@ const fetchUserInfo = createAsyncThunk(
   }
 );
 
+const changePassword = createAsyncThunk(
+'changePassword',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(api.changePassword());
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response);
+    }
+  }
+);
+
+
 const initialState = {
   userInfo: {
     nickname: '',
@@ -106,7 +119,7 @@ export const SignupSlice = createSlice({
   }
 });
 
-export { signup, checkNickname, fetchUserInfo }
+export { signup, checkNickname, fetchUserInfo, changePassword }
 export const {
   fetchNickname,
   fetchEmail,
