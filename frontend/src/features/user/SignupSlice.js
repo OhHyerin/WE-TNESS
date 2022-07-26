@@ -29,6 +29,18 @@ const checkNickname = createAsyncThunk(
   }
 );
 
+const fetchUserInfo = createAsyncThunk(
+  'fetchUserInfo',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(api.fetchUserInfo());
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response);
+    }
+  }
+);
+
 const initialState = {
   userInfo: {
     nickname: '',
@@ -88,10 +100,13 @@ export const SignupSlice = createSlice({
     [checkNickname.rejected]: state => {
       state.isPossibleNickName = false;
     },
+    [fetchUserInfo.fulfilled]: (state, action) => {
+      state.userInfo = action.payload
+    }
   }
 });
 
-export { signup, checkNickname }
+export { signup, checkNickname, fetchUserInfo }
 export const {
   fetchNickname,
   fetchEmail,

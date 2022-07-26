@@ -26,7 +26,7 @@ const SignupForm = styled.form`
   gap: 10px;
 `
 
-export default function Signup() {
+export default function SignupPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -49,7 +49,6 @@ export default function Signup() {
   const onPwdVerifyHandler = e => {
     dispatch(fetchPwdVerify(e.target.value))
   }
-  
   
   function onCheckNicknameHandler (e) {
     e.preventDefault()
