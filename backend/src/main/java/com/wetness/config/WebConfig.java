@@ -3,6 +3,7 @@ package com.wetness.config;
 import com.wetness.jwt.JwtInterceptor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -15,11 +16,18 @@ public class WebConfig implements WebMvcConfigurer {
              "/user/refresh"};
     private final JwtInterceptor jwtInterceptor;
 
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        registry
+//                .addInterceptor(jwtInterceptor)
+//                .addPathPatterns("/**")
+//                .excludePathPatterns(Exclude_Paths);
+//    }
+
     @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry
-                .addInterceptor(jwtInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns(Exclude_Paths);
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("*");
     }
 }

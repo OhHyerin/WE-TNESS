@@ -38,9 +38,10 @@ dependencies {
 	/* slf4j & logback */
 	implementation 'org.slf4j:jcl-over-slf4j'
 	implementation 'ch.qos.logback:logback-classic'
+	/* json */
+	implementation group: 'com.googlecode.json-simple', name: 'json-simple', version: '1.1.1'
 	/* SMTP 이메일 전송 */
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
-
 }
 
 tasks.named('test') {

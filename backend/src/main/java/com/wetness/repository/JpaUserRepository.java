@@ -22,6 +22,19 @@ public class JpaUserRepository implements UserRepository {
         return em.find(User.class, id);
     }
 
+    @Override
+    public User findOneBySocial(int social, String socialToken) {
+
+
+         List<User> user =  em.createQuery("SELECT u FROM User u WHERE u.social= :social and u.socialToken = :socialToken", User.class)
+                .setParameter("social", Integer.toString(social))
+                .setParameter("socialToken",socialToken)
+                .getResultList();
+
+        if(user.isEmpty()) return null;
+        else return user.get(0);
+    }
+
 
     @Override
     public User findByEmail(String email) {

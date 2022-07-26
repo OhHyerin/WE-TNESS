@@ -3,6 +3,10 @@ package com.wetness.service;
 import com.wetness.model.User;
 import com.wetness.model.request.JoinUserDto;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.util.Map;
+
 public interface UserService {
 
     boolean checkEmailDuplicate(String email);
@@ -11,6 +15,8 @@ public interface UserService {
     boolean checkNicknameDuplicate(String nickname);
 
     boolean registerUser(JoinUserDto joinUserDto);
+
+    boolean registerUserBySocial(User user);
 
     void updateUser(Long id, User user);
 
@@ -23,4 +29,10 @@ public interface UserService {
     void saveRefreshToken(String nickname, String refreshToken);
 
     String getRefreshToken(String nickname);
+
+    User getUserBySocialToken(int social,String socialToken);
+
+    String getSocialToken(int social, String code) throws IOException;
+
+    Map<String, Object> getUserInfo(String accessToken) throws IOException;
 }
