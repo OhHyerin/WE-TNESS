@@ -163,12 +163,14 @@ public class UserServiceImpl implements UserService {
 
 
             String id = obj.get("id").toString();
-            String email = kakaoAccount.get("email").toString();
-            String gender = kakaoAccount.get("gender").toString();
+            if(kakaoAccount.containsKey("email")){
+                result.put("email", kakaoAccount.get("email").toString());
+            }
+            if(kakaoAccount.containsKey("gender")){
+                result.put("gender", kakaoAccount.get("gender").toString());
+            }
 
-            result.put("id", id);
-            result.put("email", email);
-            result.put("gender", gender);
+
 
             br.close();
 

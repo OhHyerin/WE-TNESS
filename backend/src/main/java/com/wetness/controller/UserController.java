@@ -8,6 +8,7 @@ import com.wetness.model.response.DuplicateCheckResDto;
 import com.wetness.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -90,15 +91,26 @@ public class UserController {
             return ResponseEntity.ok().body(result);
         }
 
+        // 토큰으로 유저정보 조회
         Map<String, Object> userInfo = userService.getUserInfo(token);
         user = new User();
-        user.setEmail((String) userInfo.get("email"));
-        user.setGender("gender");
+        // email, gender 정보 유무에 따라 유저 세팅, 추후 수정
+        if(userInfo.containsKey("email")){
+            user.setEmail((String) userInfo.get("email"));
+        }else{
+            user.setEmail(RandomString.make(15));
+        }
+        if(userInfo.containsKey("gender")){
+            user.setGender((String) userInfo.get("gender"));
+        }else{
+            user.setGender("3");
+        }
+
         user.setSocial(Integer.toString(social));
         user.setSocialToken(token);
-        user.setRole("member");
-        byte[] array = new byte[10];
-        user.setNickname(new String(array, Charset.forName("UTF-8")));
+        user.setRole("user");
+
+        user.setNickname(RandomString.make(15));
 
         userService.registerUser(user);
 
@@ -107,6 +119,5 @@ public class UserController {
 
         return ResponseEntity.ok().body(result);
     }
-
 
 }
