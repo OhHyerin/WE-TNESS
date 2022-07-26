@@ -80,6 +80,18 @@ const edit = createAsyncThunk(
   }
 )
 
+// const findPassword = createAsyncThunk(
+//   'findPassword',
+//   async (payload, { rejectWithValue }) => {
+//     try {
+//       const response = await axios.post(api.findPassword(), payload)
+//       return response
+//     } catch (err) {
+//       return rejectWithValue(err.response); 
+//     }
+//   }
+// )
+
 const initialState = {
   currentUser: {},
   kakaoInfo: {
