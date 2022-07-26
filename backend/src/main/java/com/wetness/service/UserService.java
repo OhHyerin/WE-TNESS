@@ -35,4 +35,6 @@ public interface UserService {
     String getSocialToken(int social, String code) throws IOException;
 
     Map<String, Object> getUserInfo(String accessToken) throws IOException;
+
+    void logoutUser(String nickname);
 }
