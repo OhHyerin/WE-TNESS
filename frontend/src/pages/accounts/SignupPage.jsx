@@ -74,11 +74,11 @@ export default function SignupPage() {
           </InputBox>
           { userInfo.nickname ? (
             <SubmitBtn onClick={onCheckNicknameHandler}>
-              닉네임 확인하기
+              닉네임 확인
             </SubmitBtn>
           ) : (
             <SubmitBtn disabled deactive={!userInfo.nickname}>
-              닉네임확인하기
+              닉네임확인
             </SubmitBtn>
           )}
           <InputBox>

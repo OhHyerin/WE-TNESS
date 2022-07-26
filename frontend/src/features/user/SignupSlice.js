@@ -29,6 +29,19 @@ const checkNickname = createAsyncThunk(
   }
 );
 
+const addInfo = createAsyncThunk(
+  'addInfo',
+  async (payload, { rejectWithValue }) => {
+    const {nickname} = payload
+    try {
+      const response = await axios.get(api.addInfo(nickname));
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response);
+    }
+  }
+)
+
 const fetchUserInfo = createAsyncThunk(
   'fetchUserInfo',
   async (payload, { rejectWithValue }) => {
@@ -39,7 +52,7 @@ const fetchUserInfo = createAsyncThunk(
       return rejectWithValue(err.response);
     }
   }
-);
+)
 
 const changePassword = createAsyncThunk(
 'changePassword',
@@ -52,7 +65,6 @@ const changePassword = createAsyncThunk(
     }
   }
 );
-
 
 const initialState = {
   userInfo: {
@@ -119,7 +131,8 @@ export const SignupSlice = createSlice({
   }
 });
 
-export { signup, checkNickname, fetchUserInfo, changePassword }
+export { signup, checkNickname, fetchUserInfo, changePassword, addInfo }
+
 export const {
   fetchNickname,
   fetchEmail,
