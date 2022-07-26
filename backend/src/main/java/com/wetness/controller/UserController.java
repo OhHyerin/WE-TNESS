@@ -85,9 +85,9 @@ public class UserController {
         // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
         User user = userService.getUserBySocialToken(2,token);
         if (user!=null){
-            String jwt = jwtUtil.createToken(user);
+            String accessToken = jwtUtil.createToken(user);
             result.put("exist_user", true);
-            result.put("jwt", jwt);
+            result.put("accessToken", accessToken);
             return ResponseEntity.ok().body(result);
         }
 
@@ -109,13 +109,13 @@ public class UserController {
         user.setSocial(Integer.toString(social));
         user.setSocialToken(token);
         user.setRole("user");
-
         user.setNickname(RandomString.make(15));
 
         userService.registerUser(user);
+        String accessToken =  jwtUtil.createToken(user);
 
-        result.put("exist_user",false);
-        result.put("original_nickname", user.getNickname());
+        result.put("existUser",false);
+        result.put("accessToken", accessToken);
 
         return ResponseEntity.ok().body(result);
     }
