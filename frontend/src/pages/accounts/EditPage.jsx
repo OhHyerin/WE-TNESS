@@ -2,11 +2,15 @@ import { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
 import { checkNickname, fetchNickname, fetchEmail, fetchUserInfo} from '../../features/user/SignupSlice'
 import { edit } from '../../features/user/UserSlice'
 import FormBox from "../../components/common/auth/FormBox";
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
+import PasswordForm from '../../components/common/auth/PasswordForm';
 import AddressForm from '../../components/common/auth/AddressForm';
 import GenderForm from '../../components/common/auth/GenderForm';
 import BodyForm from '../../components/common/auth/BodyForm';
@@ -18,6 +22,23 @@ const SignupForm = styled.form`
   gap: 10px;
 `
 
+const LabelBox = styled.div`
+  display: flex;
+  justify-content: end;
+`
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 800,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
 export default function EditPage() {
   const dispatch = useDispatch();
 
@@ -26,10 +47,13 @@ export default function EditPage() {
   }, [])
 
   const userInfo = useSelector(state => state.signup.userInfo)
-
   const isPossibleNickname = useSelector(state => state.user.isPossibleNickname);
 
   const [isCheckNN, setIsCheckNN] = useState(false)
+  const [isPasswordEdit, setIsPasswordEdit] = useState(false)
+
+  const handleOpen = () => setIsPasswordEdit(true);
+  const handleClose = () => setIsPasswordEdit(false);
 
   const onNicknameHandler = e => {
     dispatch(fetchNickname(e.target.value))
@@ -59,6 +83,18 @@ export default function EditPage() {
 
   return (
     <div>
+      <Modal
+        open={isPasswordEdit}
+        onClose={handleClose}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style}>
+          <h1>비밀번호 변경</h1>
+          <PasswordForm></PasswordForm>
+        </Box>
+      </Modal>
+
       <FormBox>
         <h1>회원정보 수정</h1>
         <SignupForm
@@ -105,6 +141,9 @@ export default function EditPage() {
             수정하기
           </SubmitBtn>
         </SignupForm>
+        <LabelBox>
+          <Button onClick={handleOpen}>비밀번호 변경</  Button>
+        </LabelBox>
       </FormBox>
     </div>
   );
