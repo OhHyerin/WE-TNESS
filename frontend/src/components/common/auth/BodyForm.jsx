@@ -4,11 +4,10 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Input from '@mui/material/Input';
 import Slider from '@mui/material/Slider';
-import { useState, useEffect } from "react";
 import InputBox from "./InputBox";
 import { fetchWeight, fetchHeight } from "../../../features/user/SignupSlice";
 
-export default function BodyFrom() {
+export default function BodyForm() {
   const dispatch = useDispatch();
   const weight = useSelector(state => state.signup.userInfo.weight);
   const height = useSelector(state => state.signup.userInfo.height);

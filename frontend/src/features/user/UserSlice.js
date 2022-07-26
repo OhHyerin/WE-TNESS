@@ -36,7 +36,7 @@ const fetchFollowList = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     const {nickname} = payload
     try {
-      const response = await axios.get(api.fetchFollowList(nickname));
+      const response = await axios.get(api.fetchFollowList());
       return response;
     } catch (err) {
       return rejectWithValue(err.response);
@@ -48,7 +48,7 @@ const fetchHistory = createAsyncThunk(
   'fetchHistory',
   async (state, { rejectWithValue }) => {
     try {
-      const response = await axios.get('');
+      const response = await axios.get(api.fetchHistory());
       return response
     } catch (err) {
       return rejectWithValue(err.response);
@@ -61,6 +61,18 @@ const kakaoLogin = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const response = await axios.post(api.kakao(), payload)
+      return response
+    } catch (err) {
+      return rejectWithValue(err.response); 
+    }
+  }
+)
+
+const edit = createAsyncThunk(
+  'edit',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(api.edit(), payload)
       return response
     } catch (err) {
       return rejectWithValue(err.response); 
@@ -115,7 +127,7 @@ export const UserSlice = createSlice({
   },
 });
 
-export { login, logout, fetchFollowList, fetchHistory, kakaoLogin }
+export { login, logout, fetchFollowList, fetchHistory, kakaoLogin, edit }
 export const { testLogin, toggleIsModal } = UserSlice.actions;
 
 export default UserSlice.reducer;
