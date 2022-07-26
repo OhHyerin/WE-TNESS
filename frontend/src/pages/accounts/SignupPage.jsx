@@ -2,19 +2,12 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import FilledInput from '@mui/material/FilledInput';
 import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import InputAdornment from '@mui/material/InputAdornment';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { signup, checkNickname, fetchNickname, fetchEmail,
-  fetchPassword, fetchPwdVerify} from '../../features/user/SignupSlice'
+import { signup, checkNickname, fetchNickname, fetchEmail,} from '../../features/user/SignupSlice'
 import FormBox from "../../components/common/auth/FormBox";
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
+import PasswordForm from '../../components/common/auth/PasswordForm';
 import AddressForm from '../../components/common/auth/AddressForm';
 import GenderForm from '../../components/common/auth/GenderForm';
 import BodyForm from '../../components/common/auth/BodyForm';
@@ -26,16 +19,14 @@ const SignupForm = styled.form`
   gap: 10px;
 `
 
-export default function Signup() {
+export default function SignupPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const userInfo = useSelector(state => state.signup.userInfo)
-
   const isPossibleNickname = useSelector(state => state.user.isPossibleNickname);
 
   const [isCheckNN, setIsCheckNN] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
 
   const onNicknameHandler = e => {
     dispatch(fetchNickname(e.target.value))
@@ -43,13 +34,7 @@ export default function Signup() {
   const onEmailHandler = e => {
     dispatch(fetchEmail(e.target.value))
   }
-  const onPasswordHandler = e => {
-    dispatch(fetchPassword(e.target.value))
-  }
-  const onPwdVerifyHandler = e => {
-    dispatch(fetchPwdVerify(e.target.value))
-  }
-  
+
   
   function onCheckNicknameHandler (e) {
     e.preventDefault()
@@ -70,13 +55,6 @@ export default function Signup() {
         console.log(err)
       })
   }
-
-  function handleClickShowPassword() {
-    setShowPassword(!showPassword)
-  }
-  const handleMouseDownPassword = event => {
-    event.preventDefault();
-  };
 
   return (
     <div>
@@ -111,37 +89,9 @@ export default function Signup() {
               onChange={onEmailHandler}
             />
           </InputBox>
-          <InputBox>
-            <FormControl>
-              <InputLabel>*비밀번호</InputLabel>
-              <FilledInput
-                type={showPassword?"text":"password"}
-                value={userInfo.password}
-                onChange={onPasswordHandler}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
-          </InputBox>
+
+          <PasswordForm></PasswordForm>
           
-          <InputBox>
-            <TextField
-              error={userInfo.password !== userInfo.pwdVerify}
-              type="password"
-              label="*비밀번호 확인"
-              value={userInfo.pwdVerify}
-              onChange={onPwdVerifyHandler}
-              helperText={userInfo.password!==userInfo.pwdVerify?"비밀번호 확인이 일치하지 않습니다.":null}
-            />
-          </InputBox>
           <InputBox>
             <GenderForm></GenderForm>
           </InputBox>
