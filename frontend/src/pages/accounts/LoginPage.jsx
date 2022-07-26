@@ -115,7 +115,7 @@ export default function Login() {
         />
 
         <SubmitBtn onClick={() => {dispatch(testLogin())}}>Test Login</SubmitBtn>
-        <p>가입하실래요? <Link to="/signup">로그인</Link> </p>
+        <p>가입하실래요? <Link to="/signup">회원가입</Link> </p>
       </FormBox>
     </div>
   );

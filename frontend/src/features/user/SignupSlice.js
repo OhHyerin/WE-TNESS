@@ -29,6 +29,19 @@ const checkNickname = createAsyncThunk(
   }
 );
 
+const addInfo = createAsyncThunk(
+  'addInfo',
+  async (payload, { rejectWithValue }) => {
+    const {nickname} = payload
+    try {
+      const response = await axios.get(api.addInfo(nickname));
+      return response;
+    } catch (err) {
+      return rejectWithValue(err.response);
+    }
+  }
+)
+
 const initialState = {
   userInfo: {
     nickname: '',
@@ -91,7 +104,7 @@ export const SignupSlice = createSlice({
   }
 });
 
-export { signup, checkNickname }
+export { signup, checkNickname, addInfo }
 export const {
   fetchNickname,
   fetchEmail,
