@@ -204,4 +204,14 @@ public class UserController {
         userService.logoutUser(nickname);
         return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
     }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getUser(HttpServletRequest request) {
+        String nickname = (String) request.getAttribute("nickname");
+        User user = userService.findByNickname(nickname);
+        if (user != null) {
+            return ResponseEntity.ok().body(UserInfoDto.generateUserInfoDto(user));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+    }
 }
