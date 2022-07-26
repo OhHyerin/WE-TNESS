@@ -8,6 +8,7 @@ const EDIT_URL = ''
 const CHECK_NICKNAME_URL = '/duplicatedNickname'
 const FETCH_FOLLOW_LIST_URL = ''
 const CHANGE_PASSWORD = ''
+const FIND_PASSWORD = '/findpassword'
 
 export default {
   login: () => API_BASE_URL + LOGIN_URL,
@@ -17,5 +18,6 @@ export default {
   edit: () => API_BASE_URL + EDIT_URL,
   checkNickname: nickname => API_BASE_URL + CHECK_NICKNAME_URL + `/${nickname}`,
   fetchFollowList: () => API_BASE_URL + FETCH_FOLLOW_LIST_URL,
-  changePassword: () => API_BASE_URL + CHANGE_PASSWORD
+  changePassword: () => API_BASE_URL + CHANGE_PASSWORD,
+  findPassword: () => API_BASE_URL + FIND_PASSWORD
 }
