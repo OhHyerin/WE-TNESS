@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
@@ -103,7 +105,7 @@ public class UserController {
             return ResponseEntity.status(200).body(SUCCESS);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(300).body(FAIL);
+            return ResponseEntity.status(400).body(FAIL);
         }
     }
 
@@ -121,6 +123,13 @@ public class UserController {
             }
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+    }
+    @DeleteMapping
+    public ResponseEntity<String> deleteUser(HttpServletRequest request){
+//    public ResponseEntity<String> deleteUser(HttpServletRequest request){
+        String nickname = request.getParameter("nickname");
+        userService.deleteUser(nickname);
+        return ResponseEntity.ok().body(SUCCESS);
     }
 
 }

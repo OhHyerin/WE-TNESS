@@ -23,4 +23,7 @@ public interface UserService {
     void saveRefreshToken(String nickname, String refreshToken);
 
     String getRefreshToken(String nickname);
+
+    void deleteUser(String nickname);
+
 }
