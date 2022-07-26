@@ -120,4 +120,21 @@ public class UserController {
         return ResponseEntity.ok().body(result);
     }
 
+    @PostMapping("/login/create-account")
+    public ResponseEntity<Map<String, Object>> createAccount(@RequestHeader(value = "accessToken") String accessToken,@RequestParam(value = "nickname") String nickname){
+
+        Map<String,Object> result = new HashMap<>();
+
+        // 이전에 발급한 토큰으로 닉네임 추출 - 새로 전달받은 닉네임으로 DB 수정 후 토큰 다시 발급
+        Map<String,Object> claims = jwtUtil.get(accessToken);
+        String originalNickname = (String) claims.get("nickname");
+        User user = userService.findByNickname(originalNickname);
+        user.setNickname(nickname);
+        userService.updateUser(user.getId(),user);
+
+        result.put("accessToken",jwtUtil.createToken(user));
+
+        return ResponseEntity.ok(result);
+    }
+
 }
