@@ -80,17 +80,17 @@ const edit = createAsyncThunk(
   }
 )
 
-// const findPassword = createAsyncThunk(
-//   'findPassword',
-//   async (payload, { rejectWithValue }) => {
-//     try {
-//       const response = await axios.post(api.findPassword(), payload)
-//       return response
-//     } catch (err) {
-//       return rejectWithValue(err.response); 
-//     }
-//   }
-// )
+const findPassword = createAsyncThunk(
+  'findPassword',
+  async (payload, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(api.findPassword(), payload)
+      return response
+    } catch (err) {
+      return rejectWithValue(err.response); 
+    }
+  }
+)
 
 const initialState = {
   currentUser: {},
@@ -139,7 +139,7 @@ export const UserSlice = createSlice({
   },
 });
 
-export { login, logout, fetchFollowList, fetchHistory, kakaoLogin, edit }
+export { login, logout, fetchFollowList, fetchHistory, kakaoLogin, edit, findPassword }
 export const { testLogin, toggleIsModal } = UserSlice.actions;
 
 export default UserSlice.reducer;
