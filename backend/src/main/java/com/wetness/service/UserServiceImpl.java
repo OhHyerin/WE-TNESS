@@ -91,22 +91,22 @@ public class UserServiceImpl implements UserService {
     public void updateUser(Long id, User reqDto) {
         User user = userRepository.getOne(id);
         System.out.println("여기여기 : "+user.getId());
-        if (reqDto.getPassword() != null) {
+        if (reqDto.getPassword() != null || !reqDto.getPassword().equals("")) {
             user.setPassword(reqDto.getPassword());
         }
-        if (reqDto.getSidoCode() != null) {
+        if (reqDto.getSidoCode() != null || !reqDto.getSidoCode().equals("")) {
             user.setSidoCode(reqDto.getSidoCode());
         }
-        if (reqDto.getGugunCode() != null) {
+        if (reqDto.getGugunCode() != null || !reqDto.getGugunCode().equals("")) {
             user.setGugunCode(reqDto.getGugunCode());
         }
-        if (reqDto.getGender() != null) {
+        if (reqDto.getGender() != null || !reqDto.getGender().equals("")) {
             user.setGender(reqDto.getGender());
         }
-        if (reqDto.getHeight() != 0) {
+        if (reqDto.getHeight() != 0 || reqDto.getHeight()!=0.0) {
             user.setHeight(reqDto.getHeight());
         }
-        if (reqDto.getWeight() != 0) {
+        if (reqDto.getWeight() != 0 || reqDto.getWeight()!=0.0) {
             user.setWeight(reqDto.getWeight());
         }
 
