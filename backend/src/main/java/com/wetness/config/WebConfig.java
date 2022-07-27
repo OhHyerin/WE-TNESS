@@ -16,13 +16,13 @@ public class WebConfig implements WebMvcConfigurer {
              "/user/refresh"};
     private final JwtInterceptor jwtInterceptor;
 
-//    @Override
-//    public void addInterceptors(InterceptorRegistry registry) {
-//        registry
-//                .addInterceptor(jwtInterceptor)
-//                .addPathPatterns("/**")
-//                .excludePathPatterns(Exclude_Paths);
-//    }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry
+                .addInterceptor(jwtInterceptor)
+                .addPathPatterns("/**")
+                .excludePathPatterns(Exclude_Paths);
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {

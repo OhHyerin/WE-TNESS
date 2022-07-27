@@ -162,14 +162,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserBySocialToken(int social, String socialToken) {
 
-        return userRepository.findOneBySocial(social,socialToken);
+        return userRepository.findOneBySocial(social, socialToken);
     }
 
     @Override
     public String getSocialToken(int social, String code) throws IOException {
         URL url = new URL(hostKakao);
-        switch (social){
-            case 2 : url = new URL(hostKakao);
+        switch (social) {
+            case 2:
+                url = new URL(hostKakao);
                 break;
         }
 
@@ -241,9 +242,8 @@ public class UserServiceImpl implements UserService {
             BufferedReader br = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             String line = "";
             String res = "";
-            while((line=br.readLine())!=null)
-            {
-                res+=line;
+            while ((line = br.readLine()) != null) {
+                res += line;
             }
 
             System.out.println("res = " + res);
@@ -255,13 +255,12 @@ public class UserServiceImpl implements UserService {
 
 
             String id = obj.get("id").toString();
-            if(kakaoAccount.containsKey("email")){
+            if (kakaoAccount.containsKey("email")) {
                 result.put("email", kakaoAccount.get("email").toString());
             }
-            if(kakaoAccount.containsKey("gender")){
+            if (kakaoAccount.containsKey("gender")) {
                 result.put("gender", kakaoAccount.get("gender").toString());
             }
-
 
 
             br.close();
@@ -274,5 +273,13 @@ public class UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
+    @Transactional
+    public void logoutUser(String nickname) {
+        User user = findByNickname(nickname);
+        if (user != null) {
+            user.setRefreshToken(null);
+        }
+    }
 
 }

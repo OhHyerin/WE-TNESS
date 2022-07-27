@@ -15,6 +15,7 @@ import net.bytebuddy.utility.RandomString;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,8 +88,6 @@ public class UserController {
     }
 
 
-
-
     @PostMapping("/findEmail")
     @ApiOperation(value = "이메일 찾기")
     public ResponseEntity<FindEmailResDto> findId(@RequestParam("nickname") String nickname) {
@@ -132,23 +131,23 @@ public class UserController {
 
     @GetMapping("/login/{auth}")
     @ApiOperation(value = "소셜 로그인")
-    public ResponseEntity<Map<String,Object>> loginSocial(@PathVariable("auth") String auth, @RequestParam(value = "code") String code) throws IOException {
+    public ResponseEntity<Map<String, Object>> loginSocial(@PathVariable("auth") String auth, @RequestParam(value = "code") String code) throws IOException {
         // social 종류 : 카카오(2), 구글(3), 페이스북(4) 등
-        int social =2;
+        int social = 2;
         // 리턴할 json
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
 
-        switch(auth) {
+        switch (auth) {
             case "kakao":
                 social = 2;
                 break;
         }
 
-        String token = userService.getSocialToken(social,code);
+        String token = userService.getSocialToken(social, code);
 
         // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
-        User user = userService.getUserBySocialToken(2,token);
-        if (user!=null){
+        User user = userService.getUserBySocialToken(2, token);
+        if (user != null) {
             String accessToken = jwtUtil.createAccessToken(user);
             result.put("exist_user", true);
             result.put("accessToken", accessToken);
@@ -159,14 +158,14 @@ public class UserController {
         Map<String, Object> userInfo = userService.getUserInfo(token);
         user = new User();
         // email, gender 정보 유무에 따라 유저 세팅, 추후 수정
-        if(userInfo.containsKey("email")){
+        if (userInfo.containsKey("email")) {
             user.setEmail((String) userInfo.get("email"));
-        }else{
+        } else {
             user.setEmail(RandomString.make(15));
         }
-        if(userInfo.containsKey("gender")){
+        if (userInfo.containsKey("gender")) {
             user.setGender((String) userInfo.get("gender"));
-        }else{
+        } else {
             user.setGender("3");
         }
 
@@ -176,27 +175,43 @@ public class UserController {
         user.setNickname(RandomString.make(15));
 
         userService.registerUserBySocial(user);
-        String accessToken =  jwtUtil.createAccessToken(user);
+        String accessToken = jwtUtil.createAccessToken(user);
 
-        result.put("existUser",false);
+        result.put("existUser", false);
         result.put("accessToken", accessToken);
 
         return ResponseEntity.ok().body(result);
     }
 
     @PostMapping("/login/create-account")
-    public ResponseEntity<Map<String, Object>> createAccount(@RequestAttribute(value = "nickname") String nickname,@RequestParam(value = "ChangeNickname") String ChangeNickname){
+    public ResponseEntity<Map<String, Object>> createAccount(@RequestAttribute(value = "nickname") String nickname, @RequestParam(value = "ChangeNickname") String ChangeNickname) {
 
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
 
         // 이전에 발급한 토큰으로 닉네임 추출 - 새로 전달받은 닉네임으로 DB 수정 후 토큰 다시 발급
         User user = userService.findByNickname(nickname);
         user.setNickname(nickname);
-        userService.updateUser(user.getId(),user);
+        userService.updateUser(user.getId(), user);
 
-        result.put("accessToken",jwtUtil.createAccessToken(user));
+        result.put("accessToken", jwtUtil.createAccessToken(user));
 
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        String nickname = (String) request.getAttribute("nickname");
+        userService.logoutUser(nickname);
+        return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getUser(HttpServletRequest request) {
+        String nickname = (String) request.getAttribute("nickname");
+        User user = userService.findByNickname(nickname);
+        if (user != null) {
+            return ResponseEntity.ok().body(UserInfoDto.generateUserInfoDto(user));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+    }
 }
