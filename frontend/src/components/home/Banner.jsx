@@ -1,15 +1,17 @@
 import Carousel from 'react-material-ui-carousel';
 import { Paper, Button } from '@mui/material';
+import tutorial from '../../assets/images/banner/tutorial.png';
+import ranking from '../../assets/images/banner/ranking.png';
 
 export default function Banner() {
   const items = [
     {
       name: 'Random Name #1',
-      description: 'Probably the most random thing you have ever seen!',
+      img: tutorial,
     },
     {
       name: 'Random Name #2',
-      description: 'Hello World!',
+      img: ranking,
     },
   ];
 
@@ -27,10 +29,9 @@ export default function Banner() {
 function Item(props) {
   return (
     <Paper>
-      <h2>{props.item.name}</h2>
-      <p>{props.item.description}</p>
+      <img src={props.item.img} alt="tutorial img"></img>
 
-      <Button className="CheckButton">Check it out!</Button>
+      {/* <Button className="CheckButton">Check it out!</Button> */}
     </Paper>
   );
 }
