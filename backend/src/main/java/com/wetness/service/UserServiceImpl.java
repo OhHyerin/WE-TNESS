@@ -2,7 +2,7 @@ package com.wetness.service;
 
 import com.wetness.model.User;
 import com.wetness.model.request.JoinUserDto;
-import com.wetness.repository.UserRepository;
+import com.wetness.core.repository.UserRepository;
 import com.wetness.util.InputUtil;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
@@ -135,6 +135,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public void deleteUser(String nickname) {
+        User user = userRepository.findByNickname(nickname);
+        user.setRole("drop");
+    }
+
+    @Override
     @Transactional
     public User findByNickname(String nickname) {
         User user = userRepository.findByNickname(nickname);
@@ -150,13 +156,23 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean checkEmailDuplicate(String email) {
-        return userRepository.existsByEmail(email);
+        User user = userRepository.findByEmail(email);
+        if(user==null){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override
     @Transactional
     public boolean checkNicknameDuplicate(String nickname) {
-        return userRepository.existsByNickname(nickname);
+        User user = userRepository.findByNickname(nickname);
+        if(user==null){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override
@@ -281,5 +297,8 @@ public class UserServiceImpl implements UserService {
             user.setRefreshToken(null);
         }
     }
+
+
+
 
 }

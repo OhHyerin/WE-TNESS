@@ -20,15 +20,16 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
 public class UserController {
 
-
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
+
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final MailService mailService;
@@ -87,7 +88,6 @@ public class UserController {
         return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
     }
 
-
     @PostMapping("/findEmail")
     @ApiOperation(value = "이메일 찾기")
     public ResponseEntity<FindEmailResDto> findId(@RequestParam("nickname") String nickname) {
@@ -113,6 +113,8 @@ public class UserController {
         }
     }
 
+
+
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
         String refreshToken = refreshTokenDto.getRefreshToken();
@@ -127,6 +129,13 @@ public class UserController {
             }
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+    }
+    @DeleteMapping
+    public ResponseEntity<String> deleteUser(HttpServletRequest request){
+//    public ResponseEntity<String> deleteUser(HttpServletRequest request){
+        String nickname = request.getParameter("nickname");
+        userService.deleteUser(nickname);
+        return ResponseEntity.ok().body(SUCCESS);
     }
 
     @GetMapping("/login/{auth}")

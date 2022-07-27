@@ -37,4 +37,7 @@ public interface UserService {
     Map<String, Object> getUserInfo(String accessToken) throws IOException;
 
     void logoutUser(String nickname);
+
+    void deleteUser(String nickname);
+
 }
