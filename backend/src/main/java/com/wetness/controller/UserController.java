@@ -83,21 +83,22 @@ public class UserController {
     @PutMapping
     @ApiOperation(value = "회원정보 수정")
     public ResponseEntity<BaseResponseEntity> updateUser(@RequestBody User user) {
+        System.out.println("회원정보 수정 id : "+user.getId());
         userService.updateUser(user.getId(), user);
 
         return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
     }
 
-    @PostMapping("/findEmail")
-    @ApiOperation(value = "이메일 찾기")
-    public ResponseEntity<FindEmailResDto> findId(@RequestParam("nickname") String nickname) {
-        System.out.println("sendPwd Nickname : " + nickname);
-
-        User user = userService.findByNickname(nickname);
-        FindEmailResDto resDto = new FindEmailResDto(user.getEmail());
-
-        return ResponseEntity.status(200).body(resDto);
-    }
+//    @PostMapping("/findEmail")
+//    @ApiOperation(value = "이메일 찾기")
+//    public ResponseEntity<FindEmailResDto> findId(@RequestParam("nickname") String nickname) {
+//        System.out.println("sendPwd Nickname : " + nickname);
+//
+//        User user = userService.findByNickname(nickname);
+//        FindEmailResDto resDto = new FindEmailResDto(user.getEmail());
+//
+//        return ResponseEntity.status(200).body(resDto);
+//    }
 
     @GetMapping("/sendPw")
     @ApiOperation(value = "비밀번호 찾기를 위한 이메일 인증")
@@ -131,10 +132,12 @@ public class UserController {
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
     @DeleteMapping
+    @ApiOperation(value = "회원 탈퇴")
     public ResponseEntity<String> deleteUser(HttpServletRequest request){
 //    public ResponseEntity<String> deleteUser(HttpServletRequest request){
-        String nickname = request.getParameter("nickname");
-        userService.deleteUser(nickname);
+        String nickname = (String)request.getAttribute("nickname");
+            userService.deleteUser(nickname);
+
         return ResponseEntity.ok().body(SUCCESS);
     }
 
