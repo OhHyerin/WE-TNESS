@@ -69,6 +69,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void updateUser(Long id, User reqDto) {
         User user = userRepository.getOne(id);
+        System.out.println("여기여기 : "+user.getId());
         if (reqDto.getPassword() != null) {
             user.setPassword(reqDto.getPassword());
         }
@@ -116,9 +117,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public void deleteUser(String nickname) {
         User user = userRepository.findByNickname(nickname);
-        user.setRole("drop");
+        System.out.println("user.nickname : "+user.getNickname());
+        if(user!=null){
+            user.setRole("drop");
+        }
     }
 
     @Override

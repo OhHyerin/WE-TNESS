@@ -22,7 +22,7 @@ public class JwtInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        final String accessToken = request.getHeader("JWT");
+        final String accessToken = request.getHeader("access-token");
 
         if (accessToken == null) {
             throw new NoJwtTokenException();
