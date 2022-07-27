@@ -58,7 +58,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/duplicatedEmail/{email}")
+    @GetMapping("/duplicate-email/{email}")
     @ApiOperation(value = "이메일 중복확인")
     public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@PathVariable String email) {
         boolean possible = userService.checkEmailDuplicate(email);
@@ -67,7 +67,7 @@ public class UserController {
         return ResponseEntity.ok().body(new DuplicateCheckResDto(possible));
     }
 
-    @GetMapping("/duplicatedNickname/{nickname}")
+    @GetMapping("/duplicate-nickname/{nickname}")
     @ApiOperation(value = "닉네임 중복확인")
     public ResponseEntity<DuplicateCheckResDto> duplicatedNickname(@PathVariable String nickname) {
         boolean possible = userService.checkNicknameDuplicate(nickname);

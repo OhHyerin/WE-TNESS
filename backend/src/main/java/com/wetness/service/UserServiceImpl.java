@@ -2,7 +2,7 @@ package com.wetness.service;
 
 import com.wetness.model.User;
 import com.wetness.model.request.JoinUserDto;
-import com.wetness.repository.UserRepository;
+import com.wetness.core.repository.UserRepository;
 import com.wetness.util.InputUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(Long id, User reqDto) {
-        User user = userRepository.findOne(id);
+        User user = userRepository.getOne(id);
         if (reqDto.getPassword() != null) {
             user.setPassword(reqDto.getPassword());
         }
@@ -137,13 +137,23 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean checkEmailDuplicate(String email) {
-        return userRepository.existsByEmail(email);
+        User user = userRepository.findByEmail(email);
+        if(user==null){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     @Override
     @Transactional
     public boolean checkNicknameDuplicate(String nickname) {
-        return userRepository.existsByNickname(nickname);
+        User user = userRepository.findByNickname(nickname);
+        if(user==null){
+            return true;
+        }else{
+            return false;
+        }
     }
 
 

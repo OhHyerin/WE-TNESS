@@ -11,7 +11,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
     private static final String[] Exclude_Paths =
-            {"/", "/user/login", "/user/join", "/user/duplicateEmail/*", "/user/duplicateNickname/*",
+            {"/", "/user/login", "/user/join", "/user/duplicate-email/*", "/user/duplicate-nickname/*",
              "/user/refresh"};
     private final JwtInterceptor jwtInterceptor;
 
