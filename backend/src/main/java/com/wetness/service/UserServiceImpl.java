@@ -1,5 +1,6 @@
 package com.wetness.service;
 
+import com.wetness.core.queryrepository.UserQueryRepository;
 import com.wetness.model.User;
 import com.wetness.model.request.JoinUserDto;
 import com.wetness.core.repository.UserRepository;
@@ -24,6 +25,7 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final UserQueryRepository userQueryRepository;
     private final String hostKakao = "https://kauth.kakao.com/oauth/token";
 
     @Override
@@ -87,7 +89,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(Long id, User reqDto) {
-        User user = userRepository.findOne(id);
+        User user = userRepository.getOne(id);
         if (reqDto.getPassword() != null) {
             user.setPassword(reqDto.getPassword());
         }
@@ -178,7 +180,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserBySocialToken(int social, String socialToken) {
 
-        return userRepository.findOneBySocial(social, socialToken);
+        return userQueryRepository.findOneBySocial(social, socialToken);
     }
 
     @Override
