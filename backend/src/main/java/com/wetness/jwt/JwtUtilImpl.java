@@ -5,6 +5,8 @@ import com.wetness.model.User;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.io.UnsupportedEncodingException;
@@ -17,7 +19,13 @@ public class JwtUtilImpl implements JwtUtil {
 
     public static final Logger logger = LoggerFactory.getLogger(JwtUtilImpl.class);
 
-    private static final String SALT = "wetnessSecret";
+    //    private static final String SALT = "wetnessSecret";
+    @Value("${wetness.jwt.secretKey}")
+    private String jwtSecret;
+
+    @Value("${wetness.jwt.accessTokenExpirationMs}")
+    private int jwtExpirationMs;
+
     // token 유효기간 2시간
     private static final int EXPIRE_MINUTES = 1000 * 60 * 60 * 2;
 
@@ -25,7 +33,9 @@ public class JwtUtilImpl implements JwtUtil {
     private static final int REFRESH_EXPIRE_MINUTES = 1000 * 60 * 60 * 24 * 7;
 
     @Override
-    public String createAccessToken(User user) {
+    public String createAccessToken(Authentication authentication) {
+
+
 
         // 헤더 생성
         Map<String, Object> headers = new HashMap<>();

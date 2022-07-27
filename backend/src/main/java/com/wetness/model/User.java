@@ -1,8 +1,11 @@
 package com.wetness.model;
 
 import lombok.Data;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
 import java.util.Date;
 @Entity
 @Data
@@ -24,6 +27,7 @@ public class User {
     private double height;
     private double weight;
     private String social;
+    @Enumerated(EnumType.STRING)
     private String role;
     private String socialToken;
     private String refreshToken;
@@ -31,4 +35,17 @@ public class User {
     private boolean banState;
     private Date banDate;
 
+    public User() {
+    }
+
+    public User(String email, String password, String nickname,String gender, double height,double weight, String social, String role) {
+        this.email = email;
+        this.password = password;
+        this.nickname = nickname;
+        this.gender = gender;
+        this.height = height;
+        this.weight = weight;
+        this.social = social;
+        this.role = role;
+    }
 }

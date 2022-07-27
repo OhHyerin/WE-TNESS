@@ -9,9 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.Pattern;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -30,53 +32,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public boolean registerUser(JoinUserDto joinUserDto) {
-        final String inputPassword = joinUserDto.getPassword();
-        final String inputPwdVerify = joinUserDto.getPwdVerify();
-        final String inputEmail = joinUserDto.getEmail();
-        final String inputNickName = joinUserDto.getNickname();
-        final String inputAddressCode = joinUserDto.getAddressCode();
-        final String inputGender = joinUserDto.getGender();
-        final Double inputHeight = joinUserDto.getHeight();
-        final Double inputWeight = joinUserDto.getWeight();
+    public void registerUser(User user) {
 
-        if (InputUtil.checkValidEmail(inputEmail) &&
-                InputUtil.checkValidPassword(inputPassword) &&
-                InputUtil.checkValidNickname(inputNickName) &&
-                inputPassword.equals(inputPwdVerify) &&
-                checkEmailDuplicate(inputEmail) &&
-                checkNicknameDuplicate(inputNickName)) {
-            User user = new User();
-
-            //Essential Info
-            user.setEmail(inputEmail);
-            user.setPassword(inputPassword);
-            user.setNickname(inputNickName);
-            user.setSocial("0");
-            user.setRole("normal");
-
-            //Extra Info
-            if (inputAddressCode != null && inputAddressCode.length() == 10) {
-                String sidoCode = inputAddressCode.substring(0, 2) + "00000000";
-                String gugunCode = inputAddressCode.substring(0, 5) + "00000";
-                user.setSidoCode(sidoCode);
-                user.setGugunCode(gugunCode);
-            }
-            if (inputGender != null &&
-                    (inputGender.equals("male") || inputGender.equals("female"))) {
-                user.setGender(inputGender);
-            }
-            if (inputHeight != null && inputHeight != 0.0) {
-                user.setHeight(inputHeight);
-            }
-            if (inputWeight != null && inputWeight != 0.0) {
-                user.setWeight(inputWeight);
-            }
-
-            userRepository.save(user);
-            return true;
-        }
-        return false;
+        userRepository.save(user);
     }
 
     @Override
@@ -115,11 +73,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User loginUser(String email, String password) {
-        User findUser = userRepository.findByEmail(email);
-        if (findUser != null && findUser.getPassword().equals(password)) {
-            return findUser;
-        }
-        return null;
+        User findUser = userRepository.findByEmail(email)
+                .orElseThrow(()-> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
+        return findUser;
     }
 
     @Override
@@ -156,30 +112,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(String email) {
-        User user = userRepository.findByEmail(email);
-        return user;
+        User findUser = userRepository.findByEmail(email)
+                .orElseThrow(()-> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
+        return findUser;
     }
 
     @Override
     @Transactional
     public boolean checkEmailDuplicate(String email) {
-        User user = userRepository.findByEmail(email);
-        if(user==null){
-            return true;
-        }else{
-            return false;
-        }
+//        User user = userRepository.findByEmail(email);
+//        if(user==null){
+//            return true;
+//        }else{
+//            return false;
+//        }
+        return userRepository.existsByEmail(email);
     }
 
     @Override
     @Transactional
     public boolean checkNicknameDuplicate(String nickname) {
-        User user = userRepository.findByNickname(nickname);
-        if(user==null){
-            return true;
-        }else{
-            return false;
-        }
+//        User user = userRepository.findByNickname(nickname);
+//        if(user==null){
+//            return true;
+//        }else{
+//            return false;
+//        }
+        return userRepository.existsByNickname(nickname);
     }
 
     @Override

@@ -12,10 +12,18 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.bytebuddy.utility.RandomString;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,26 +37,49 @@ public class UserController {
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
-
     private final UserService userService;
     private final JwtUtil jwtUtil;
     private final MailService mailService;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
 
 
     @PostMapping("/join")
     @ApiOperation(value = "회원가입")
-    public ResponseEntity<BaseResponseEntity> registerUser(@RequestBody JoinUserDto joinUserDto) {
-        if (userService.registerUser(joinUserDto)) {
-            return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+    public ResponseEntity<BaseResponseEntity> registerUser(@Valid @RequestBody JoinUserDto joinUserDto) {
+
+        User user = new User(
+                joinUserDto.getEmail(),
+                passwordEncoder.encode(joinUserDto.getPassword()),
+                joinUserDto.getNickname(),
+                joinUserDto.getGender(),
+                joinUserDto.getHeight(),
+                joinUserDto.getWeight(),
+                "wetness",
+                "user"
+        );
+
+        String inputAddressCode = joinUserDto.getAddressCode();
+        if(inputAddressCode != null && inputAddressCode.length() == 10){
+            user.setSidoCode(inputAddressCode.substring(0, 2) + "00000000");
+            user.setGugunCode(inputAddressCode.substring(0, 5) + "00000");
         }
-        return ResponseEntity.internalServerError().body(new BaseResponseEntity(500, "Fail"));
+
+        userService.registerUser(user);
+
+        return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
     }
 
     //TODO sql error 처리 추가 필요
     @PostMapping("/login")
     @ApiOperation(value = "로그인")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
-        User loginUser = userService.loginUser(user.getEmail(), user.getPassword());
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         if (loginUser != null) {
             String accessToken = jwtUtil.createAccessToken(loginUser);
             String refreshToken = jwtUtil.createRefreshToken();

@@ -14,7 +14,7 @@ public interface UserService {
 
     boolean checkNicknameDuplicate(String nickname);
 
-    boolean registerUser(JoinUserDto joinUserDto);
+    void registerUser(User user);
 
     boolean registerUserBySocial(User user);
 

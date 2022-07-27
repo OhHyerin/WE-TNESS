@@ -1,5 +1,6 @@
 package com.wetness.repository;
 
+import com.wetness.core.repository.UserRepository;
 import com.wetness.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,8 +20,9 @@ import java.util.Date;
 @SpringBootTest
 public class JpaUserRepositoryTest {
 
+    // error 떠서 core.userRepository로 변경함
     @Autowired
-    JpaUserRepository jpaUserRepository;
+    UserRepository jpaUserRepository;
 
     Logger log = (Logger) LoggerFactory.getLogger(JpaUserRepositoryTest.class);
 
@@ -50,7 +52,7 @@ public class JpaUserRepositoryTest {
     @Transactional
     @Rollback(value = false)
     public void testUserUpdate() {
-      User user = jpaUserRepository.findOne(1L);
+      User user = jpaUserRepository.getOne(1L);
       user.setBanDate(new Date());
     }
 
