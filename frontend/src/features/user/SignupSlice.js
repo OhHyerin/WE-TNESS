@@ -1,70 +1,68 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import api from '../../api/index'
+import api from '../../api/index';
 
-const signup = createAsyncThunk(
-  'signup',
-  async (payload, { rejectWithValue }) => {
-    try {
-      const response = await axios.post(api.signup(), payload);
-      console.log(response)
-      // setToken()
-      return response;
-    } catch (err) {
-      return rejectWithValue(err.response);
-    }
+const signup = createAsyncThunk('signup', async (payload, { rejectWithValue }) => {
+  try {
+    const response = await axios.post(api.signup(), payload);
+    console.log(response);
+    // setToken()
+    return response;
+  } catch (err) {
+    console.log(err);
+    return rejectWithValue(err.response);
   }
-);
+});
 
-const checkNickname = createAsyncThunk(
-  'checkNickname',
-  async (payload, { rejectWithValue }) => {
-    const {nickname} = payload
-    try {
-      const response = await axios.get(api.nicknameCheck(nickname));
-      return response;
-    } catch (err) {
-      return rejectWithValue(err.response);
-    }
+const checkNickname = createAsyncThunk('checkNickname', async (payload, { rejectWithValue }) => {
+  const nickname = payload;
+  try {
+    const res = await axios.get(api.checkNickname(nickname));
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    return rejectWithValue(err.response);
   }
-);
+});
 
-const addInfo = createAsyncThunk(
-  'addInfo',
-  async (payload, { rejectWithValue }) => {
-    const {nickname} = payload
-    try {
-      const response = await axios.get(api.addInfo(nickname));
-      return response;
-    } catch (err) {
-      return rejectWithValue(err.response);
-    }
+const checkEmail = createAsyncThunk('checkEmail', async (payload, { rejectWithValue }) => {
+  const email = payload;
+  try {
+    const res = await axios.get(api.checkEmail(email));
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    return rejectWithValue(err.response);
   }
-)
+});
 
-const fetchUserInfo = createAsyncThunk(
-  'fetchUserInfo',
-  async (payload, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(api.fetchUserInfo());
-      return response;
-    } catch (err) {
-      return rejectWithValue(err.response);
-    }
+const addInfo = createAsyncThunk('addInfo', async (payload, { rejectWithValue }) => {
+  const { nickname } = payload;
+  try {
+    const response = await axios.get(api.addInfo(nickname));
+    return response;
+  } catch (err) {
+    return rejectWithValue(err.response);
   }
-)
+});
 
-const changePassword = createAsyncThunk(
-'changePassword',
-  async (payload, { rejectWithValue }) => {
-    try {
-      const response = await axios.get(api.changePassword());
-      return response;
-    } catch (err) {
-      return rejectWithValue(err.response);
-    }
+const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (payload, { rejectWithValue }) => {
+  try {
+    const response = await axios.get(api.fetchUserInfo());
+    return response;
+  } catch (err) {
+    return rejectWithValue(err.response);
   }
-);
+});
+
+const changePassword = createAsyncThunk('changePassword', async (payload, { rejectWithValue }) => {
+  try {
+    const response = await axios.get(api.changePassword());
+    return response;
+  } catch (err) {
+    return rejectWithValue(err.response);
+  }
+});
 
 const initialState = {
   userInfo: {
@@ -78,6 +76,7 @@ const initialState = {
     height: '',
   },
   isPossibleNickname: false,
+  isPossibleEmail: false,
 };
 
 export const SignupSlice = createSlice({
@@ -85,29 +84,29 @@ export const SignupSlice = createSlice({
   initialState,
   reducers: {
     fetchNickname: (state, action) => {
-      state.userInfo.nickname = action.payload
+      state.userInfo.nickname = action.payload;
     },
     fetchEmail: (state, action) => {
-      state.userInfo.email = action.payload
+      state.userInfo.email = action.payload;
     },
     fetchPassword: (state, action) => {
-      state.userInfo.password = action.payload
+      state.userInfo.password = action.payload;
     },
     fetchPwdVerify: (state, action) => {
-      state.userInfo.pwdVerify = action.payload
+      state.userInfo.pwdVerify = action.payload;
     },
     fetchGender: (state, action) => {
-      state.userInfo.gender = action.payload
+      state.userInfo.gender = action.payload;
     },
     fetchAddressCode: (state, action) => {
-      state.userInfo.addressCode = action.payload
+      state.userInfo.addressCode = action.payload;
     },
     fetchHeight: (state, action) => {
-      state.userInfo.height = action.payload
+      state.userInfo.height = action.payload;
     },
     fetchWeight: (state, action) => {
-      state.userInfo.weight = action.payload
-    }
+      state.userInfo.weight = action.payload;
+    },
   },
   extraReducers: {
     [signup.pending]: state => {
@@ -119,19 +118,19 @@ export const SignupSlice = createSlice({
     [signup.rejected]: state => {
       state.isLoading = false;
     },
-    [checkNickname.fulfilled]: state => {
-      state.isPossibleNickName = true;
+    [checkNickname.fulfilled]: (state, action) => {
+      state.isPossibleNickname = action.payload.possible;
     },
-    [checkNickname.rejected]: state => {
-      state.isPossibleNickName = false;
+    [checkEmail.fulfilled]: (state, action) => {
+      state.isPossibleEmail = action.payload.possible;
     },
     [fetchUserInfo.fulfilled]: (state, action) => {
-      state.userInfo = action.payload
-    }
-  }
+      state.userInfo = action.payload;
+    },
+  },
 });
 
-export { signup, checkNickname, fetchUserInfo, changePassword, addInfo }
+export { signup, checkNickname, checkEmail, fetchUserInfo, changePassword, addInfo };
 
 export const {
   fetchNickname,
