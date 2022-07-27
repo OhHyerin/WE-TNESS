@@ -1,7 +1,7 @@
 package com.wetness.jwt;
 
 import com.wetness.exception.UnauthorizedException;
-import com.wetness.model.User;
+import com.wetness.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +35,7 @@ public class JwtUtilImpl implements JwtUtil {
     @Override
     public String createAccessToken(Authentication authentication) {
 
-
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 
         // 헤더 생성
         Map<String, Object> headers = new HashMap<>();
@@ -46,15 +46,14 @@ public class JwtUtilImpl implements JwtUtil {
         // 페이로드 생성
         Map<String, Object> payloads = new HashMap<>();
         payloads.put("issuer", "wetness");
-        payloads.put("nickname", user.getNickname());
-        payloads.put("email", user.getEmail());
-        //payloads.put("id",user.getId());
+        payloads.put("nickname", userPrincipal.getNickname());
+        payloads.put("email", userPrincipal.getEmail());
 
 
         String jwt = Jwts.builder()
                 .setHeader(headers)
                 .setClaims(payloads)
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRE_MINUTES))
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
                 .setSubject("user")
                 .signWith(SignatureAlgorithm.HS256, generateKey())
                 .compact();
@@ -90,7 +89,7 @@ public class JwtUtilImpl implements JwtUtil {
     private byte[] generateKey() {
         byte[] key = null;
         try {
-            key = SALT.getBytes("UTF-8");
+            key = jwtSecret.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
             if (logger.isInfoEnabled()) {
                 e.printStackTrace();
@@ -105,19 +104,30 @@ public class JwtUtilImpl implements JwtUtil {
     @Override
     public Map<String, Object> get(String key) {
 
-        Jws<Claims> claims;
+        Jws<Claims> claims = null;
+        Map<String,Object> payload = null;
 
         try {
             claims = Jwts.parser()
-                    .setSigningKey(SALT.getBytes("UTF-8"))
+                    .setSigningKey(jwtSecret.getBytes("UTF-8"))
                     .parseClaimsJws(key);
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            throw new UnauthorizedException();
+            payload = claims.getBody();
+        }catch (SignatureException e) {
+            logger.error("Invalid JWT signature: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
         }
-        Map<String, Object> value = claims.getBody();
-        logger.info("value : {}", value);
-        return value;
+
+        logger.info("payload : {}", payload);
+        return payload;
     }
 
 //    @Override
@@ -131,11 +141,17 @@ public class JwtUtilImpl implements JwtUtil {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(this.generateKey()).parseClaimsJws(jwt);
             return true;
-        } catch (ExpiredJwtException | SignatureException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.error(e.getMessage());
-            return false;
+        }catch (SignatureException e) {
+            logger.error("Invalid JWT signature: {}", e.getMessage());
+        } catch (MalformedJwtException e) {
+            logger.error("Invalid JWT token: {}", e.getMessage());
+        } catch (ExpiredJwtException e) {
+            logger.error("JWT token is expired: {}", e.getMessage());
+        } catch (UnsupportedJwtException e) {
+            logger.error("JWT token is unsupported: {}", e.getMessage());
+        } catch (IllegalArgumentException e) {
+            logger.error("JWT claims string is empty: {}", e.getMessage());
         }
+        return false;
     }
 }

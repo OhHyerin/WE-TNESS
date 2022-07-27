@@ -6,6 +6,7 @@ import com.wetness.model.request.JoinUserDto;
 import com.wetness.model.request.RefreshTokenDto;
 import com.wetness.model.response.*;
 import com.wetness.service.MailService;
+import com.wetness.service.UserDetailsImpl;
 import com.wetness.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
@@ -79,17 +80,27 @@ public class UserController {
                 new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword())
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
-        if (loginUser != null) {
-            String accessToken = jwtUtil.createAccessToken(loginUser);
-            String refreshToken = jwtUtil.createRefreshToken();
+        String accessToken = jwtUtil.createAccessToken(authentication);
+        String refreshToken = jwtUtil.createRefreshToken();
+        userService.saveRefreshToken(userDetails.getNickname(),refreshToken);
+        LoginDto loginDto = new LoginDto(
+                "200", null, accessToken, refreshToken,
+                new UserResponseDto(userDetails.getEmail(),userDetails.getNickname())
+        );
+        return ResponseEntity.ok().body(loginDto);
 
-            userService.saveRefreshToken(loginUser.getNickname(), refreshToken);
-
-            LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken, new UserResponseDto(loginUser.getEmail(), loginUser.getNickname()));
-            return ResponseEntity.ok().body(loginDto);
-        }
-        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+//        if (loginUser != null) {
+//            String accessToken = jwtUtil.createAccessToken(loginUser);
+//            String refreshToken = jwtUtil.createRefreshToken();
+//
+//            userService.saveRefreshToken(loginUser.getNickname(), refreshToken);
+//
+//            LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken, new UserResponseDto(loginUser.getEmail(), loginUser.getNickname()));
+//            return ResponseEntity.ok().body(loginDto);
+//        }
+//        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
 
@@ -147,21 +158,21 @@ public class UserController {
 
 
 
-    @PostMapping("/refresh")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
-        String refreshToken = refreshTokenDto.getRefreshToken();
-        String nickname = refreshTokenDto.getNickname();
-        if (jwtUtil.isUsable(refreshToken)) {
-            String savedRefreshToken = userService.getRefreshToken(nickname);
-            if (refreshToken.equals(savedRefreshToken)) {
-                User loginUser = userService.findByNickname(nickname);
-                String accessToken = jwtUtil.createAccessToken(loginUser);
-                LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken, new UserResponseDto(loginUser.getEmail(), loginUser.getNickname()));
-                return ResponseEntity.ok().body(loginDto);
-            }
-        }
-        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
-    }
+//    @PostMapping("/refresh")
+//    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
+//        String refreshToken = refreshTokenDto.getRefreshToken();
+//        String nickname = refreshTokenDto.getNickname();
+//        if (jwtUtil.isUsable(refreshToken)) {
+//            String savedRefreshToken = userService.getRefreshToken(nickname);
+//            if (refreshToken.equals(savedRefreshToken)) {
+//                User loginUser = userService.findByNickname(nickname);
+//                String accessToken = jwtUtil.createAccessToken(loginUser);
+//                LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken, new UserResponseDto(loginUser.getEmail(), loginUser.getNickname()));
+//                return ResponseEntity.ok().body(loginDto);
+//            }
+//        }
+//        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+//    }
     @DeleteMapping
     @ApiOperation(value = "회원 탈퇴")
     public ResponseEntity<String> deleteUser(HttpServletRequest request){
@@ -172,59 +183,59 @@ public class UserController {
         return ResponseEntity.ok().body(SUCCESS);
     }
 
-    @GetMapping("/login/{auth}")
-    @ApiOperation(value = "소셜 로그인")
-    public ResponseEntity<Map<String, Object>> loginSocial(@PathVariable("auth") String auth, @RequestParam(value = "code") String code) throws IOException {
-        // social 종류 : 카카오(2), 구글(3), 페이스북(4) 등
-        int social = 2;
-        // 리턴할 json
-        Map<String, Object> result = new HashMap<>();
-
-        switch (auth) {
-            case "kakao":
-                social = 2;
-                break;
-        }
-
-        String token = userService.getSocialToken(social, code);
-
-        // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
-        User user = userService.getUserBySocialToken(2, token);
-        if (user != null) {
-            String accessToken = jwtUtil.createAccessToken(user);
-            result.put("exist_user", true);
-            result.put("accessToken", accessToken);
-            return ResponseEntity.ok().body(result);
-        }
-
-        // 토큰으로 유저정보 조회
-        Map<String, Object> userInfo = userService.getUserInfo(token);
-        user = new User();
-        // email, gender 정보 유무에 따라 유저 세팅, 추후 수정
-        if (userInfo.containsKey("email")) {
-            user.setEmail((String) userInfo.get("email"));
-        } else {
-            user.setEmail(RandomString.make(15));
-        }
-        if (userInfo.containsKey("gender")) {
-            user.setGender((String) userInfo.get("gender"));
-        } else {
-            user.setGender("3");
-        }
-
-        user.setSocial(auth);
-        user.setSocialToken(token);
-        user.setRole("user");
-        user.setNickname(RandomString.make(15));
-
-        userService.registerUserBySocial(user);
-        String accessToken = jwtUtil.createAccessToken(user);
-
-        result.put("existUser", false);
-        result.put("accessToken", accessToken);
-
-        return ResponseEntity.ok().body(result);
-    }
+//    @GetMapping("/login/{auth}")
+//    @ApiOperation(value = "소셜 로그인")
+//    public ResponseEntity<Map<String, Object>> loginSocial(@PathVariable("auth") String auth, @RequestParam(value = "code") String code) throws IOException {
+//        // social 종류 : 카카오(2), 구글(3), 페이스북(4) 등
+//        int social = 2;
+//        // 리턴할 json
+//        Map<String, Object> result = new HashMap<>();
+//
+//        switch (auth) {
+//            case "kakao":
+//                social = 2;
+//                break;
+//        }
+//
+//        String token = userService.getSocialToken(social, code);
+//
+//        // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
+//        User user = userService.getUserBySocialToken(2, token);
+//        if (user != null) {
+//            String accessToken = jwtUtil.createAccessToken(user);
+//            result.put("exist_user", true);
+//            result.put("accessToken", accessToken);
+//            return ResponseEntity.ok().body(result);
+//        }
+//
+//        // 토큰으로 유저정보 조회
+//        Map<String, Object> userInfo = userService.getUserInfo(token);
+//        user = new User();
+//        // email, gender 정보 유무에 따라 유저 세팅, 추후 수정
+//        if (userInfo.containsKey("email")) {
+//            user.setEmail((String) userInfo.get("email"));
+//        } else {
+//            user.setEmail(RandomString.make(15));
+//        }
+//        if (userInfo.containsKey("gender")) {
+//            user.setGender((String) userInfo.get("gender"));
+//        } else {
+//            user.setGender("3");
+//        }
+//
+//        user.setSocial(auth);
+//        user.setSocialToken(token);
+//        user.setRole("user");
+//        user.setNickname(RandomString.make(15));
+//
+//        userService.registerUserBySocial(user);
+//        String accessToken = jwtUtil.createAccessToken(user);
+//
+//        result.put("existUser", false);
+//        result.put("accessToken", accessToken);
+//
+//        return ResponseEntity.ok().body(result);
+//    }
 
     @PostMapping("/login/create-account")
     public ResponseEntity<Map<String, Object>> createAccount(@RequestAttribute(value = "nickname") String nickname, @RequestParam(value = "ChangeNickname") String ChangeNickname) {
@@ -236,7 +247,7 @@ public class UserController {
         user.setNickname(nickname);
         userService.updateUser(user.getId(), user);
 
-        result.put("accessToken", jwtUtil.createAccessToken(user));
+//        result.put("accessToken", jwtUtil.createAccessToken(user));
 
         return ResponseEntity.ok(result);
     }
