@@ -24,7 +24,7 @@ const LoginForm = styled.form`
   display: flex;
   flex-direction: column;
   padding: 10px;
-  gap: 10px;
+  gap: 15px;
 `
 const style = {
   position: 'absolute',
@@ -37,6 +37,13 @@ const style = {
   boxShadow: 24,
   p: 4,
 };
+
+const LinkBox = styled.div`
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+`
 
 export default function Login() {
   const navigate = useNavigate();
@@ -144,14 +151,13 @@ export default function Login() {
             </SubmitBtn>
           )}
       </LoginForm>
-
-        <hr />
         <KakaoLoginBar
           onClick={kakaoLoginHandler}
         />
-
-      <p>가입하실래요? <Link to="/signup">회원가입</Link> </p>
-      <Button onClick={handleOpen}>비밀번호 찾기</Button>
+      <LinkBox>
+        <p>가입하실래요? <Link to="/signup">회원가입</Link> </p>
+        <Button onClick={handleOpen}>비밀번호 찾기</Button>
+      </LinkBox>
       <Modal
         open={isModal}
         onClose={handleClose}
