@@ -1,6 +1,6 @@
 package com.wetness.jwt;
 
-import com.wetness.exception.UnauthorizedException;
+import com.wetness.model.User;
 import com.wetness.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
@@ -36,7 +36,6 @@ public class JwtUtilImpl implements JwtUtil {
     public String createAccessToken(Authentication authentication) {
 
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-
         // 헤더 생성
         Map<String, Object> headers = new HashMap<>();
         headers.put("typ", "JWT");
@@ -49,6 +48,29 @@ public class JwtUtilImpl implements JwtUtil {
         payloads.put("nickname", userPrincipal.getNickname());
         payloads.put("email", userPrincipal.getEmail());
 
+
+        String jwt = Jwts.builder()
+                .setHeader(headers)
+                .setClaims(payloads)
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .setSubject("user")
+                .signWith(SignatureAlgorithm.HS256, generateKey())
+                .compact();
+
+        return jwt;
+    }
+    public String createTokenForRefresh(User user) {
+
+        Map<String, Object> headers = new HashMap<>();
+        headers.put("typ", "JWT");
+        headers.put("regDate", System.currentTimeMillis());
+        headers.put("alg", "HS256");
+
+        // 페이로드 생성
+        Map<String, Object> payloads = new HashMap<>();
+        payloads.put("issuer", "wetness");
+        payloads.put("nickname", user.getNickname());
+        payloads.put("email", user.getEmail());
 
         String jwt = Jwts.builder()
                 .setHeader(headers)
@@ -129,11 +151,6 @@ public class JwtUtilImpl implements JwtUtil {
         logger.info("payload : {}", payload);
         return payload;
     }
-
-//    @Override
-//    public String getUserId() {
-//        return (String) this.get("user").get("userid");
-//    }
 
     //전달 받은 토큰이 제대로 생성된것인지 확인하고 문제가 있다면 UnauthorizedException을 발생
     @Override

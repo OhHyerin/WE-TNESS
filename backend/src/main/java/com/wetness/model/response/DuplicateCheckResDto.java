@@ -7,5 +7,5 @@ import lombok.Data;
 @AllArgsConstructor
 public class DuplicateCheckResDto {
 
-    boolean possible;
+    boolean isExist;
 }

@@ -11,11 +11,14 @@ public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
     private String email;
+    private String password;
     private String nickname;
     private String role;
 
-    public UserDetailsImpl(String email, String nickname, String role) {
+
+    public UserDetailsImpl(String email,String password, String nickname, String role) {
         this.email = email;
+        this.password = password;
         this.nickname = nickname;
         this.role = role;
     }
@@ -24,6 +27,7 @@ public class UserDetailsImpl implements UserDetails {
 
         return new UserDetailsImpl(
                 user.getEmail(),
+                user.getPassword(),
                 user.getNickname(),
                 user.getRole()
         );
@@ -36,7 +40,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return this.password;
     }
 
     @Override
@@ -72,5 +76,15 @@ public class UserDetailsImpl implements UserDetails {
 
     public String getNickname() {
         return this.nickname;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDetailsImpl{" +
+                "email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", role='" + role + '\'' +
+                '}';
     }
 }

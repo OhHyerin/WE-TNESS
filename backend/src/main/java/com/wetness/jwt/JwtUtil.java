@@ -11,6 +11,8 @@ public interface JwtUtil{
 
     String createAccessToken(Authentication authentication);
 
+    String createTokenForRefresh(User user);
+
     String createRefreshToken();
 
     // 토큰 유효성 검사 이후 payload 반환

@@ -27,7 +27,7 @@ public class User {
     private double height;
     private double weight;
     private String social;
-    @Enumerated(EnumType.STRING)
+//    @Enumerated(EnumType.STRING)
     private String role;
     private String socialToken;
     private String refreshToken;

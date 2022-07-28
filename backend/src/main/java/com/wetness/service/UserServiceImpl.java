@@ -33,7 +33,6 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void registerUser(User user) {
-
         userRepository.save(user);
     }
 
@@ -120,24 +119,12 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public boolean checkEmailDuplicate(String email) {
-//        User user = userRepository.findByEmail(email);
-//        if(user==null){
-//            return true;
-//        }else{
-//            return false;
-//        }
         return userRepository.existsByEmail(email);
     }
 
     @Override
     @Transactional
     public boolean checkNicknameDuplicate(String nickname) {
-//        User user = userRepository.findByNickname(nickname);
-//        if(user==null){
-//            return true;
-//        }else{
-//            return false;
-//        }
         return userRepository.existsByNickname(nickname);
     }
 

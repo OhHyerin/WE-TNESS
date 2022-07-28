@@ -12,8 +12,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import net.bytebuddy.utility.RandomString;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,8 +22,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import javax.validation.constraints.Pattern;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,7 +44,8 @@ public class UserController {
     @PostMapping("/join")
     @ApiOperation(value = "회원가입")
     public ResponseEntity<BaseResponseEntity> registerUser(@Valid @RequestBody JoinUserDto joinUserDto) {
-
+        System.out.println("회원가입시 원래 암호 : " + joinUserDto.getPassword());
+        System.out.println("회원가입시 변경된 암호 : " + passwordEncoder.encode(joinUserDto.getPassword()));
         User user = new User(
                 joinUserDto.getEmail(),
                 passwordEncoder.encode(joinUserDto.getPassword()),
@@ -79,6 +76,7 @@ public class UserController {
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword())
         );
+
         SecurityContextHolder.getContext().setAuthentication(authentication);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
@@ -90,18 +88,7 @@ public class UserController {
                 new UserResponseDto(userDetails.getEmail(),userDetails.getNickname())
         );
         return ResponseEntity.ok().body(loginDto);
-
-//        if (loginUser != null) {
-//            String accessToken = jwtUtil.createAccessToken(loginUser);
-//            String refreshToken = jwtUtil.createRefreshToken();
-//
-//            userService.saveRefreshToken(loginUser.getNickname(), refreshToken);
-//
-//            LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken, new UserResponseDto(loginUser.getEmail(), loginUser.getNickname()));
-//            return ResponseEntity.ok().body(loginDto);
-//        }
-//        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
-    }
+   }
 
 
     @GetMapping("/duplicate-email/{email}")
@@ -156,23 +143,26 @@ public class UserController {
         }
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
+
+        String requestRefreshToken = refreshTokenDto.getRefreshToken();
+        String nickname = refreshTokenDto.getNickname();
+        User user = userService.findByNickname(nickname);
+
+        if (jwtUtil.isUsable(requestRefreshToken)) {
+            String savedRefreshToken = userService.getRefreshToken(nickname);
+            if (requestRefreshToken.equals(savedRefreshToken)) {
+
+                String accessToken = jwtUtil.createTokenForRefresh(user);
+                LoginDto loginDto = new LoginDto("200", null, accessToken, requestRefreshToken, new UserResponseDto(user.getEmail(), user.getNickname()));
+                return ResponseEntity.ok().body(loginDto);
+            }
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
 
 
-//    @PostMapping("/refresh")
-//    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
-//        String refreshToken = refreshTokenDto.getRefreshToken();
-//        String nickname = refreshTokenDto.getNickname();
-//        if (jwtUtil.isUsable(refreshToken)) {
-//            String savedRefreshToken = userService.getRefreshToken(nickname);
-//            if (refreshToken.equals(savedRefreshToken)) {
-//                User loginUser = userService.findByNickname(nickname);
-//                String accessToken = jwtUtil.createAccessToken(loginUser);
-//                LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken, new UserResponseDto(loginUser.getEmail(), loginUser.getNickname()));
-//                return ResponseEntity.ok().body(loginDto);
-//            }
-//        }
-//        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
-//    }
+    }
     @DeleteMapping
     @ApiOperation(value = "회원 탈퇴")
     public ResponseEntity<String> deleteUser(HttpServletRequest request){
@@ -238,16 +228,19 @@ public class UserController {
 //    }
 
     @PostMapping("/login/create-account")
-    public ResponseEntity<Map<String, Object>> createAccount(@RequestAttribute(value = "nickname") String nickname, @RequestParam(value = "ChangeNickname") String ChangeNickname) {
+    public ResponseEntity<Map<String, Object>> createAccount(@RequestParam(value = "changeNickname") String changeNickname) {
 
-        Map<String, Object> result = new HashMap<>();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String email = (String) authentication.getPrincipal();
 
         // 이전에 발급한 토큰으로 닉네임 추출 - 새로 전달받은 닉네임으로 DB 수정 후 토큰 다시 발급
-        User user = userService.findByNickname(nickname);
-        user.setNickname(nickname);
+        User user = userService.findByEmail(email);
+        user.setNickname(changeNickname);
         userService.updateUser(user.getId(), user);
 
-//        result.put("accessToken", jwtUtil.createAccessToken(user));
+        Map<String, Object> result = new HashMap<>();
+        result.put("accessToken", jwtUtil.createAccessToken(authentication));
 
         return ResponseEntity.ok(result);
     }
