@@ -3,6 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import TextField from '@mui/material/TextField';
+import Visibility from '@mui/icons-material/Visibility';
+import TaskAltIcon from '@mui/icons-material/TaskAlt';
+import { InputAdornment } from '@mui/material';
+import AccountCircle from "@mui/icons-material/AccountCircle";
 import { signup, checkNickname, checkEmail, fetchNickname, fetchEmail } from '../../features/user/SignupSlice';
 import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
@@ -11,6 +15,7 @@ import PasswordForm from '../../components/common/auth/PasswordForm';
 import AddressForm from '../../components/common/auth/AddressForm';
 import GenderForm from '../../components/common/auth/GenderForm';
 import BodyForm from '../../components/common/auth/BodyForm';
+import IconTextField from '../../components/common/IconTextField';
 
 const SignupForm = styled.form`
   display: flex;
@@ -26,14 +31,17 @@ export default function SignupPage() {
   const userInfo = useSelector(state => state.signup.userInfo);
   const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
   const isPossibleEmail = useSelector(state => state.signup.isPossibleEmail);
+  const [isSignupError, setIsSignupError] = useState(false)
 
   const [isCheckNN, setIsCheckNN] = useState(false);
   const [isCheckEmail, setIsCheckEmail] = useState(false);
 
   const onNicknameHandler = e => {
+    setIsCheckNN(false)
     dispatch(fetchNickname(e.target.value));
   };
   const onEmailHandler = e => {
+    setIsCheckEmail(false)
     dispatch(fetchEmail(e.target.value));
   };
 
@@ -56,8 +64,12 @@ export default function SignupPage() {
     const payload = userInfo;
     console.log(payload);
     dispatch(signup(payload))
-      .then(() => {
-        navigate('/');
+      .then(res => {
+        if (res.type === 'signup/fulfilled') {
+          navigate('/login')
+        } else {
+          setIsSignupError(true)
+        }
       })
       .catch(err => {
         console.log(err);
@@ -70,14 +82,22 @@ export default function SignupPage() {
         <h1>회원가입 페이지입니당</h1>
         <SignupForm onSubmit={onSubmitHandler}>
           <InputBox>
-            <TextField
+            <IconTextField
               error={isCheckNN && !isPossibleNickname}
+              iconStart={<AccountCircle />}
               label="*닉네임"
               value={userInfo.nickname}
               onChange={onNicknameHandler}
               helperText={
                 isCheckNN ? (isPossibleNickname ? '사용 가능한 닉네임입니다.' : '사용중인 닉네임입니다.') : null
               }
+              InputProps={{
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <TaskAltIcon color='success'/>
+                  </InputAdornment>
+                ),
+              }}
             />
           </InputBox>
           {userInfo.nickname ? (
@@ -107,7 +127,7 @@ export default function SignupPage() {
             </SubmitBtn>
           )}
 
-          <PasswordForm></PasswordForm>
+          <PasswordForm isSignupError={isSignupError}></PasswordForm>
 
           <InputBox>
             <GenderForm></GenderForm>
@@ -118,8 +138,17 @@ export default function SignupPage() {
           </InputBox>
           <BodyForm></BodyForm>
           <SubmitBtn
-            disabled={!isPossibleNickname || !isPossibleEmail || userInfo.password !== userInfo.pwdVerify}
-            deactive={!isPossibleNickname || !isPossibleEmail || userInfo.password !== userInfo.pwdVerify}>
+            disabled={
+              !isCheckNN || !isPossibleNickname ||
+              !isCheckEmail || !isPossibleEmail ||
+              userInfo.password !== userInfo.pwdVerify ||
+              userInfo.password === ''}
+            deactive={
+              !isCheckNN || !isPossibleNickname ||
+              !isCheckEmail || !isPossibleEmail ||
+              userInfo.password !== userInfo.pwdVerify ||
+              userInfo.password === ''}
+          >
             회원가입
           </SubmitBtn>
         </SignupForm>
@@ -130,3 +159,4 @@ export default function SignupPage() {
     </div>
   );
 }
+

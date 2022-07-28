@@ -12,18 +12,18 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { fetchPassword, fetchPwdVerify } from '../../../features/user/SignupSlice'
 import InputBox from './InputBox';
 
-const Passwordbox = styled.div`
+const PasswordBox = styled.div`
   display: flex;
   flex-direction: column;
-  padding: 10px;
   gap: 10px;
 `
 
-export default function PasswordBox() {
+export default function PasswordForm({...props}) {
   const dispatch = useDispatch()
 
   const password = useSelector(state => state.signup.userInfo.password)
   const pwdVerify = useSelector(state => state.signup.userInfo.pwdVerify)
+  const isSignupError = props?.isSignupError
 
   const [showPassword, setShowPassword] = useState(false)
   
@@ -42,7 +42,7 @@ export default function PasswordBox() {
   };
 
   return (
-    <Passwordbox>
+    <PasswordBox>
       <InputBox>
         <FormControl>
           <InputLabel>*비밀번호</InputLabel>
@@ -56,25 +56,25 @@ export default function PasswordBox() {
                   onClick={handleClickShowPassword}
                   onMouseDown={handleMouseDownPassword}
                   >
-                {showPassword ? <VisibilityOff /> : <Visibility />}
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
                 </IconButton>
               </InputAdornment>
             }
           />
         </FormControl>
       </InputBox>
-          
-          <InputBox>
-            <TextField
-              error={password !== pwdVerify}
-              type="password"
-              label="*비밀번호 확인"
-              value={pwdVerify}
-              onChange={onPwdVerifyHandler}
-              helperText={password!==pwdVerify?"비밀번호 확인이 일치하지 않습니다.":null}
-            />
-          </InputBox>
+      {isSignupError?<p>*영문/숫자/특수문자를 포함하여 8자 이상 입력</p>: null }
 
-    </Passwordbox>
+      <InputBox>
+        <TextField
+          error={password !== pwdVerify}
+          type="password"
+          label="*비밀번호 확인"
+          value={pwdVerify}
+          onChange={onPwdVerifyHandler}
+          helperText={password!==pwdVerify?"비밀번호 확인이 일치하지 않습니다.":null}
+        />
+      </InputBox>
+    </PasswordBox>
   )
 }
