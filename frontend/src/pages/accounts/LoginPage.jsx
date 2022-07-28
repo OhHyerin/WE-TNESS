@@ -13,12 +13,13 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { login, findPassword } from '../../features/user/UserSlice';
+import { login, findPassword, fetchCurrentUser, checkLogin } from '../../features/user/UserSlice';
 import FormBox from '../../components/common/auth/FormBox'
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import KakaoLoginBar from '../../components/common/auth/KakaoLoginBar';
 import KAKAO_AUTH_URL from '../../api/Oauth';
+import { getCurrentUser } from '../../features/Token';
 
 const LoginForm = styled.form`
   display: flex;
@@ -71,6 +72,8 @@ export default function Login() {
     }
     dispatch(login(payload))
       .then(() => {
+        dispatch(fetchCurrentUser(getCurrentUser()));
+        dispatch(checkLogin());
         navigate('/')
       })
       .catch(err => {
