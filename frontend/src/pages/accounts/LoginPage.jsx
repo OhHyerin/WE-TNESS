@@ -13,7 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { login, testLogin, findPassword } from '../../features/user/UserSlice';
+import { login, findPassword } from '../../features/user/UserSlice';
 import FormBox from '../../components/common/auth/FormBox'
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
@@ -140,7 +140,6 @@ export default function Login() {
           onClick={kakaoLoginHandler}
         />
 
-      <SubmitBtn onClick={() => {dispatch(testLogin())}}>Test Login</SubmitBtn>
       <p>가입하실래요? <Link to="/signup">회원가입</Link> </p>
       <Button onClick={handleOpen}>비밀번호 찾기</Button>
       <Modal

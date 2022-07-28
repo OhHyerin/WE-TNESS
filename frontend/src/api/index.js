@@ -12,6 +12,7 @@ const CHECK_EMAIL_URL = '/duplicate-email';
 const FETCH_FOLLOW_LIST_URL = '';
 const CHANGE_PASSWORD = '';
 const FIND_PASSWORD = '/findpassword';
+const ADD_INFO_URL = '/login/create-account'
 
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
@@ -20,6 +21,7 @@ export default {
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
   logout: () => API_BASE_URL + USER_URL + LOGOUT_URL,
   kakao: () => API_BASE_URL + USER_URL + LOGIN_URL + KAKAO_URL,
+  addInfo: () => API_BASE_URL + USER_URL + ADD_INFO_URL,
   edit: () => API_BASE_URL + EDIT_URL,
   fetchFollowList: () => API_BASE_URL + FETCH_FOLLOW_LIST_URL,
   changePassword: () => API_BASE_URL + CHANGE_PASSWORD,
