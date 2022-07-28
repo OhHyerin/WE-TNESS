@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, Navigate } from "react-router-dom"
-import { kakaoLogin, toggleIsModal } from "../../features/user/UserSlice";
+import { kakaoLogin } from "../../features/user/UserSlice";
+import { toggleIsModal } from '../../features/user/SignupSlice'
 
 export default function KakaoLoginPage() {
   const dispatch = useDispatch()

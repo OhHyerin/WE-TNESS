@@ -51,8 +51,6 @@ export default function AddressForm() {
     <Modal
       open={open}
       onClose={handleClose}
-      aria-labelledby="modal-modal-title"
-      aria-describedby="modal-modal-description"
     >
       <Box sx={style}>
         <DaumPostcode onComplete={completeHandler}/>

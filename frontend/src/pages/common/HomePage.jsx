@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -10,12 +10,10 @@ import RankingPreview from '../../components/home/RankingPreview';
 import RoomList from '../../components/home/RoomList';
 import RoomFilter1 from '../../components/home/RoomFilter1';
 import RoomFilter2 from '../../components/home/RoomFilter2';
-import { toggleIsModal, checkLogin } from '../../features/user/UserSlice';
 import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
-import { checkNickname } from '../../features/user/SignupSlice';
-import { getAccessToken } from '../../features/Token';
+import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
 
 const style = {
   position: 'absolute',
@@ -37,15 +35,13 @@ const SubmitForm = styled.form`
 `;
 
 export default function Home() {
-  useEffect(() => {
-    const Token = getAccessToken();
-    if (Token) {
-      dispatch(checkLogin());
-    }
-  }, []);
+  
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const currentUser = useSelector(state => state.user.currentUser)
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated)
 
   const isModal = useSelector(state => state.user.isModal);
   const isPossibleNickname = useSelector(state => state.user.isPossibleNickname);
@@ -53,9 +49,7 @@ export default function Home() {
   const [isCheckNN, setIsCheckNN] = useState(false);
 
   // 모달 닫기 테스트버튼
-  const [testModal, setTestModal] = useState(true);
   function handleClose() {
-    setTestModal(false);
     dispatch(toggleIsModal());
   }
 
@@ -74,24 +68,25 @@ export default function Home() {
     e.preventDefault();
     const payload = nickname;
     console.log(payload);
-    // dispatch(addInfo(payload))
-    //   .then(() => {
-    //     handleClose()
-    //   })
-    //   .catch(err => {
-    //     console.log(err)
-    //   })
+    dispatch(addInfo(payload))
+      .then(() => {
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
 
   return (
     <div>
       <div>
+        {isAuthenticated ? (<p> 닉네임 : {currentUser.nickname} </p>) : null}
+      </div>
+      
+      <div>
         <Modal
-          // open={isModal}
-          open={testModal}
+          open={isModal}
           onClose={handleClose}
-          aria-labelledby="modal-modal-title"
-          aria-describedby="modal-modal-description">
+        >
           <Box sx={style}>
             <FormBox>
               <SubmitForm onSubmit={onSubmitHandler}>

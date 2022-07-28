@@ -15,8 +15,8 @@ export default function BodyForm() {
   function onWeightHandeler (e) {
     dispatch(fetchWeight(e.target.value))
   }
-  function onHeightHandler (e) {
-    dispatch(fetchHeight(e.target.value))
+  function onHeightHandler (value) {
+    dispatch(fetchHeight(value))
   }
   function valuetext(value) {
     return `${value}°C`;
@@ -28,6 +28,7 @@ export default function BodyForm() {
       <p>{height}</p>
       <Slider
           defaultValue={160}
+          onChange={(_, value) => onHeightHandler(value)}
           getAriaValueText={valuetext}
           valueLabelDisplay="auto"
           step={5}
