@@ -14,6 +14,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 @Configuration
@@ -41,7 +42,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
     private static final String[] Exclude_Paths =
-            {"/", "/user/login", "/user/join", "/user/duplicate-email/*", "/user/duplicate-nickname/*",
+            {"/", "/user/login", "/user/join","/user/duplicate-email/*", "/user/duplicate-nickname/*",
              "/user/refresh", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
                     , "/swagger-resources/**","/v2/api-docs","/csrf", "/error"};
 
@@ -55,11 +56,12 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception{
 
         http.cors().and().csrf().disable()
-                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
-                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).and()
                 .authorizeRequests().antMatchers(Exclude_Paths).permitAll()
-                .anyRequest().authenticated();
-
+                .anyRequest().authenticated().and()
+                .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                ;
+        http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
 
