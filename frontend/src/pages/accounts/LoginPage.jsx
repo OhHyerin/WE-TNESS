@@ -2,17 +2,10 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Modal from '@mui/material/Modal';
-import { OutlinedInput } from '@mui/material';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import InputAdornment from '@mui/material/InputAdornment';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { Box,Button,Modal,
+  FilledInput, TextField, IconButton,
+  InputLabel, FormControl, InputAdornment } from '@mui/material';
+  import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { login, findPassword } from '../../features/user/UserSlice';
 import FormBox from '../../components/common/auth/FormBox'
 import InputBox from '../../components/common/auth/InputBox';
@@ -124,7 +117,7 @@ export default function Login() {
         <InputBox>
           <FormControl>
             <InputLabel>*비밀번호</InputLabel>
-            <OutlinedInput
+            <FilledInput
               label="*비밀번호"
               type={showPassword?"text":"password"}
               value={password}
@@ -135,7 +128,7 @@ export default function Login() {
                     onClick={handleClickShowPassword}
                     onMouseDown={handleMouseDownPassword}
                     >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
                   </IconButton>
                 </InputAdornment>
               }

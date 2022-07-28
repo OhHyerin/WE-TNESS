@@ -1,14 +1,9 @@
 import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import FilledInput from '@mui/material/FilledInput';
-import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import InputAdornment from '@mui/material/InputAdornment';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import { FilledInput, TextField, IconButton,
+  InputLabel, FormControl, InputAdornment } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { fetchPassword, fetchPwdVerify } from '../../../features/user/SignupSlice'
 import InputBox from './InputBox';
 
