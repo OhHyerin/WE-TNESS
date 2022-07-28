@@ -13,13 +13,12 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { login, findPassword, fetchCurrentUser, checkLogin } from '../../features/user/UserSlice';
+import { login, findPassword } from '../../features/user/UserSlice';
 import FormBox from '../../components/common/auth/FormBox'
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import KakaoLoginBar from '../../components/common/auth/KakaoLoginBar';
 import KAKAO_AUTH_URL from '../../api/Oauth';
-import { getCurrentUser } from '../../features/Token';
 
 const LoginForm = styled.form`
   display: flex;
@@ -46,9 +45,10 @@ export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [isLoginError, setIsLoginError] = useState(false)
 
-  const [isModal, setIsModal] = useState(false)
   const [findPwdEmail, setFindPwdEmail] = useState('')
+  const [isModal, setIsModal] = useState(false)
   const handleOpen = () => setIsModal(true);
   const handleClose = () => setIsModal(false);
 
@@ -71,10 +71,12 @@ export default function Login() {
       password
     }
     dispatch(login(payload))
-      .then(() => {
-        dispatch(fetchCurrentUser(getCurrentUser()));
-        dispatch(checkLogin());
-        navigate('/')
+      .then(res => {
+        if (res.type === 'login/fulfilled') {
+          navigate('/')
+        } else {
+          setIsLoginError(true)
+        }
       })
       .catch(err => {
         console.log(err)
@@ -95,7 +97,7 @@ export default function Login() {
 
   function onSubmitEmail (e) {
     e.preventDefault();
-    dispatch(findPassword(findPwdEmail))
+    dispatch(findPassword({email: findPwdEmail}))
   }
 
   return (
@@ -133,9 +135,14 @@ export default function Login() {
             />
           </FormControl>
         </InputBox>
-          <SubmitBtn>
-            로그인
-          </SubmitBtn>
+        {isLoginError?<p>이메일 / 비밀번호를 확인해주세요.</p>: null }
+        { email&&password ? (
+            <SubmitBtn>로그인</SubmitBtn>
+          ) : (
+            <SubmitBtn disabled deactive={true}>
+              로그인
+            </SubmitBtn>
+          )}
       </LoginForm>
 
         <hr />

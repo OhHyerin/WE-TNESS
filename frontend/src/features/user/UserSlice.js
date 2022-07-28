@@ -6,10 +6,13 @@ import { setAccessToken,
   removeRefreshToken,
   decodeAccessToken,
   setCurrentUser,
-  removeCurrentUser
+  removeCurrentUser,
+  getCurrentUser,
 } from '../Token';
 import api from '../../api/index';
 import header from '../authHeader';
+
+
 
 const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => {
   try {
@@ -17,7 +20,7 @@ const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => 
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
     setCurrentUser(decodeAccessToken(res.data.accessToken))
-    return res.data;
+    return res
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -79,6 +82,7 @@ const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
 
 const findPassword = createAsyncThunk('findPassword', async (payload, { rejectWithValue }) => {
   try {
+    console.log(payload)
     const response = await axios.post(api.findPassword(), payload);
     return response;
   } catch (err) {
@@ -99,7 +103,6 @@ const initialState = {
   },
   followList: {},
   isAuthenticated: false,
-  isAdmin: false,
   isLoading: false,
   history: {
     getAwardList: [1, 2],
@@ -118,9 +121,9 @@ export const UserSlice = createSlice({
     },
   },
   extraReducers: {
-    [login.fulfilled]: (state, action) => {
+    [login.fulfilled]: state => {
       state.isAuthenticated = true;
-      state.loginUser = action.userInfo;
+      state.currentUser = getCurrentUser();
     },
     [login.rejected]: state => {
       state.isAuthenticated = false;

@@ -44,6 +44,5 @@ export const removeCurrentUser = () => {
 
 export const decodeAccessToken = accessToken => {
   const currentUser = jwtDecode(accessToken)
-  console.log(currentUser)
   return currentUser
 }

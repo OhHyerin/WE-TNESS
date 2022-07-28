@@ -20,10 +20,10 @@ export default {
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
   logout: () => API_BASE_URL + USER_URL + LOGOUT_URL,
+  findPassword: () => API_BASE_URL + USER_URL + FIND_PASSWORD,
   kakao: () => API_BASE_URL + USER_URL + LOGIN_URL + KAKAO_URL,
   addInfo: () => API_BASE_URL + USER_URL + ADD_INFO_URL,
   edit: () => API_BASE_URL + EDIT_URL,
   fetchFollowList: () => API_BASE_URL + FETCH_FOLLOW_LIST_URL,
   changePassword: () => API_BASE_URL + CHANGE_PASSWORD,
-  findPassword: () => API_BASE_URL + FIND_PASSWORD,
 };
