@@ -1,20 +1,13 @@
-import { useState } from 'react'
+import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import FilledInput from '@mui/material/FilledInput';
 import TextField from '@mui/material/TextField';
-import IconButton from '@mui/material/IconButton';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import InputAdornment from '@mui/material/InputAdornment';
-import Visibility from '@mui/icons-material/Visibility';
-import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { signup, checkNickname, fetchNickname, fetchEmail,
-  fetchPassword, fetchPwdVerify} from '../../features/user/SignupSlice'
-import FormBox from "../../components/common/auth/FormBox";
+import { signup, checkNickname, checkEmail, fetchNickname, fetchEmail } from '../../features/user/SignupSlice';
+import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
+import PasswordForm from '../../components/common/auth/PasswordForm';
 import AddressForm from '../../components/common/auth/AddressForm';
 import GenderForm from '../../components/common/auth/GenderForm';
 import BodyForm from '../../components/common/auth/BodyForm';
@@ -24,140 +17,115 @@ const SignupForm = styled.form`
   flex-direction: column;
   padding: 10px;
   gap: 10px;
-`
+`;
 
-export default function Signup() {
+export default function SignupPage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const userInfo = useSelector(state => state.signup.userInfo)
+  const userInfo = useSelector(state => state.signup.userInfo);
+  const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
+  const isPossibleEmail = useSelector(state => state.signup.isPossibleEmail);
 
-  const isPossibleNickname = useSelector(state => state.user.isPossibleNickname);
-
-  const [isCheckNN, setIsCheckNN] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const [isCheckNN, setIsCheckNN] = useState(false);
+  const [isCheckEmail, setIsCheckEmail] = useState(false);
 
   const onNicknameHandler = e => {
-    dispatch(fetchNickname(e.target.value))
-  }
+    dispatch(fetchNickname(e.target.value));
+  };
   const onEmailHandler = e => {
-    dispatch(fetchEmail(e.target.value))
-  }
-  const onPasswordHandler = e => {
-    dispatch(fetchPassword(e.target.value))
-  }
-  const onPwdVerifyHandler = e => {
-    dispatch(fetchPwdVerify(e.target.value))
-  }
-  
-  
-  function onCheckNicknameHandler (e) {
-    e.preventDefault()
-    const payload = userInfo.nickname
-    setIsCheckNN(true)
-    dispatch(checkNickname(payload))
+    dispatch(fetchEmail(e.target.value));
+  };
+
+  function onCheckNicknameHandler(e) {
+    e.preventDefault();
+    const payload = userInfo.nickname;
+    setIsCheckNN(true);
+    dispatch(checkNickname(payload));
   }
 
-  function onSubmitHandler (e) {
-    e.preventDefault()
-    const payload = userInfo
-    console.log(payload)
+  function onCheckEmailHandler(e) {
+    e.preventDefault();
+    const payload = userInfo.email;
+    setIsCheckEmail(true);
+    dispatch(checkEmail(payload));
+  }
+
+  function onSubmitHandler(e) {
+    e.preventDefault();
+    const payload = userInfo;
+    console.log(payload);
     dispatch(signup(payload))
       .then(() => {
-        navigate('/')
+        navigate('/');
       })
       .catch(err => {
-        console.log(err)
-      })
+        console.log(err);
+      });
   }
-
-  function handleClickShowPassword() {
-    setShowPassword(!showPassword)
-  }
-  const handleMouseDownPassword = event => {
-    event.preventDefault();
-  };
 
   return (
     <div>
       <FormBox>
         <h1>회원가입 페이지입니당</h1>
-        <SignupForm
-          onSubmit={onSubmitHandler}
-        >
+        <SignupForm onSubmit={onSubmitHandler}>
           <InputBox>
             <TextField
               error={isCheckNN && !isPossibleNickname}
               label="*닉네임"
               value={userInfo.nickname}
               onChange={onNicknameHandler}
-              helperText={isCheckNN ? (isPossibleNickname ? "사용 가능한 닉네임입니다." : "사용중인 닉네임입니다.") : null}
+              helperText={
+                isCheckNN ? (isPossibleNickname ? '사용 가능한 닉네임입니다.' : '사용중인 닉네임입니다.') : null
+              }
             />
           </InputBox>
-          { userInfo.nickname ? (
-            <SubmitBtn onClick={onCheckNicknameHandler}>
-              닉네임 확인하기
-            </SubmitBtn>
+          {userInfo.nickname ? (
+            <SubmitBtn onClick={onCheckNicknameHandler}>닉네임 확인</SubmitBtn>
           ) : (
             <SubmitBtn disabled deactive={!userInfo.nickname}>
-              닉네임확인하기
+              닉네임확인
             </SubmitBtn>
           )}
           <InputBox>
             <TextField
+              error={isCheckEmail && !isPossibleEmail}
               type="email"
               label="*이메일"
               value={userInfo.email}
               onChange={onEmailHandler}
+              helperText={
+                isCheckEmail ? (isPossibleEmail ? '사용 가능한 이메일입니다.' : '사용중인 이메일입니다.') : null
+              }
             />
           </InputBox>
-          <InputBox>
-            <FormControl>
-              <InputLabel>*비밀번호</InputLabel>
-              <FilledInput
-                type={showPassword?"text":"password"}
-                value={userInfo.password}
-                onChange={onPasswordHandler}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
-          </InputBox>
-          
-          <InputBox>
-            <TextField
-              error={userInfo.password !== userInfo.pwdVerify}
-              type="password"
-              label="*비밀번호 확인"
-              value={userInfo.pwdVerify}
-              onChange={onPwdVerifyHandler}
-              helperText={userInfo.password!==userInfo.pwdVerify?"비밀번호 확인이 일치하지 않습니다.":null}
-            />
-          </InputBox>
+          {userInfo.email ? (
+            <SubmitBtn onClick={onCheckEmailHandler}>이메일 확인</SubmitBtn>
+          ) : (
+            <SubmitBtn disabled deactive={!userInfo.email}>
+              이메일 확인
+            </SubmitBtn>
+          )}
+
+          <PasswordForm></PasswordForm>
+
           <InputBox>
             <GenderForm></GenderForm>
           </InputBox>
           <InputBox>
             <label>주소</label>
-            <AddressForm/>
+            <AddressForm />
           </InputBox>
           <BodyForm></BodyForm>
           <SubmitBtn
-            disabled={!isPossibleNickname}
-            deactive={!isPossibleNickname}
-          >
+            disabled={!isPossibleNickname || !isPossibleEmail || userInfo.password !== userInfo.pwdVerify}
+            deactive={!isPossibleNickname || !isPossibleEmail || userInfo.password !== userInfo.pwdVerify}>
             회원가입
           </SubmitBtn>
         </SignupForm>
-        <p>회원이신가요? <Link to="/login">로그인</Link> </p>
+        <p>
+          회원이신가요? <Link to="/login">로그인</Link>{' '}
+        </p>
       </FormBox>
     </div>
   );

@@ -2,7 +2,9 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import FilledInput from '@mui/material/FilledInput';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Modal from '@mui/material/Modal';
 import { OutlinedInput } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import IconButton from '@mui/material/IconButton';
@@ -11,7 +13,7 @@ import FormControl from '@mui/material/FormControl';
 import InputAdornment from '@mui/material/InputAdornment';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
-import { login, testLogin, } from '../../features/user/UserSlice';
+import { login, testLogin, findPassword } from '../../features/user/UserSlice';
 import FormBox from '../../components/common/auth/FormBox'
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
@@ -24,6 +26,17 @@ const LoginForm = styled.form`
   padding: 10px;
   gap: 10px;
 `
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 800,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 export default function Login() {
   const navigate = useNavigate();
@@ -33,6 +46,11 @@ export default function Login() {
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
 
+  const [isModal, setIsModal] = useState(false)
+  const [findPwdEmail, setFindPwdEmail] = useState('')
+  const handleOpen = () => setIsModal(true);
+  const handleClose = () => setIsModal(false);
+
   function onEmailHandler (e) {
     setEmail(e.target.value)
   };
@@ -40,6 +58,10 @@ export default function Login() {
   function onPasswordHandler (e) {
     setPassword(e.target.value)
   };
+
+  function onFindPwdEmailHandler (e) {
+    setFindPwdEmail(e.target.value)
+  }
 
   function onSubmitHandler (e) {
     e.preventDefault()
@@ -68,55 +90,80 @@ export default function Login() {
     window.location.href = KAKAO_AUTH_URL
   }
 
+  function onSubmitEmail (e) {
+    e.preventDefault();
+    dispatch(findPassword(findPwdEmail))
+  }
+
   return (
-    <div>
-      <FormBox>
-        <h1>로그인페이지임당</h1>
-        <LoginForm
-          onSubmit={onSubmitHandler}
-        >
-          <InputBox>
-            <TextField
-              type="email"
-              label="*이메일"
-              value={email}
-              onChange={onEmailHandler}
+    <FormBox>
+      <h1>로그인페이지임당</h1>
+      <LoginForm
+        onSubmit={onSubmitHandler}
+      >
+        <InputBox>
+          <TextField
+            type="email"
+            label="*이메일"
+            value={email}
+            onChange={onEmailHandler}
+          />
+        </InputBox>
+        <InputBox>
+          <FormControl>
+            <InputLabel>*비밀번호</InputLabel>
+            <OutlinedInput
+              label="*비밀번호"
+              type={showPassword?"text":"password"}
+              value={password}
+              onChange={onPasswordHandler}
+              endAdornment={
+                <InputAdornment position="end">
+                  <IconButton
+                    onClick={handleClickShowPassword}
+                    onMouseDown={handleMouseDownPassword}
+                    >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                  </IconButton>
+                </InputAdornment>
+              }
             />
-          </InputBox>
-          <InputBox>
-            <FormControl>
-              <InputLabel>*비밀번호</InputLabel>
-              <OutlinedInput
-                label="*비밀번호"
-                type={showPassword?"text":"password"}
-                value={password}
-                onChange={onPasswordHandler}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                    </IconButton>
-                  </InputAdornment>
-                }
-              />
-            </FormControl>
-          </InputBox>
+          </FormControl>
+        </InputBox>
           <SubmitBtn>
             로그인
           </SubmitBtn>
-        </LoginForm>
+      </LoginForm>
 
-        <hr/>
+        <hr />
         <KakaoLoginBar
           onClick={kakaoLoginHandler}
         />
 
-        <SubmitBtn onClick={() => {dispatch(testLogin())}}>Test Login</SubmitBtn>
-        <p>가입하실래요? <Link to="/signup">로그인</Link> </p>
-      </FormBox>
-    </div>
+      <SubmitBtn onClick={() => {dispatch(testLogin())}}>Test Login</SubmitBtn>
+      <p>가입하실래요? <Link to="/signup">회원가입</Link> </p>
+      <Button onClick={handleOpen}>비밀번호 찾기</Button>
+      <Modal
+        open={isModal}
+        onClose={handleClose}
+      >
+        <Box sx={style}>
+          <p>이메일로 임시 비밀번호를 받아보세용</p>
+          <InputBox>
+            <TextField
+              type="email"
+              label="*이메일"
+              value={findPwdEmail}
+              onChange={onFindPwdEmailHandler}
+            />
+          </InputBox>
+          <SubmitBtn
+            onClick={onSubmitEmail}
+          >
+            이메일 보내기
+          </SubmitBtn>
+        </Box>
+      </Modal>
+    </FormBox>
   );
 }
