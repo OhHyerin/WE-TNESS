@@ -4,10 +4,9 @@ import api from '../../api/index';
 
 const signup = createAsyncThunk('signup', async (payload, { rejectWithValue }) => {
   try {
-    const response = await axios.post(api.signup(), payload);
-    console.log(response);
-    // setToken()
-    return response;
+    const res = await axios.post(api.signup(), payload);
+    console.log(res);
+    return res;
   } catch (err) {
     console.log(err);
     return rejectWithValue(err.response);
@@ -20,7 +19,6 @@ const checkNickname = createAsyncThunk('checkNickname', async (payload, { reject
     const res = await axios.get(api.checkNickname(nickname));
     return res.data;
   } catch (err) {
-    console.log(err);
     return rejectWithValue(err.response);
   }
 });
@@ -37,10 +35,11 @@ const checkEmail = createAsyncThunk('checkEmail', async (payload, { rejectWithVa
 });
 
 const addInfo = createAsyncThunk('addInfo', async (payload, { rejectWithValue }) => {
-  const { nickname } = payload;
+  console.log(payload)
   try {
-    const response = await axios.get(api.addInfo(nickname));
-    return response;
+    const res = await axios.get(api.addInfo(payload));
+    console.log(res)
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -75,6 +74,7 @@ const initialState = {
     weight: '',
     height: '',
   },
+  isModal: false,
   isPossibleNickname: false,
   isPossibleEmail: false,
 };
@@ -107,6 +107,9 @@ export const SignupSlice = createSlice({
     fetchWeight: (state, action) => {
       state.userInfo.weight = action.payload;
     },
+    toggleIsModal: state => {
+      state.isModal = !state.isModal
+    }
   },
   extraReducers: {
     [signup.pending]: state => {
@@ -127,6 +130,9 @@ export const SignupSlice = createSlice({
     [fetchUserInfo.fulfilled]: (state, action) => {
       state.userInfo = action.payload;
     },
+    [addInfo.fulfilled]: state => {
+      state.isModal = false
+    }
   },
 });
 
@@ -141,6 +147,7 @@ export const {
   fetchAddressCode,
   fetchHeight,
   fetchWeight,
+  toggleIsModal,
 } = SignupSlice.actions;
 
 export default SignupSlice.reducer;
