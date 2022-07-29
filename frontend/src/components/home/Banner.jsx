@@ -1,7 +1,9 @@
 import Carousel from 'react-material-ui-carousel';
-import { Paper, Button } from '@mui/material';
+import { Paper } from '@mui/material';
 import tutorial from '../../assets/images/banner/tutorial.png';
 import ranking from '../../assets/images/banner/ranking.png';
+
+const bannerHeight = '450px';
 
 export default function Banner() {
   const items = [
@@ -16,20 +18,20 @@ export default function Banner() {
   ];
 
   return (
-    <div>
+    <>
       <h2>배너</h2>
-      <Carousel>
+      <Carousel height={bannerHeight} interval={'6000'} navButtonsAlwaysVisible={'true'}>
         {items.map((item, i) => (
           <Item key={i} item={item} />
         ))}
       </Carousel>
-    </div>
+    </>
   );
 }
 function Item(props) {
   return (
     <Paper>
-      <img src={props.item.img} alt="tutorial img"></img>
+      <img src={props.item.img} alt="tutorial img" height={bannerHeight}></img>
 
       {/* <Button className="CheckButton">Check it out!</Button> */}
     </Paper>
