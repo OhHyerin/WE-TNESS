@@ -8,7 +8,9 @@ import com.wetness.model.response.*;
 import com.wetness.service.MailService;
 import com.wetness.service.UserDetailsImpl;
 import com.wetness.service.UserService;
+import com.wetness.util.InputUtil;
 import io.swagger.annotations.ApiOperation;
+import jdk.internal.util.xml.impl.Input;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import javax.validation.constraints.Pattern;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,7 +61,7 @@ public class UserController {
         );
 
         String inputAddressCode = joinUserDto.getAddressCode();
-        if(inputAddressCode != null && inputAddressCode.length() == 10){
+        if (inputAddressCode != null && inputAddressCode.length() == 10) {
             user.setSidoCode(inputAddressCode.substring(0, 2) + "00000000");
             user.setGugunCode(inputAddressCode.substring(0, 5) + "00000");
         }
@@ -74,45 +77,41 @@ public class UserController {
     public ResponseEntity<?> loginUser(@RequestBody User user) {
 
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(),user.getPassword())
+                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        System.out.println("aaaaaaaaaaa"+userDetails.toString());
 
         String accessToken = jwtUtil.createAccessToken(authentication);
         String refreshToken = jwtUtil.createRefreshToken();
-        userService.saveRefreshToken(userDetails.getNickname(),refreshToken);
-        LoginDto loginDto = new LoginDto(
-                "200", null, accessToken, refreshToken,
-                new UserResponseDto(userDetails.getEmail(),userDetails.getNickname())
-        );
+        userService.saveRefreshToken(userDetails.getNickname(), refreshToken);
+        LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken);
         return ResponseEntity.ok().body(loginDto);
-   }
+    }
 
 
     @GetMapping("/duplicate-email/{email}")
     @ApiOperation(value = "이메일 중복확인")
-    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@PathVariable String email) {
-        boolean possible = userService.checkEmailDuplicate(email);
-
-        //true면 사용가능, false면 이미 존재
-        return ResponseEntity.ok().body(new DuplicateCheckResDto(possible));
+    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@PathVariable@Valid@Pattern(regexp = InputUtil.EMAIL_REGEX ,message = "email 형식이 틀립니다") String email) {
+        //true면 이미 존재, false면 사용가능
+        return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkEmailDuplicate(email)));
     }
 
     @GetMapping("/duplicate-nickname/{nickname}")
     @ApiOperation(value = "닉네임 중복확인")
-    public ResponseEntity<DuplicateCheckResDto> duplicatedNickname(@PathVariable String nickname) {
-        boolean possible = userService.checkNicknameDuplicate(nickname);
+    public ResponseEntity<DuplicateCheckResDto> duplicatedNickname(@PathVariable  String nickname) {
 
-        //true면 사용 가능, false면 이미 존재
-        return ResponseEntity.ok().body(new DuplicateCheckResDto(possible));
+        //true면 이미 존재, false면 사용가능
+        return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
     }
 
     @PutMapping
     @ApiOperation(value = "회원정보 수정")
     public ResponseEntity<BaseResponseEntity> updateUser(@RequestBody User user) {
-        System.out.println("회원정보 수정 id : "+user.getId());
+        System.out.println("회원정보 수정 id : " + user.getId());
         userService.updateUser(user.getId(), user);
 
         return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
@@ -155,7 +154,7 @@ public class UserController {
             if (requestRefreshToken.equals(savedRefreshToken)) {
 
                 String accessToken = jwtUtil.createTokenForRefresh(user);
-                LoginDto loginDto = new LoginDto("200", null, accessToken, requestRefreshToken, new UserResponseDto(user.getEmail(), user.getNickname()));
+                LoginDto loginDto = new LoginDto("200", null, accessToken, requestRefreshToken);
                 return ResponseEntity.ok().body(loginDto);
             }
         }
@@ -163,12 +162,13 @@ public class UserController {
 
 
     }
+
     @DeleteMapping
     @ApiOperation(value = "회원 탈퇴")
-    public ResponseEntity<String> deleteUser(HttpServletRequest request){
+    public ResponseEntity<String> deleteUser(HttpServletRequest request) {
 //    public ResponseEntity<String> deleteUser(HttpServletRequest request){
-        String nickname = (String)request.getAttribute("nickname");
-            userService.deleteUser(nickname);
+        String nickname = (String) request.getAttribute("nickname");
+        userService.deleteUser(nickname);
 
         return ResponseEntity.ok().body(SUCCESS);
     }

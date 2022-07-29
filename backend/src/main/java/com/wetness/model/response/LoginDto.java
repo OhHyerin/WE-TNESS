@@ -12,5 +12,4 @@ public class LoginDto {
     String code;
     String accessToken;
     String refreshToken;
-    UserResponseDto userInfo;
 }
