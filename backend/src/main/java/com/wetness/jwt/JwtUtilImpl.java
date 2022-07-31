@@ -124,7 +124,7 @@ public class JwtUtilImpl implements JwtUtil {
     }
 
     @Override
-    public Map<String, Object> get(String key) {
+    public Map<String, Object> get(String key) throws ExpiredJwtException {
 
         Jws<Claims> claims = null;
         Map<String,Object> payload = null;

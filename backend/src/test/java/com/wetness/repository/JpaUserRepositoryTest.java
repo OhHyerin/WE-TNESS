@@ -1,6 +1,5 @@
 package com.wetness.repository;
 
-import com.wetness.core.repository.UserRepository;
 import com.wetness.model.User;
 import org.junit.Test;
 import org.junit.runner.RunWith;

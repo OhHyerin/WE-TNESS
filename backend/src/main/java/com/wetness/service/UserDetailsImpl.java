@@ -1,6 +1,5 @@
 package com.wetness.service;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wetness.model.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

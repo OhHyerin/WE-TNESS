@@ -34,17 +34,19 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     try {
       String jwt = parseJwt(request);
       if (jwt != null) {
-        Map<String, Object> payload = jwtUtil.get(jwt);
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername((String) payload.get("email"));
-        UsernamePasswordAuthenticationToken authentication =
-            new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities());
-        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+          Map<String, Object> payload = jwtUtil.get(jwt);
+          UserDetails userDetails = userDetailsService.loadUserByUsername((String) payload.get("email"));
+          UsernamePasswordAuthenticationToken authentication =
+                  new UsernamePasswordAuthenticationToken(
+                          userDetails,
+                          null,
+                          userDetails.getAuthorities());
+          authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+          SecurityContextHolder.getContext().setAuthentication(authentication);
+
+
       }
     } catch (Exception e) {
       logger.error("access-token을 찾울 수 없습니다", e);

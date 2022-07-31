@@ -2,15 +2,14 @@ package com.wetness.controller;
 
 import com.wetness.jwt.JwtUtil;
 import com.wetness.model.User;
-import com.wetness.model.request.JoinUserDto;
-import com.wetness.model.request.RefreshTokenDto;
-import com.wetness.model.response.*;
+import com.wetness.dto.request.JoinUserDto;
+import com.wetness.dto.request.RefreshTokenDto;
+import com.wetness.dto.response.*;
 import com.wetness.service.MailService;
 import com.wetness.service.UserDetailsImpl;
 import com.wetness.service.UserService;
 import com.wetness.util.InputUtil;
 import io.swagger.annotations.ApiOperation;
-import jdk.internal.util.xml.impl.Input;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -83,7 +82,6 @@ public class UserController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        System.out.println("aaaaaaaaaaa"+userDetails.toString());
 
         String accessToken = jwtUtil.createAccessToken(authentication);
         String refreshToken = jwtUtil.createRefreshToken();

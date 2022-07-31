@@ -1,6 +1,6 @@
 package com.wetness.exception;
 
-import com.wetness.model.response.BaseResponseEntity;
+import com.wetness.dto.response.BaseResponseEntity;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.SignatureException;
 import org.springframework.http.HttpStatus;

@@ -1,12 +1,10 @@
-package com.wetness.model.request;
+package com.wetness.dto.request;
 
-import com.wetness.model.User;
 import com.wetness.util.InputUtil;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
-import java.util.Date;
 
 @Data
 public class JoinUserDto {

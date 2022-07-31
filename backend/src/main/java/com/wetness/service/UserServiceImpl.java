@@ -1,10 +1,7 @@
 package com.wetness.service;
 
-import com.wetness.core.queryrepository.UserQueryRepository;
 import com.wetness.model.User;
-import com.wetness.model.request.JoinUserDto;
-import com.wetness.core.repository.UserRepository;
-import com.wetness.util.InputUtil;
+import com.wetness.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,21 +10,17 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.Pattern;
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final UserQueryRepository userQueryRepository;
     private final String hostKakao = "https://kauth.kakao.com/oauth/token";
 
     @Override
@@ -128,11 +121,6 @@ public class UserServiceImpl implements UserService {
         return userRepository.existsByNickname(nickname);
     }
 
-    @Override
-    public User getUserBySocialToken(int social, String socialToken) {
-
-        return userQueryRepository.findOneBySocial(social, socialToken);
-    }
 
     @Override
     public String getSocialToken(int social, String code) throws IOException {

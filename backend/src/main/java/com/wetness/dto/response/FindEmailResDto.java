@@ -1,4 +1,4 @@
-package com.wetness.model.response;
+package com.wetness.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponseDto {
+public class FindEmailResDto {
+
     String email;
-    String nickName;
 }

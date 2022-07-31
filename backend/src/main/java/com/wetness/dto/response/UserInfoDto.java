@@ -1,9 +1,7 @@
-package com.wetness.model.response;
+package com.wetness.dto.response;
 
 import com.wetness.model.User;
 import lombok.Data;
-
-import java.util.Date;
 
 @Data
 public class UserInfoDto {

@@ -1,4 +1,4 @@
-package com.wetness.model.request;
+package com.wetness.dto.request;
 
 import lombok.Data;
 

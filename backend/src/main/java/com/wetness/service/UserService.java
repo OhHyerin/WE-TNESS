@@ -1,10 +1,8 @@
 package com.wetness.service;
 
 import com.wetness.model.User;
-import com.wetness.model.request.JoinUserDto;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Map;
 
 public interface UserService {
@@ -30,7 +28,6 @@ public interface UserService {
 
     String getRefreshToken(String nickname);
 
-    User getUserBySocialToken(int social,String socialToken);
 
     String getSocialToken(int social, String code) throws IOException;
 
