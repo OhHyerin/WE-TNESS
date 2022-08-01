@@ -5,41 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="386e71ac-4ff3-4dca-8e20-c8c2f8dc81ef" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../backend-java/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/build.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/gradlew" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/gradlew.bat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/settings.gradle" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/generated/com/ssafy/db/entity/QBaseEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/generated/com/ssafy/db/entity/QUser.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/GroupCallApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/api/controller/AuthController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/api/controller/UserController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/api/request/UserLoginPostReq.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/api/request/UserRegisterPostReq.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/api/response/UserLoginPostRes.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/api/response/UserRes.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/api/service/UserService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/api/service/UserServiceImpl.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/common/auth/JwtAuthenticationFilter.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/common/auth/SsafyUserDetailService.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/common/auth/SsafyUserDetails.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/common/exception/handler/NotFoundHandler.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/common/model/response/BaseResponseBody.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/common/util/JwtTokenUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/common/util/ResponseBodyWriteUtil.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/config/JpaConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/config/SecurityConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/config/SwaggerConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/config/WebMvcConfig.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/db/entity/BaseEntity.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/db/entity/User.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/db/repository/UserRepository.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/java/com/ssafy/db/repository/UserRepositorySupport.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/../backend-java/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,11 +44,18 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "RequestMappingsPanelOrder0": "0",
+    "RequestMappingsPanelOrder1": "1",
+    "RequestMappingsPanelWidth0": "75",
+    "RequestMappingsPanelWidth1": "75",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "C:/Users/hyy04/Desktop/공통프로젝트/pjt205/S07P12A205/backend",
     "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
     "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
     "spring.configuration.checksum": "3241ca6184e7e06d7e2313367e60913a"
   }
@@ -103,7 +77,8 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1659313583932</updated>
-      <workItem from="1659313585698" duration="1188000" />
+      <workItem from="1659313585698" duration="3094000" />
+      <workItem from="1659316731321" duration="2044000" />
     </task>
     <servers />
   </component>
