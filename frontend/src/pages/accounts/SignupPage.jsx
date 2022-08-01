@@ -4,18 +4,20 @@ import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { signup, checkNickname, checkEmail, fetchNickname, fetchEmail } from '../../features/user/SignupSlice';
+import PageBox from '../../components/common/auth/PageBox';
 import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import PasswordForm from '../../components/common/auth/PasswordForm';
 import IconTextField from '../../components/common/IconTextField';
 import CheckBtn from '../../components/common/CheckBtn';
+import logo from '../../assets/images/logo.jpg'
 
 const SignupForm = styled.form`
   display: flex;
   flex-direction: column;
   padding: 10px;
-  gap: 10px;
+  gap: 15px;
 `;
 
 export default function SignupPage() {
@@ -71,9 +73,9 @@ export default function SignupPage() {
   }
 
   return (
-    <div>
+    <PageBox>
       <FormBox>
-        <h1>회원가입 페이지입니당</h1>
+        <h1>회원가입</h1>
         <SignupForm onSubmit={onSubmitHandler}>
           <InputBox>
             <IconTextField
@@ -137,7 +139,10 @@ export default function SignupPage() {
           회원이신가요? <Link to="/login">로그인</Link>{' '}
         </p>
       </FormBox>
-    </div>
+      <FormBox>
+        <img src={logo} alt="로고이미지" />
+      </FormBox>
+    </PageBox>
   );
 }
 
