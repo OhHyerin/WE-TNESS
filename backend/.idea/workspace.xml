@@ -6,7 +6,12 @@
   <component name="ChangeListManager">
     <list default="true" id="386e71ac-4ff3-4dca-8e20-c8c2f8dc81ef" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/controller/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/controller/GameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/db/entity/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/db/entity/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/db/repository/GameRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/db/repository/GameRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/model/dto/request/GameReqDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/model/dto/request/GameReqDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/GameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/GameService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/GameServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/GameServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -29,6 +34,14 @@
         </projects_view>
       </state>
     </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
@@ -53,10 +66,10 @@
     "WebServerToolWindowFactoryState": "false",
     "last_opened_file_path": "C:/Users/hyy04/Desktop/공통프로젝트/pjt205/S07P12A205/backend",
     "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Project",
+    "project.structure.last.edited": "Modules",
     "project.structure.proportion": "0.15",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle",
+    "settings.editor.selected.configurable": "configurable.group.appearance",
     "spring.configuration.checksum": "3241ca6184e7e06d7e2313367e60913a"
   }
 }]]></component>
@@ -78,7 +91,7 @@
       <option name="presentableId" value="Default" />
       <updated>1659313583932</updated>
       <workItem from="1659313585698" duration="3094000" />
-      <workItem from="1659316731321" duration="2044000" />
+      <workItem from="1659316731321" duration="18278000" />
     </task>
     <servers />
   </component>

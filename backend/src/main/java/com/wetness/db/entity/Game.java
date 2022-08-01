@@ -4,10 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -17,7 +14,7 @@ import java.util.Date;
 @Entity
 @Table(name="game")
 public class Game {
-    @Id
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "room_id")
     private long roomId;  //refactor 필요! -> class Room 을 참조하도록
@@ -27,15 +24,14 @@ public class Game {
     private LocalDateTime terminateDate;
 
 
-    public class GameBuilder(){
+    public class GameBuilder{
         private long id;
         private long roomId;
         private LocalDateTime createDate;
         private LocalDateTime terminateDate;
 
         public GameBuilder(){}
-        public GameBuilder buildIds(long id, long roomId){
-            this.id = id;
+        public GameBuilder buildIds(long roomId){
             this.roomId = id;
             return this;
         }
