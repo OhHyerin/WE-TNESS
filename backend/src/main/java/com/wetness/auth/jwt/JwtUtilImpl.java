@@ -1,7 +1,7 @@
-package com.wetness.jwt;
+package com.wetness.auth.jwt;
 
-import com.wetness.model.User;
-import com.wetness.service.UserDetailsImpl;
+import com.wetness.db.entity.User;
+import com.wetness.model.service.UserDetailsImpl;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
+import javax.servlet.ServletException;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.HashMap;
@@ -124,30 +125,16 @@ public class JwtUtilImpl implements JwtUtil {
     }
 
     @Override
-    public Map<String, Object> get(String key) throws ExpiredJwtException {
+    public Map<String, Object> get(String key) throws ExpiredJwtException, ServletException, UnsupportedEncodingException {
 
         Jws<Claims> claims = null;
         Map<String,Object> payload = null;
 
-        try {
+
             claims = Jwts.parser()
                     .setSigningKey(jwtSecret.getBytes("UTF-8"))
                     .parseClaimsJws(key);
             payload = claims.getBody();
-        }catch (SignatureException e) {
-            logger.error("Invalid JWT signature: {}", e.getMessage());
-        } catch (MalformedJwtException e) {
-            logger.error("Invalid JWT token: {}", e.getMessage());
-        } catch (ExpiredJwtException e) {
-            logger.error("JWT token is expired: {}", e.getMessage());
-        } catch (UnsupportedJwtException e) {
-            logger.error("JWT token is unsupported: {}", e.getMessage());
-        } catch (IllegalArgumentException e) {
-            logger.error("JWT claims string is empty: {}", e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-
         logger.info("payload : {}", payload);
         return payload;
     }

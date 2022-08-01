@@ -1,6 +1,6 @@
-package com.wetness.service;
+package com.wetness.model.service;
 
-import com.wetness.model.User;
+import com.wetness.db.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 

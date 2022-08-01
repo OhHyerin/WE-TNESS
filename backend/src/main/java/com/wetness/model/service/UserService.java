@@ -1,6 +1,6 @@
-package com.wetness.service;
+package com.wetness.model.service;
 
-import com.wetness.model.User;
+import com.wetness.db.entity.User;
 
 import java.io.IOException;
 import java.util.Map;

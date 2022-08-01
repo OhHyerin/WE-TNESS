@@ -1,4 +1,4 @@
-package com.wetness.jwt;
+package com.wetness.auth.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -27,7 +27,7 @@ public class AuthEntryPointJwt implements AuthenticationEntryPoint {
 
     response.setContentType(MediaType.APPLICATION_JSON_VALUE);
     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-
+    System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
     final Map<String, Object> body = new HashMap<>();
     body.put("status", HttpServletResponse.SC_UNAUTHORIZED);
     body.put("error", "Unauthorized");

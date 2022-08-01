@@ -1,8 +1,11 @@
-package com.wetness.jwt;
+package com.wetness.auth.jwt;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
-import com.wetness.model.User;
+import com.wetness.db.entity.User;
 import org.springframework.security.core.Authentication;
+
+import javax.servlet.ServletException;
 
 
 public interface JwtUtil{
@@ -16,7 +19,7 @@ public interface JwtUtil{
     String createRefreshToken();
 
     // 토큰 유효성 검사 이후 payload 반환
-    Map<String, Object> get(String key);
+    Map<String, Object> get(String key) throws ServletException, UnsupportedEncodingException;
 //    String getUserId();
     boolean isUsable(String jwt);
 }

@@ -1,7 +1,7 @@
-package com.wetness.service;
+package com.wetness.model.service;
 
-import com.wetness.model.User;
-import com.wetness.repository.UserRepository;
+import com.wetness.db.entity.User;
+import com.wetness.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;

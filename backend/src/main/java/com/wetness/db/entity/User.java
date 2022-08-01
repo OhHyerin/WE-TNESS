@@ -1,4 +1,4 @@
-package com.wetness.model;
+package com.wetness.db.entity;
 
 import lombok.Data;
 

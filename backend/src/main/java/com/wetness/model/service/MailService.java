@@ -1,6 +1,6 @@
-package com.wetness.service;
+package com.wetness.model.service;
 
-import com.wetness.model.User;
+import com.wetness.db.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;

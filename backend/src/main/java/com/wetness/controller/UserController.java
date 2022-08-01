@@ -1,14 +1,16 @@
 package com.wetness.controller;
 
-import com.wetness.jwt.JwtUtil;
-import com.wetness.model.User;
-import com.wetness.dto.request.JoinUserDto;
-import com.wetness.dto.request.RefreshTokenDto;
-import com.wetness.dto.response.*;
-import com.wetness.service.MailService;
-import com.wetness.service.UserDetailsImpl;
-import com.wetness.service.UserService;
-import com.wetness.util.InputUtil;
+import com.wetness.auth.jwt.JwtUtil;
+import com.wetness.db.entity.User;
+import com.wetness.model.dto.request.JoinUserDto;
+import com.wetness.model.dto.request.RefreshTokenDto;
+import com.wetness.model.dto.response.BaseResponseEntity;
+import com.wetness.model.dto.response.DuplicateCheckResDto;
+import com.wetness.model.dto.response.LoginDto;
+import com.wetness.model.dto.response.UserInfoDto;
+import com.wetness.model.service.MailService;
+import com.wetness.model.service.UserDetailsImpl;
+import com.wetness.model.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -26,6 +28,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.wetness.util.InputUtil.EMAIL_REGEX;
 
 
 @RestController
@@ -93,7 +97,7 @@ public class UserController {
 
     @GetMapping("/duplicate-email/{email}")
     @ApiOperation(value = "이메일 중복확인")
-    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@PathVariable@Valid@Pattern(regexp = InputUtil.EMAIL_REGEX ,message = "email 형식이 틀립니다") String email) {
+    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@PathVariable@Valid@Pattern(regexp = EMAIL_REGEX ,message = "email 형식이 틀립니다") String email) {
         //true면 이미 존재, false면 사용가능
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkEmailDuplicate(email)));
     }
@@ -128,7 +132,7 @@ public class UserController {
 
     @GetMapping("/sendPw")
     @ApiOperation(value = "비밀번호 찾기를 위한 이메일 인증")
-    public ResponseEntity<String> sendPwd(@RequestParam("email") String email) {
+    public ResponseEntity<String> sendPwd(@RequestParam("email")@Valid@Pattern(regexp = EMAIL_REGEX,message = "이메일 형식이 올바르지 않습니다") String email) {
         System.out.println("sendPwd EMAIL : " + email);
 
         try {

@@ -1,6 +1,6 @@
-package com.wetness.dto.response;
+package com.wetness.model.dto.response;
 
-import com.wetness.model.User;
+import com.wetness.db.entity.User;
 import lombok.Data;
 
 @Data

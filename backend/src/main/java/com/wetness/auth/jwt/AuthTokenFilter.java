@@ -1,7 +1,7 @@
-package com.wetness.jwt;
+package com.wetness.auth.jwt;
 
 
-import com.wetness.service.UserDetailsServiceImpl;
+import com.wetness.model.service.UserDetailsServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,10 +30,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-      throws ServletException, IOException {
+          throws ServletException, IOException{
     try {
       String jwt = parseJwt(request);
-      if (jwt != null) {
+      if (jwt != null&& jwtUtil.isUsable(jwt)) {
 
           Map<String, Object> payload = jwtUtil.get(jwt);
           UserDetails userDetails = userDetailsService.loadUserByUsername((String) payload.get("email"));
