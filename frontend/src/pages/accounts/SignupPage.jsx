@@ -16,6 +16,7 @@ import logo from '../../assets/images/logo.jpg'
 const SignupForm = styled.form`
   display: flex;
   flex-direction: column;
+  margin-top: 100px;
   padding: 10px;
   gap: 15px;
 `;
@@ -75,8 +76,8 @@ export default function SignupPage() {
   return (
     <PageBox>
       <FormBox>
-        <h1>회원가입</h1>
         <SignupForm onSubmit={onSubmitHandler}>
+          <h1>회원가입</h1>
           <InputBox>
             <IconTextField
               error={isCheckNN && !isPossibleNickname}

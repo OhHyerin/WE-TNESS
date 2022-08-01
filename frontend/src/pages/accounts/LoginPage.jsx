@@ -2,22 +2,22 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
-import { Box,Button,Modal,
-  FilledInput, TextField, IconButton,
-  InputLabel, FormControl, InputAdornment } from '@mui/material';
-  import { Visibility, VisibilityOff } from '@mui/icons-material';
-  import logo from '../../assets/images/logo.jpg'
-  import PageBox from '../../components/common/auth/PageBox';
-  import FormBox from '../../components/common/auth/FormBox'
-  import InputBox from '../../components/common/auth/InputBox';
-  import SubmitBtn from '../../components/common/SubmitBtn';
-  import KakaoLoginBar from '../../components/common/auth/KakaoLoginBar';
-  import KAKAO_AUTH_URL from '../../api/Oauth';
-  import { login, findPassword } from '../../features/user/UserSlice';
+import { Box,Button,Modal, TextField, IconButton, FormControl } from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import logo from '../../assets/images/logo.jpg'
+import PageBox from '../../components/common/auth/PageBox';
+import FormBox from '../../components/common/auth/FormBox'
+import InputBox from '../../components/common/auth/InputBox';
+import SubmitBtn from '../../components/common/SubmitBtn';
+import KakaoLoginBar from '../../components/common/auth/KakaoLoginBar';
+import KAKAO_AUTH_URL from '../../api/Oauth';
+import { login, findPassword } from '../../features/user/UserSlice';
+import IconTextField from '../../components/common/IconTextField';
 
 const LoginForm = styled.form`
   display: flex;
   flex-direction: column;
+  margin-top: 100px;
   padding: 10px;
   gap: 15px;
 `
@@ -105,10 +105,10 @@ export default function Login() {
   return (
     <PageBox>
       <FormBox>
-        <h1>로그인</h1>
         <LoginForm
           onSubmit={onSubmitHandler}
-        >
+          >
+          <h1>로그인</h1>
           <InputBox>
             <TextField
               type="email"
@@ -119,26 +119,25 @@ export default function Login() {
           </InputBox>
           <InputBox>
             <FormControl>
-              <InputLabel>*비밀번호</InputLabel>
-              <FilledInput
+              <IconTextField
                 label="*비밀번호"
+                error={isLoginError}
+                iconEnd={
+                <IconButton
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                >
+                  {showPassword ? <Visibility /> : <VisibilityOff />}
+                </IconButton>
+                }
                 type={showPassword?"text":"password"}
                 value={password}
                 onChange={onPasswordHandler}
-                endAdornment={
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
-                      >
-                    {showPassword ? <Visibility /> : <VisibilityOff />}
-                    </IconButton>
-                  </InputAdornment>
-                }
+                helperText={isLoginError?"이메일 / 비밀번호를 확인해주세요.": null }
               />
             </FormControl>
           </InputBox>
-          {isLoginError?<p>이메일 / 비밀번호를 확인해주세요.</p>: null }
+          
           { email&&password ? (
               <SubmitBtn>로그인</SubmitBtn>
             ) : (
