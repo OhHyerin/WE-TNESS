@@ -9,13 +9,14 @@ import java.util.Collection;
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
+    private long id;
     private String email;
     private String password;
     private String nickname;
     private String role;
 
-
-    public UserDetailsImpl(String email,String password, String nickname, String role) {
+    public UserDetailsImpl(Long id, String email,String password, String nickname, String role) {
+        this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -25,6 +26,7 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(User user){
 
         return new UserDetailsImpl(
+                user.getId(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getNickname(),
