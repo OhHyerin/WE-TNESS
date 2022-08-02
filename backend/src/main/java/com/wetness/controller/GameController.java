@@ -36,5 +36,9 @@ public class GameController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    @PostMapping("/result")
+    public ResponseEntity<Map<String,Long>> saveResult(){
+        return null;
+    }
 
 }
