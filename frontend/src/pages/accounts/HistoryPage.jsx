@@ -2,8 +2,8 @@ import useEffect from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navigate, useParams } from 'react-router-dom';
 import AwardList from '../../components/history/Award/AwardList';
-import RecordList from '../../components/history/Match/RecordList';
-import HistoryList from '../../components/history/History/HistoryList';
+import MatchList from '../../components/history/Match/MatchList';
+import RecordList from '../../components/history/Record/RecordList';
 import DiaryList from '../../components/history/Diary/DiaryList';
 
 // import { fetchHistory } from '../../features/user/userSlice';
@@ -24,8 +24,8 @@ export default function HistoryPage() {
       <div>
         <h1>{nickname}님의 운동 현황 페이지</h1>
         <AwardList></AwardList>
+        <MatchList></MatchList>
         <RecordList></RecordList>
-        <HistoryList></HistoryList>
         <DiaryList></DiaryList>
       </div>
     );
