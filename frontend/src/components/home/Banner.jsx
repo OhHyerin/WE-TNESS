@@ -1,25 +1,51 @@
 import Carousel from 'react-material-ui-carousel';
-import { Paper } from '@mui/material';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@mui/material';
 import items from '../../assets/data/bannerItems';
 
-const bannerHeight = '450px';
-
 export default function Banner() {
+  const [imgSize, setImgSize] = useState({
+    width: '',
+    height: '',
+  });
+
+  const imgRef = useRef();
+  const checkSize = () => {
+    console.log('width : ' + imgRef.current.width);
+    console.log('height : ' + imgRef.current.height);
+  };
+  const handleResize = () => {
+    console.log(`img 사이즈 x: ${imgRef.current.width}, y: ${imgRef.current.height}`);
+    checkSize();
+    setImgSize({
+      width: imgRef.current.width,
+      height: imgRef.current.height,
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   return (
     <>
-      {/* 배너 */}
-      <Carousel height={bannerHeight} interval={'6000'} navButtonsAlwaysVisible={'true'}>
+      <Carousel interval={'6000'} navButtonsAlwaysVisible={'true'} height={imgSize.height}>
         {items.map((item, i) => (
-          <Item key={i} item={item} />
+          <Item key={i} item={item} imgRef={imgRef} />
         ))}
       </Carousel>
+      <Button onClick={handleResize}>버튼</Button>
+      <button onClick={() => this.forceUpdate()}>Force Update</button>
     </>
   );
 }
 function Item(props) {
   return (
-    <Paper>
-      <img src={props.item.img} alt="tutorial img" height={bannerHeight}></img>
-    </Paper>
+    <div>
+      <img src={props.item.img} alt="banner img" width={'100%'} height={'auto'} ref={props.imgRef} />
+    </div>
   );
 }
