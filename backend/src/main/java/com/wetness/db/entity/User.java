@@ -1,12 +1,14 @@
 package com.wetness.db.entity;
 
-import lombok.Data;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
 @Entity
-@Data
-@Table(name="user")
+@Getter
+@Setter
+@AllArgsConstructor
+@Builder
 public class User {
 
     @Id @GeneratedValue // DB AUTO_INCREMENT 작업을 DB 테이블에서 수행 - application.properties 에서 속성 추가됨.
