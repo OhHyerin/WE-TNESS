@@ -1,4 +1,4 @@
-export default function RecordList() {
+export default function MatchList() {
   return (
     <div>
       <h2>내 전적</h2>
