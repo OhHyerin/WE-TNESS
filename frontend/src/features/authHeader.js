@@ -1,5 +1,9 @@
 import { getAccessToken } from './Token';
 
-const header = { 'access-token': getAccessToken() };
+const header = { Authorization: getAccessToken() };
 
-export default header;
+const config = {
+  headers: header,
+};
+
+export default config;
