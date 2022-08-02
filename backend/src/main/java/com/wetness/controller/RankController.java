@@ -1,5 +1,6 @@
 package com.wetness.controller;
 
+import com.wetness.db.entity.Rank;
 import com.wetness.model.dto.request.RankDto;
 import com.wetness.model.dto.response.BaseResponseEntity;
 import com.wetness.model.service.RankService;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/rank")
 @RequiredArgsConstructor
@@ -27,13 +30,19 @@ public class RankController {
     private final RankService rankService;
     private final UserService userService;
 
-    @PostMapping("/rank")
+    @PostMapping()
     @ApiOperation(value = "랭킹")
-    public ResponseEntity<BaseResponseEntity> getRank(@RequestBody RankDto rankDto){
+    public ResponseEntity<List<Rank>> getRank(@RequestBody RankDto rankDto){
 
-        System.out.println(rankService.getRank(rankDto));
+//        System.out.println(rankService.getRank(rankDto));
+        List<Rank> ranks = rankService.getRank(rankDto);
+//        for(int i=0;i<ranks.size();i++){
+//            System.out.println("칼로리? : "+ranks.get(i).getCalorie()+" 누가? : "+ranks.get(i).getUserId());
+//        }
 
-        return ResponseEntity.ok().body(new BaseResponseEntity(200, SUCCESS));
+
+
+        return ResponseEntity.ok().body(ranks);
     }
 
 }
