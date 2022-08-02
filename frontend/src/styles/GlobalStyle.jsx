@@ -13,7 +13,7 @@ const GlobalStyle = createGlobalStyle`
   box-sizing: border-box;
   font: inherit;
   color: inherit;
-  flex-shrink: 0;
+  /* flex-shrink: 0; */
 }
 `;
 

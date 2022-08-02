@@ -1,15 +1,25 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { setAccessToken, removeAccessToken, setRefreshToken, removeRefreshToken } from '../Token';
+import {
+  setAccessToken,
+  removeAccessToken,
+  setRefreshToken,
+  removeRefreshToken,
+  decodeAccessToken,
+  setCurrentUser,
+  removeCurrentUser,
+  getCurrentUser,
+} from '../Token';
 import api from '../../api/index';
-import header from '../authHeader';
+import config from '../authHeader';
 
 const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.login(), payload);
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
-    return res.data;
+    setCurrentUser(decodeAccessToken(res.data.accessToken));
+    return res;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -17,12 +27,10 @@ const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => 
 
 const logout = createAsyncThunk('logout', async (state, { rejectWithValue }) => {
   try {
-    const config = {
-      headers: header,
-    };
     const res = await axios.post(api.logout(), {}, config);
     removeAccessToken();
     removeRefreshToken();
+    removeCurrentUser();
     return res;
   } catch (err) {
     return rejectWithValue(err.response);
@@ -49,9 +57,11 @@ const fetchHistory = createAsyncThunk('fetchHistory', async (state, { rejectWith
 });
 
 const kakaoLogin = createAsyncThunk('kakaoLogin', async (payload, { rejectWithValue }) => {
+  console.log(payload);
   try {
-    const response = await axios.post(api.kakao(), payload);
-    return response;
+    const res = await axios.post(api.kakao(), payload);
+    console.log(res);
+    return res;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -68,6 +78,7 @@ const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
 
 const findPassword = createAsyncThunk('findPassword', async (payload, { rejectWithValue }) => {
   try {
+    console.log(payload);
     const response = await axios.post(api.findPassword(), payload);
     return response;
   } catch (err) {
@@ -76,16 +87,18 @@ const findPassword = createAsyncThunk('findPassword', async (payload, { rejectWi
 });
 
 const initialState = {
-  loginUser: {},
+  currentUser: {
+    nickname: '',
+    email: '',
+    exp: '',
+    role: '',
+  },
   kakaoInfo: {
     exist_user: false,
-    jwt: '',
-    original_nickname: '',
+    accessToken: '',
   },
-  isModal: false,
   followList: {},
   isAuthenticated: false,
-  isAdmin: false,
   isLoading: false,
   history: {
     getAwardList: [1, 2],
@@ -96,20 +109,17 @@ export const UserSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    testLogin: state => {
-      state.isAuthenticated = !state.isAuthenticated;
-    },
-    toggleIsModal: state => {
-      state.isModal = !state.isModal;
+    fetchCurrentUser: (state, action) => {
+      state.currentUser = action.payload;
     },
     checkLogin: state => {
       state.isAuthenticated = true;
     },
   },
   extraReducers: {
-    [login.fulfilled]: (state, action) => {
+    [login.fulfilled]: state => {
       state.isAuthenticated = true;
-      state.loginUser = action.userInfo;
+      state.currentUser = getCurrentUser();
     },
     [login.rejected]: state => {
       state.isAuthenticated = false;
@@ -127,6 +137,6 @@ export const UserSlice = createSlice({
 });
 
 export { login, logout, fetchFollowList, fetchHistory, kakaoLogin, edit, findPassword };
-export const { testLogin, toggleIsModal, checkLogin } = UserSlice.actions;
+export const { fetchCurrentUser, checkLogin } = UserSlice.actions;
 
 export default UserSlice.reducer;
