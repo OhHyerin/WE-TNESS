@@ -5,19 +5,18 @@ import AwardList from '../../components/history/Award/AwardList';
 import MatchList from '../../components/history/Match/MatchList';
 import RecordList from '../../components/history/Record/RecordList';
 import DiaryList from '../../components/history/Diary/DiaryList';
-
-// import { fetchHistory } from '../../features/user/userSlice';
+import { fetchHistory } from '../../features/user/HistorySlice';
 
 export default function HistoryPage() {
   const params = useParams();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const nickname = params.userNickname;
 
-  // useEffect(() => {
-  //   // dispatch(fetchHistory())
-  // });
+  useEffect(() => {
+    dispatch(fetchHistory());
+  });
 
   if (isAuthenticated) {
     return (

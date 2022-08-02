@@ -16,15 +16,37 @@ const initialState = {
   achieveAwards: [1, 3],
   heatMapList: [],
   matches: {},
-  weeklyCalories: {
-    mon: '',
-    tue: '',
-    wed: '',
-    thu: '',
-    fri: '',
-    sat: '',
-    sun: '',
-  },
+  todayCalories: '',
+  weeklyCalories: [
+    {
+      date: 'mon',
+      value: '',
+    },
+    {
+      date: 'tue',
+      value: '',
+    },
+    {
+      date: 'wed',
+      value: '',
+    },
+    {
+      date: 'thu',
+      value: '',
+    },
+    {
+      date: 'fri',
+      value: '',
+    },
+    {
+      date: 'sat',
+      value: '',
+    },
+    {
+      date: 'sun',
+      value: '',
+    },
+  ],
   diaryPhotos: [],
 };
 
