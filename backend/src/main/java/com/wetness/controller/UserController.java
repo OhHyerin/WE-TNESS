@@ -19,7 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -97,7 +99,7 @@ public class UserController {
 
     @GetMapping("/duplicate-email/{email}")
     @ApiOperation(value = "이메일 중복확인")
-    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@PathVariable@Valid@Pattern(regexp = EMAIL_REGEX ,message = "email 형식이 틀립니다") String email) {
+    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable@Valid@Pattern(regexp = EMAIL_REGEX ,message = "email 형식이 틀립니다") String email) {
         //true면 이미 존재, false면 사용가능
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkEmailDuplicate(email)));
     }

@@ -1,21 +1,26 @@
 package com.wetness.model.service;
 
 import com.wetness.db.entity.User;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 
+@Data
 public class UserDetailsImpl implements UserDetails {
     private static final long serialVersionUID = 1L;
 
+    private long id;
     private String email;
     private String password;
     private String nickname;
     private String role;
 
 
-    public UserDetailsImpl(String email,String password, String nickname, String role) {
+    public UserDetailsImpl(long id, String email,String password, String nickname, String role) {
+
+        this.id = id;
         this.email = email;
         this.password = password;
         this.nickname = nickname;
@@ -25,6 +30,7 @@ public class UserDetailsImpl implements UserDetails {
     public static UserDetailsImpl build(User user){
 
         return new UserDetailsImpl(
+                user.getId(),
                 user.getEmail(),
                 user.getPassword(),
                 user.getNickname(),
@@ -36,6 +42,8 @@ public class UserDetailsImpl implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return null;
     }
+
+    public long id(){return this.id;}
 
     @Override
     public String getPassword() {
@@ -67,8 +75,6 @@ public class UserDetailsImpl implements UserDetails {
         return true;
     }
 
-
-
     public String getEmail() {
         return this.email;
     }
@@ -80,7 +86,8 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public String toString() {
         return "UserDetailsImpl{" +
-                "email='" + email + '\'' +
+                "id='" + id +'\'' +
+                ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", role='" + role + '\'' +
