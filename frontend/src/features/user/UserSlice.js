@@ -100,9 +100,6 @@ const initialState = {
   followList: {},
   isAuthenticated: false,
   isLoading: false,
-  history: {
-    getAwardList: [1, 2],
-  },
 };
 
 export const UserSlice = createSlice({
