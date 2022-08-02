@@ -14,6 +14,10 @@ const fetchHistory = createAsyncThunk('fetchHistory', async (state, { rejectWith
 
 const initialState = {
   achieveAwards: [1, 3],
+  heatMapList: [],
+  matches: {},
+  weeklyCalories: {},
+  diaryPhotos: [],
 };
 
 export const HistorySlice = createSlice({
