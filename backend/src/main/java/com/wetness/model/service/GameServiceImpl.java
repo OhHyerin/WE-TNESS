@@ -43,16 +43,13 @@ public class GameServiceImpl implements GameService{
     @Override
     public Long insertResult(GameResultReqDto result, UserDetailsImpl user) {
         User resultOwner = userRepo.findById(user.id()).get();
-        System.out.println(resultOwner.getId()+"===================userId");
         Game game = gameRepo.findById(result.getGameId()).get();
-        System.out.println(game.getId()+" ==================gameId");
         Workout workout = workoutRepo.findById(result.getWorkoutId()).get();
-        System.out.println(workout.getId()+" ==================workoutId");
 
         UserGame gameResult = new UserGame.UserGameBuilder().buildUser(resultOwner).
                 buildGame(game).buildWorkout(workout).buildScore(result.getScore()).
-                buildRank(result.getRank()).getGame();
-        System.out.println(gameResult.getId()+" -========================gameResultId");
+                buildRank(result.getRank()).getUserGame();
+
         Long userGameId = userGameRepo.save(gameResult).getId();
 
         return userGameId;

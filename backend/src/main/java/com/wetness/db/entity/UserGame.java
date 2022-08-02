@@ -3,7 +3,6 @@ package com.wetness.db.entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.ManyToAny;
 
 import javax.persistence.*;
 
@@ -27,6 +26,7 @@ public class UserGame {
     private Workout workout;
 
     private double score;  //몇 분
+    @Column(name="`rank`")
     private int rank;
 
     private UserGame(UserGameBuilder builder){
@@ -69,7 +69,7 @@ public class UserGame {
             this.rank = rank;
             return this;
         }
-        public UserGame getGame(){
+        public UserGame getUserGame(){
             return new UserGame(this);
         }
     }
