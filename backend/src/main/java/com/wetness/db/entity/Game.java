@@ -45,7 +45,7 @@ public class Game {
         }
 
         public GameBuilder buildTerminateTime(int[] terminating){
-            this.createDate = LocalDateTime.of(terminating[0],terminating[1],terminating[2],
+            this.terminateDate = LocalDateTime.of(terminating[0],terminating[1],terminating[2],
                     terminating[3],terminating[4],terminating[5]);
             return this;
         }
