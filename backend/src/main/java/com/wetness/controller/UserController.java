@@ -1,13 +1,11 @@
 package com.wetness.controller;
 
 import com.wetness.auth.jwt.JwtUtil;
+import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.RefreshTokenDto;
-import com.wetness.model.dto.response.BaseResponseEntity;
-import com.wetness.model.dto.response.DuplicateCheckResDto;
-import com.wetness.model.dto.response.LoginDto;
-import com.wetness.model.dto.response.UserInfoDto;
+import com.wetness.model.dto.response.*;
 import com.wetness.model.service.MailService;
 import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
@@ -91,7 +89,12 @@ public class UserController {
 
         String accessToken = jwtUtil.createAccessToken(authentication);
         String refreshToken = jwtUtil.createRefreshToken();
+
         userService.saveRefreshToken(userDetails.getNickname(), refreshToken);
+
+        User targetUser = userService.findByNickname(userDetails.getNickname());
+        userService.setLoginData(targetUser.getId());
+
         LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken);
         return ResponseEntity.ok().body(loginDto);
     }
@@ -134,7 +137,7 @@ public class UserController {
 
     @GetMapping("/sendPw")
     @ApiOperation(value = "비밀번호 찾기를 위한 이메일 인증")
-    public ResponseEntity<String> sendPwd(@RequestParam("email")@Valid@Pattern(regexp = EMAIL_REGEX,message = "이메일 형식이 올바르지 않습니다") String email) {
+    public ResponseEntity<String> sendPwd(@RequestParam("email") @Valid @Pattern(regexp = EMAIL_REGEX, message = "이메일 형식이 올바르지 않습니다") String email) {
         System.out.println("sendPwd EMAIL : " + email);
 
         try {
@@ -262,6 +265,21 @@ public class UserController {
         User user = userService.findByNickname(nickname);
         if (user != null) {
             return ResponseEntity.ok().body(UserInfoDto.generateUserInfoDto(user));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+    }
+
+    //TODO 스프링 시큐리티 적용해서 유저 정보 추출 적용 필요
+    @GetMapping("/login/continue")
+    public ResponseEntity<?> getLoginContinue(HttpServletRequest request) {
+        String nickname = (String) request.getAttribute("nickname");
+
+        User user = userService.findByNickname(nickname);
+        if (user != null) {
+            LoggedContinue loggedContinue = userService.getLoginData(user.getId());
+            if (loggedContinue != null) {
+                return ResponseEntity.ok().body(LoginContinueDto.generateLoginContinueDto(loggedContinue));
+            }
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
