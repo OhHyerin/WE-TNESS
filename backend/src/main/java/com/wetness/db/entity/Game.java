@@ -35,9 +35,8 @@ public class Game {
         private LocalDateTime terminateDate;
 
         public GameBuilder(){}
-        public GameBuilder buildIds(long id, long roomId){
-            this.id = id;
-            this.roomId = id;
+        public GameBuilder buildIds(long roomId){
+            this.roomId = roomId;
             return this;
         }
         public GameBuilder buildCreateTime(int[] created){

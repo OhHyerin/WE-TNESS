@@ -13,12 +13,12 @@ public class GameServiceImpl implements GameService{
     GameRepository gameRepo;
 
     @Override
-    public Long startGame(GameReqDto gameReq, Long userId) {
+    public Long startGame(GameReqDto gameReqDto, Long userId) {
         
         //userId validation 체크 추가하기
-        Game game = new Game.GameBuilder().buildIds(gameReq.getRoomId(),userId).
-                buildCreateTime(gameReq.getCreateDate()).
-                buildTerminateTime(gameReq.getTerminateDate())
+        Game game = new Game.GameBuilder().buildIds(gameReqDto.getRoomId()).
+                buildCreateTime(gameReqDto.getCreateDate()).
+                buildTerminateTime(gameReqDto.getTerminateDate())
                 .getGame();
 
         gameRepo.save(game);

@@ -5,9 +5,15 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="386e71ac-4ff3-4dca-8e20-c8c2f8dc81ef" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/WorkoutServiceImpl.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/wetness/db/entity/UserGame.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/wetness/model/dto/request/GameResultReqDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/WorkoutService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/WorkoutService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/controller/GameController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/controller/GameController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/db/entity/Game.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/db/entity/Game.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/model/dto/request/GameReqDto.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/model/dto/request/GameReqDto.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/GameService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/GameService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/GameServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/wetness/model/service/GameServiceImpl.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -88,7 +94,7 @@
       <updated>1659313583932</updated>
       <workItem from="1659313585698" duration="3094000" />
       <workItem from="1659316731321" duration="19333000" />
-      <workItem from="1659400435898" duration="14422000" />
+      <workItem from="1659400435898" duration="19976000" />
     </task>
     <servers />
   </component>
