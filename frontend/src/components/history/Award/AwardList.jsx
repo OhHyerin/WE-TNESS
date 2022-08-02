@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import awards from '../../../assets/data/awardImgList';
+import awards from '../../../assets/data/awardItems';
 
 const AwardBox = styled.div`
   display: flex;
