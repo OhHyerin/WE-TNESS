@@ -16,7 +16,6 @@ function App() {
       dispatch(fetchCurrentUser(getCurrentUser()));
       dispatch(checkLogin());
     }
-    console.log(10)
   }, []);
   return (
     <div className="App">

@@ -7,6 +7,9 @@ const KakaoLoginBar = styled.img.attrs({
   color: transparent;
   width: 300px;
   height: 45px;
+  :hover {
+    cursor: pointer;
+  }
 `
 
 export default KakaoLoginBar;

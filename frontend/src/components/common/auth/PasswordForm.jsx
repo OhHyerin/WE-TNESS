@@ -6,6 +6,7 @@ import { FilledInput, TextField, IconButton,
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { fetchPassword, fetchPwdVerify } from '../../../features/user/SignupSlice'
 import InputBox from './InputBox';
+import IconTextField from '../IconTextField';
 
 const PasswordBox = styled.div`
   display: flex;
@@ -40,25 +41,25 @@ export default function PasswordForm({...props}) {
     <PasswordBox>
       <InputBox>
         <FormControl>
-          <InputLabel>*비밀번호</InputLabel>
-          <FilledInput
+          <p>{isSignupError}</p>
+          <IconTextField
+            label="*비밀번호"
+            error={isSignupError}
+            iconEnd={
+            <IconButton
+              onClick={handleClickShowPassword}
+              onMouseDown={handleMouseDownPassword}
+            >
+              {showPassword ? <Visibility /> : <VisibilityOff />}
+            </IconButton>
+            }
             type={showPassword?"text":"password"}
             value={password}
             onChange={onPasswordHandler}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  >
-                  {showPassword ? <Visibility /> : <VisibilityOff />}
-                </IconButton>
-              </InputAdornment>
-            }
+            helperText={isSignupError ? "영문/숫자/특수문자를 포함하여 8자 이상 입력해주세요." : null}
           />
         </FormControl>
       </InputBox>
-      {isSignupError?<p>*영문/숫자/특수문자를 포함하여 8자 이상 입력</p>: null }
 
       <InputBox>
         <TextField
