@@ -5,10 +5,12 @@ import lombok.*;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity(name = "ranking")
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Getter
 @Setter
