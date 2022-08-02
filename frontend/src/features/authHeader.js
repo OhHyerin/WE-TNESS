@@ -1,6 +1,6 @@
 import { getAccessToken } from './Token';
 
-const header = { Authorization: getAccessToken() };
+const header = { Authorization: `Bearer ${getAccessToken()}` };
 
 const config = {
   headers: header,
