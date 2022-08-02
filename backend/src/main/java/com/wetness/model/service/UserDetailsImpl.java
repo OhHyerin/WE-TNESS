@@ -15,6 +15,7 @@ public class UserDetailsImpl implements UserDetails {
     private String nickname;
     private String role;
 
+
     public UserDetailsImpl(Long id, String email,String password, String nickname, String role) {
         this.id = id;
         this.email = email;
@@ -33,6 +34,8 @@ public class UserDetailsImpl implements UserDetails {
                 user.getRole()
         );
     }
+
+    public long id(){return this.id;}
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -82,7 +85,8 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public String toString() {
         return "UserDetailsImpl{" +
-                "email='" + email + '\'' +
+                "id='" + id +'\'' +
+                ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", role='" + role + '\'' +
