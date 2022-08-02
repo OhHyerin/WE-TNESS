@@ -1,37 +1,49 @@
 import Carousel from 'react-material-ui-carousel';
-import { Paper, Button } from '@mui/material';
-import tutorial from '../../assets/images/banner/tutorial.png';
-import ranking from '../../assets/images/banner/ranking.png';
+import { useEffect, useRef, useState } from 'react';
+import { Button } from '@mui/material';
+import items from '../../assets/data/bannerItems';
 
 export default function Banner() {
-  const items = [
-    {
-      name: 'Random Name #1',
-      img: tutorial,
-    },
-    {
-      name: 'Random Name #2',
-      img: ranking,
-    },
-  ];
+  const [imgSize, setImgSize] = useState({
+    width: '',
+    height: '',
+  });
+
+  const imgRef = useRef();
+  const checkSize = () => {
+    console.log('width : ' + imgRef.current.width);
+    console.log('height : ' + imgRef.current.height);
+  };
+  const handleResize = () => {
+    console.log(`img 사이즈 x: ${imgRef.current.width}, y: ${imgRef.current.height}`);
+    checkSize();
+    setImgSize({
+      width: imgRef.current.width,
+      height: imgRef.current.height,
+    });
+  };
+
+  useEffect(() => {
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   return (
-    <div>
-      <h2>배너</h2>
-      <Carousel>
+    <>
+      <Carousel interval={'6000'} navButtonsAlwaysVisible={'true'} height={imgSize.height}>
         {items.map((item, i) => (
-          <Item key={i} item={item} />
+          <Item key={i} item={item} imgRef={imgRef} />
         ))}
       </Carousel>
-    </div>
+    </>
   );
 }
 function Item(props) {
   return (
-    <Paper>
-      <img src={props.item.img} alt="tutorial img"></img>
-
-      {/* <Button className="CheckButton">Check it out!</Button> */}
-    </Paper>
+    <div>
+      <img src={props.item.img} alt="banner img" width={'100%'} height={'auto'} ref={props.imgRef} />
+    </div>
   );
 }
