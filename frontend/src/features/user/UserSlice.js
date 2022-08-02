@@ -98,8 +98,7 @@ const initialState = {
     accessToken: '',
   },
   followList: {},
-  isAuthenticated: false,
-  isLoading: false,
+  isLoding: false,
 };
 
 export const UserSlice = createSlice({
@@ -111,6 +110,9 @@ export const UserSlice = createSlice({
     },
     checkLogin: state => {
       state.isAuthenticated = true;
+    },
+    toggleIsLoding: state => {
+      state.isLoding = true;
     },
   },
   extraReducers: {
@@ -134,6 +136,6 @@ export const UserSlice = createSlice({
 });
 
 export { login, logout, fetchFollowList, fetchHistory, kakaoLogin, edit, findPassword };
-export const { fetchCurrentUser, checkLogin } = UserSlice.actions;
+export const { fetchCurrentUser, checkLogin, toggleIsLoding } = UserSlice.actions;
 
 export default UserSlice.reducer;
