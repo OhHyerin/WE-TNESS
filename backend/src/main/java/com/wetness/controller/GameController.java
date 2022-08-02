@@ -1,6 +1,7 @@
 package com.wetness.controller;
 
 import com.wetness.model.dto.request.GameReqDto;
+import com.wetness.model.dto.request.GameResultReqDto;
 import com.wetness.model.service.GameService;
 import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
@@ -37,8 +38,13 @@ public class GameController {
     }
 
     @PostMapping("/result")
-    public ResponseEntity<Map<String,Long>> saveResult(){
-        return null;
+    public ResponseEntity<Map<String,Long>> saveResult(@RequestBody GameResultReqDto gameResult,
+                                                       @AuthenticationPrincipal UserDetailsImpl user){
+
+        Long userGameId = gameService.insertResult(gameResult,user);
+        Map<String,Long> result = new HashMap<>();
+        result.put("userGameId",userGameId);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 }
