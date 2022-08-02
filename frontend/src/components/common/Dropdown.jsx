@@ -22,19 +22,17 @@ export default function AccountMenu() {
   };
   return (
     <React.Fragment>
-      <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        <Tooltip title={`Signed in as ${userNickname}`}>
-          <IconButton
-            onClick={handleClick}
-            size="small"
-            sx={{ ml: 2 }}
-            aria-controls={open ? 'account-menu' : undefined}
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}>
-            <Avatar sx={{ width: 32, height: 32 }}>ID</Avatar>
-          </IconButton>
-        </Tooltip>
-      </Box>
+      <Tooltip title={`Signed in as ${userNickname}`}>
+        <IconButton
+          onClick={handleClick}
+          size="small"
+          sx={{ ml: 2 }}
+          aria-controls={open ? 'account-menu' : undefined}
+          aria-haspopup="true"
+          aria-expanded={open ? 'true' : undefined}>
+          <Avatar sx={{ width: 32, height: 32 }}>ID</Avatar>
+        </IconButton>
+      </Tooltip>
       <Menu
         anchorEl={anchorEl}
         id="account-menu"

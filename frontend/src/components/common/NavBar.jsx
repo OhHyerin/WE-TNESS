@@ -1,6 +1,9 @@
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchForm from '../search/SearchForm';
 import AccountMenu from './Dropdown';
 
@@ -9,7 +12,8 @@ const Header = styled.div`
   justify-content: space-between;
   align-items: center;
   height: 80px;
-  background: var(--prim-bg-color);
+  /* background: var(--prim-bg-color); */
+  background-color: grey;
 `;
 const Nav = styled.div`
   display: flex;
@@ -28,7 +32,11 @@ const NavBtns = styled.div`
 `;
 
 const LoginMenu = styled.div`
-  width: 120px;
+  width: 144px;
+  a {
+    text-decoration: none;
+    padding: 0px 8px;
+  }
 `;
 
 export default function NavBar() {
@@ -38,10 +46,17 @@ export default function NavBar() {
     <>
       <Header>
         <Link to="/">Logo</Link>
-        <SearchForm></SearchForm>
+        <SearchForm />
         <div>
           {isAuthenticated ? (
             <LoginMenu>
+              {/* 알림 - 임시 & 수정 필요 */}
+              <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
+                <Badge badgeContent={17} color="error">
+                  <NotificationsIcon />
+                </Badge>
+              </IconButton>
+              {/* 계정 버튼 - 드롭다운 */}
               <AccountMenu />
             </LoginMenu>
           ) : (
