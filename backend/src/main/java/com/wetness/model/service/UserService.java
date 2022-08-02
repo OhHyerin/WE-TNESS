@@ -1,5 +1,6 @@
 package com.wetness.model.service;
 
+import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
 
 import java.io.IOException;
@@ -37,4 +38,7 @@ public interface UserService {
 
     void deleteUser(String nickname);
 
+    void setLoginData(Long userId);
+
+    LoggedContinue getLoginData(Long userId);
 }

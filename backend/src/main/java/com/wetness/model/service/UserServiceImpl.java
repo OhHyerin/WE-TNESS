@@ -1,6 +1,8 @@
 package com.wetness.model.service;
 
+import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
+import com.wetness.db.repository.LoggedContinueRepository;
 import com.wetness.db.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,6 +24,7 @@ import java.util.Map;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final LoggedContinueRepository loggedContinueRepository;
     private final String hostKakao = "https://kauth.kakao.com/oauth/token";
 
     @Override
@@ -239,7 +243,32 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    @Transactional
+    public void setLoginData(Long userId) {
+        LocalDate today = LocalDate.now();
+        LoggedContinue loggedContinue = loggedContinueRepository.findByUserId(userId);
+        if (loggedContinue == null) {
+            loggedContinue = new LoggedContinue(userId, 1, 1, today);
+            loggedContinueRepository.save(loggedContinue);
+        } else if (!today.isEqual(loggedContinue.getRecentDate())) {
+            if (today.isEqual(loggedContinue.getRecentDate().plusDays(1))) {
+                loggedContinue.setConsecutively(loggedContinue.getConsecutively() + 1);
+                if (loggedContinue.getMaxConsecutively() < loggedContinue.getConsecutively()) {
+                    loggedContinue.setMaxConsecutively(loggedContinue.getConsecutively());
+                }
+            } else { //하루전 로그인 기록 없을 경우 연속 출석일 1로 설정
+                loggedContinue.setConsecutively(1);
+            }
+            loggedContinue.setRecentDate(today);
+        }
+    }
 
 
+
+    @Override
+    public LoggedContinue getLoginData(Long userId) {
+        return loggedContinueRepository.findByUserId(userId);
+    }
 
 }
