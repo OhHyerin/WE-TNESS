@@ -10,6 +10,6 @@ import java.util.Date;
 @Component
 public class GameReqDto {
     private long roomId;
-    private LocalDateTime createDate; //input 타입 논의
-    private LocalDateTime terminateDate; //input 타입 논의
+    private int[] createDate; //length 6 : Year Month Day Hour Minute Second
+    private int[] terminateDate; //length 6
 }

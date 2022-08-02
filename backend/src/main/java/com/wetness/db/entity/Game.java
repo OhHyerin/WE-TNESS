@@ -1,16 +1,15 @@
 package com.wetness.db.entity;
 
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Date;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Data
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 @Entity
 @Table(name="game")
 public class Game {
@@ -22,16 +21,22 @@ public class Game {
     private LocalDateTime createDate;
     @Column(name = "terminate_date")
     private LocalDateTime terminateDate;
+    private Game(GameBuilder builder){
+        this.id = builder.id;
+        this.roomId = builder.roomId;
+        this.createDate = builder.createDate;
+        this.terminateDate = builder.terminateDate;
+    }
 
-
-    public class GameBuilder{
+    public static class GameBuilder{
         private long id;
         private long roomId;
         private LocalDateTime createDate;
         private LocalDateTime terminateDate;
 
         public GameBuilder(){}
-        public GameBuilder buildIds(long roomId){
+        public GameBuilder buildIds(long id, long roomId){
+            this.id = id;
             this.roomId = id;
             return this;
         }
@@ -47,7 +52,7 @@ public class Game {
         }
 
         public Game getGame(){
-            return new Game(this.id, this.roomId, this.createDate, this.terminateDate);
+            return new Game(this);
         }
-    }
+    }//end GameBuilder Class
 }
