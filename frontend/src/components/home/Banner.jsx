@@ -37,8 +37,6 @@ export default function Banner() {
           <Item key={i} item={item} imgRef={imgRef} />
         ))}
       </Carousel>
-      <Button onClick={handleResize}>버튼</Button>
-      <button onClick={() => this.forceUpdate()}>Force Update</button>
     </>
   );
 }
