@@ -6,6 +6,7 @@ import com.wetness.db.entity.User;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.RefreshTokenDto;
 import com.wetness.model.dto.response.*;
+import com.wetness.model.service.CommonCodeService;
 import com.wetness.model.service.MailService;
 import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
@@ -19,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -41,6 +41,8 @@ public class UserController {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
     private final UserService userService;
+    private final CommonCodeService commonCodeService;
+
     private final JwtUtil jwtUtil;
     private final MailService mailService;
     private final PasswordEncoder passwordEncoder;
@@ -102,14 +104,14 @@ public class UserController {
 
     @GetMapping("/duplicate-email/{email}")
     @ApiOperation(value = "이메일 중복확인")
-    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable@Valid@Pattern(regexp = EMAIL_REGEX ,message = "email 형식이 틀립니다") String email) {
+    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable @Valid @Pattern(regexp = EMAIL_REGEX, message = "email 형식이 틀립니다") String email) {
         //true면 이미 존재, false면 사용가능
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkEmailDuplicate(email)));
     }
 
     @GetMapping("/duplicate-nickname/{nickname}")
     @ApiOperation(value = "닉네임 중복확인")
-    public ResponseEntity<DuplicateCheckResDto> duplicatedNickname(@PathVariable  String nickname) {
+    public ResponseEntity<DuplicateCheckResDto> duplicatedNickname(@PathVariable String nickname) {
 
         //true면 이미 존재, false면 사용가능
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
@@ -253,33 +255,27 @@ public class UserController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(HttpServletRequest request) {
-        String nickname = (String) request.getAttribute("nickname");
-        userService.logoutUser(nickname);
+    public ResponseEntity<?> logout(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        userService.logoutUser(userDetails.getNickname());
         return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
     }
 
     @GetMapping("/me")
-    public ResponseEntity<?> getUser(HttpServletRequest request) {
-        String nickname = (String) request.getAttribute("nickname");
-        User user = userService.findByNickname(nickname);
+    public ResponseEntity<?> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        User user = userService.findByNickname(userDetails.getNickname());
         if (user != null) {
-            return ResponseEntity.ok().body(UserInfoDto.generateUserInfoDto(user));
+            String sido = commonCodeService.findCommonCodeName(user.getSidoCode());
+            String gugun = commonCodeService.findCommonCodeName(user.getGugunCode());
+            return ResponseEntity.ok().body(UserInfoResDto.generateUserInfoResDto(user, sido + " " + gugun));
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
-    //TODO 스프링 시큐리티 적용해서 유저 정보 추출 적용 필요
     @GetMapping("/login/continue")
-    public ResponseEntity<?> getLoginContinue(HttpServletRequest request) {
-        String nickname = (String) request.getAttribute("nickname");
-
-        User user = userService.findByNickname(nickname);
-        if (user != null) {
-            LoggedContinue loggedContinue = userService.getLoginData(user.getId());
-            if (loggedContinue != null) {
-                return ResponseEntity.ok().body(LoginContinueDto.generateLoginContinueDto(loggedContinue));
-            }
+    public ResponseEntity<?> getLoginContinue(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        LoggedContinue loggedContinue = userService.getLoginData(userDetails.getId());
+        if (loggedContinue != null) {
+            return ResponseEntity.ok().body(LoginContinueDto.generateLoginContinueDto(loggedContinue));
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
