@@ -38,18 +38,8 @@ const logout = createAsyncThunk('logout', async (state, { rejectWithValue }) => 
 });
 
 const fetchFollowList = createAsyncThunk('fetchFollowList', async (payload, { rejectWithValue }) => {
-  const { nickname } = payload;
   try {
     const response = await axios.get(api.fetchFollowList());
-    return response;
-  } catch (err) {
-    return rejectWithValue(err.response);
-  }
-});
-
-const fetchHistory = createAsyncThunk('fetchHistory', async (state, { rejectWithValue }) => {
-  try {
-    const response = await axios.get(api.fetchHistory());
     return response;
   } catch (err) {
     return rejectWithValue(err.response);
@@ -98,11 +88,7 @@ const initialState = {
     accessToken: '',
   },
   followList: {},
-  isAuthenticated: false,
-  isLoading: false,
-  history: {
-    getAwardList: [1, 2],
-  },
+  isLoding: false,
 };
 
 export const UserSlice = createSlice({
@@ -114,6 +100,9 @@ export const UserSlice = createSlice({
     },
     checkLogin: state => {
       state.isAuthenticated = true;
+    },
+    toggleIsLoding: state => {
+      state.isLoding = true;
     },
   },
   extraReducers: {
@@ -136,7 +125,7 @@ export const UserSlice = createSlice({
   },
 });
 
-export { login, logout, fetchFollowList, fetchHistory, kakaoLogin, edit, findPassword };
-export const { fetchCurrentUser, checkLogin } = UserSlice.actions;
+export { login, logout, fetchFollowList, kakaoLogin, edit, findPassword };
+export const { fetchCurrentUser, checkLogin, toggleIsLoding } = UserSlice.actions;
 
 export default UserSlice.reducer;
