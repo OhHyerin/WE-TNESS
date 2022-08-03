@@ -58,8 +58,11 @@ export default function SignupPage() {
 
   function onSubmitHandler(e) {
     e.preventDefault();
-    const payload = userInfo;
-    console.log(payload);
+    const payload = {
+      email: userInfo.email,
+      nickname: userInfo.nickname,
+      password: userInfo.password,
+    };
     dispatch(signup(payload))
       .then(res => {
         if (res.type === 'signup/fulfilled') {

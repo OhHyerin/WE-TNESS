@@ -17,6 +17,7 @@ const checkNickname = createAsyncThunk('checkNickname', async (payload, { reject
   const nickname = payload;
   try {
     const res = await axios.get(api.checkNickname(nickname));
+    console.log(res);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
@@ -88,10 +89,10 @@ export const SignupSlice = createSlice({
       state.isLoading = false;
     },
     [checkNickname.fulfilled]: (state, action) => {
-      state.isPossibleNickname = !action.payload.isExist;
+      state.isPossibleNickname = !action.payload.exist;
     },
     [checkEmail.fulfilled]: (state, action) => {
-      state.isPossibleEmail = !action.payload.isExist;
+      state.isPossibleEmail = !action.payload.exist;
     },
     [addInfo.fulfilled]: state => {
       state.isModal = false;
