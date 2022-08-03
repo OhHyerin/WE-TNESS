@@ -1,5 +1,6 @@
 package com.wetness.controller;
 
+import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
 import com.wetness.model.service.GameService;
@@ -51,4 +52,8 @@ public class GameController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
+//    @PostMapping("/diary")
+//    public ResponseEntity<String> writeDiary(@RequestBody DiaryReqDto diary, @AuthenticationPrincipal UserDetailsImpl user){
+//
+//    }
 }

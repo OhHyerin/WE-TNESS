@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Getter
 @Entity
 @Table(name="user_game")
-public class UserGame {
+public class GameRecord {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
@@ -29,7 +29,7 @@ public class UserGame {
     @Column(name="`rank`")
     private int rank;
 
-    private UserGame(UserGameBuilder builder){
+    private GameRecord(UserGameBuilder builder){
         this.id = builder.id;
         this.user = builder.user;
         this.game = builder.game;
@@ -69,8 +69,8 @@ public class UserGame {
             this.rank = rank;
             return this;
         }
-        public UserGame getUserGame(){
-            return new UserGame(this);
+        public GameRecord getUserGame(){
+            return new GameRecord(this);
         }
     }
 }

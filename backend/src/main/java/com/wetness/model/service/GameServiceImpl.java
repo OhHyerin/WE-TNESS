@@ -2,15 +2,14 @@ package com.wetness.model.service;
 
 import com.wetness.db.entity.Game;
 import com.wetness.db.entity.User;
-import com.wetness.db.entity.UserGame;
+import com.wetness.db.entity.GameRecord;
 import com.wetness.db.entity.Workout;
 import com.wetness.db.repository.GameRepository;
-import com.wetness.db.repository.UserGameRepository;
+import com.wetness.db.repository.GameRecordRepository;
 import com.wetness.db.repository.UserRepository;
 import com.wetness.db.repository.WorkoutRepository;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,7 +19,7 @@ public class GameServiceImpl implements GameService{
     @Autowired
     GameRepository gameRepo;
     @Autowired
-    UserGameRepository userGameRepo;
+    GameRecordRepository userGameRepo;
     @Autowired
     UserRepository userRepo;
     @Autowired
@@ -46,7 +45,7 @@ public class GameServiceImpl implements GameService{
         Game game = gameRepo.findById(result.getGameId()).get();
         Workout workout = workoutRepo.findById(result.getWorkoutId()).get();
 
-        UserGame gameResult = new UserGame.UserGameBuilder().buildUser(resultOwner).
+        GameRecord gameResult = new GameRecord.UserGameBuilder().buildUser(resultOwner).
                 buildGame(game).buildWorkout(workout).buildScore(result.getScore()).
                 buildRank(result.getRank()).getUserGame();
 
