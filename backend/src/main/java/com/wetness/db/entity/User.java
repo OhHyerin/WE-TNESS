@@ -4,27 +4,29 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+
 @Entity
 @Data
-@Table(name="user")
+@Table(name = "user")
 public class User {
 
-    @Id @GeneratedValue // DB AUTO_INCREMENT 작업을 DB 테이블에서 수행 - application.properties 에서 속성 추가됨.
+    @Id
+    @GeneratedValue // DB AUTO_INCREMENT 작업을 DB 테이블에서 수행 - application.properties 에서 속성 추가됨.
     private Long id;
 
     private String email;
     private String password;
-    @Column(name="nickname")
+    @Column(name = "nickname")
     private String nickname;
 
     private String sidoCode;
     private String gugunCode;
 
     private String gender;
-    private double height;
-    private double weight;
+    private Double height;
+    private Double weight;
     private String social;
-//    @Enumerated(EnumType.STRING)
+    //    @Enumerated(EnumType.STRING)
     private String role;
     private String socialToken;
     private String refreshToken;
@@ -35,7 +37,7 @@ public class User {
     public User() {
     }
 
-    public User(String email, String password, String nickname,String gender, double height,double weight, String social, String role) {
+    public User(String email, String password, String nickname, String gender, Double height, Double weight, String social, String role) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;

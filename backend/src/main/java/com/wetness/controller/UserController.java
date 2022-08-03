@@ -58,21 +58,14 @@ public class UserController {
                 joinUserDto.getEmail(),
                 passwordEncoder.encode(joinUserDto.getPassword()),
                 joinUserDto.getNickname(),
-                joinUserDto.getGender(),
-                joinUserDto.getHeight(),
-                joinUserDto.getWeight(),
+                null,
+                null,
+                null,
                 "wetness",
                 "user"
         );
 
-        String inputAddressCode = joinUserDto.getAddressCode();
-        if (inputAddressCode != null && inputAddressCode.length() == 10) {
-            user.setSidoCode(inputAddressCode.substring(0, 2) + "00000000");
-            user.setGugunCode(inputAddressCode.substring(0, 5) + "00000");
-        }
-
         userService.registerUser(user);
-
         return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
     }
 
