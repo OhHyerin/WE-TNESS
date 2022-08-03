@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import AccountCircle from "@mui/icons-material/AccountCircle";
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import { signup, checkNickname, checkEmail, fetchNickname, fetchEmail } from '../../features/user/SignupSlice';
 import PageBox from '../../components/common/auth/PageBox';
 import FormBox from '../../components/common/auth/FormBox';
@@ -11,7 +11,7 @@ import SubmitBtn from '../../components/common/SubmitBtn';
 import PasswordForm from '../../components/common/auth/PasswordForm';
 import IconTextField from '../../components/common/IconTextField';
 import CheckBtn from '../../components/common/CheckBtn';
-import logo from '../../assets/images/logo.jpg'
+import logo from '../../assets/images/logo.jpg';
 
 const SignupForm = styled.form`
   display: flex;
@@ -28,17 +28,17 @@ export default function SignupPage() {
   const userInfo = useSelector(state => state.signup.userInfo);
   const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
   const isPossibleEmail = useSelector(state => state.signup.isPossibleEmail);
-  const [isSignupError, setIsSignupError] = useState(false)
+  const [isSignupError, setIsSignupError] = useState(false);
 
   const [isCheckNN, setIsCheckNN] = useState(false);
   const [isCheckEmail, setIsCheckEmail] = useState(false);
 
   const onNicknameHandler = e => {
-    setIsCheckNN(false)
+    setIsCheckNN(false);
     dispatch(fetchNickname(e.target.value));
   };
   const onEmailHandler = e => {
-    setIsCheckEmail(false)
+    setIsCheckEmail(false);
     dispatch(fetchEmail(e.target.value));
   };
 
@@ -63,9 +63,9 @@ export default function SignupPage() {
     dispatch(signup(payload))
       .then(res => {
         if (res.type === 'signup/fulfilled') {
-          navigate('/login')
+          navigate('/login');
         } else {
-          setIsSignupError(true)
+          setIsSignupError(true);
         }
       })
       .catch(err => {
@@ -82,13 +82,15 @@ export default function SignupPage() {
             <IconTextField
               error={isCheckNN && !isPossibleNickname}
               iconStart={<AccountCircle />}
-              iconEnd={userInfo.nickname ? (
-                        <CheckBtn onClick={onCheckNicknameHandler}>확인</CheckBtn>
-                      ) : (
-                        <CheckBtn disabled deactive={!userInfo.nickname}>
-                          확인
-                        </CheckBtn>
-                      )}
+              iconEnd={
+                userInfo.nickname ? (
+                  <CheckBtn onClick={onCheckNicknameHandler}>확인</CheckBtn>
+                ) : (
+                  <CheckBtn disabled deactive={!userInfo.nickname}>
+                    확인
+                  </CheckBtn>
+                )
+              }
               label="*닉네임"
               value={userInfo.nickname}
               onChange={onNicknameHandler}
@@ -97,17 +99,19 @@ export default function SignupPage() {
               }
             />
           </InputBox>
-          
+
           <InputBox>
             <IconTextField
               error={isCheckEmail && !isPossibleEmail}
-              iconEnd={userInfo.email ? (
-                        <CheckBtn onClick={onCheckEmailHandler}>확인</CheckBtn>
-                      ) : (
-                        <CheckBtn disabled deactive={!userInfo.email}>
-                          확인
-                        </CheckBtn>
-                      )}
+              iconEnd={
+                userInfo.email ? (
+                  <CheckBtn onClick={onCheckEmailHandler}>확인</CheckBtn>
+                ) : (
+                  <CheckBtn disabled deactive={!userInfo.email}>
+                    확인
+                  </CheckBtn>
+                )
+              }
               type="email"
               label="*이메일"
               value={userInfo.email}
@@ -118,21 +122,25 @@ export default function SignupPage() {
             />
           </InputBox>
 
-          <PasswordForm isSignupError={isSignupError}></PasswordForm>
+          <PasswordForm isError={isSignupError}></PasswordForm>
 
-          
           <SubmitBtn
             disabled={
-              !isCheckNN || !isPossibleNickname ||
-              !isCheckEmail || !isPossibleEmail ||
+              !isCheckNN ||
+              !isPossibleNickname ||
+              !isCheckEmail ||
+              !isPossibleEmail ||
               userInfo.password !== userInfo.pwdVerify ||
-              userInfo.password === ''}
+              userInfo.password === ''
+            }
             deactive={
-              !isCheckNN || !isPossibleNickname ||
-              !isCheckEmail || !isPossibleEmail ||
+              !isCheckNN ||
+              !isPossibleNickname ||
+              !isCheckEmail ||
+              !isPossibleEmail ||
               userInfo.password !== userInfo.pwdVerify ||
-              userInfo.password === ''}
-          >
+              userInfo.password === ''
+            }>
             회원가입
           </SubmitBtn>
         </SignupForm>
@@ -146,4 +154,3 @@ export default function SignupPage() {
     </PageBox>
   );
 }
-
