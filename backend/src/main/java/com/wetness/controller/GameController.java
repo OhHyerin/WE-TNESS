@@ -52,8 +52,10 @@ public class GameController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-//    @PostMapping("/diary")
-//    public ResponseEntity<String> writeDiary(@RequestBody DiaryReqDto diary, @AuthenticationPrincipal UserDetailsImpl user){
-//
-//    }
+    @PostMapping("/diary")
+    public ResponseEntity<String> writeDiary(@RequestBody DiaryReqDto diary, @AuthenticationPrincipal UserDetailsImpl user){
+        gameService.insertDiary(diary,user);
+        return new ResponseEntity<>(SUCCESS,HttpStatus.OK);
+    }
+
 }

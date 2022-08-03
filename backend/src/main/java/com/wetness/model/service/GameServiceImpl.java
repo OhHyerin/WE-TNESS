@@ -1,13 +1,8 @@
 package com.wetness.model.service;
 
-import com.wetness.db.entity.Game;
-import com.wetness.db.entity.User;
-import com.wetness.db.entity.GameRecord;
-import com.wetness.db.entity.Workout;
-import com.wetness.db.repository.GameRepository;
-import com.wetness.db.repository.GameRecordRepository;
-import com.wetness.db.repository.UserRepository;
-import com.wetness.db.repository.WorkoutRepository;
+import com.wetness.db.entity.*;
+import com.wetness.db.repository.*;
+import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,11 +14,14 @@ public class GameServiceImpl implements GameService{
     @Autowired
     GameRepository gameRepo;
     @Autowired
-    GameRecordRepository userGameRepo;
+    GameRecordRepository gameRecordRepo;
     @Autowired
     UserRepository userRepo;
     @Autowired
     WorkoutRepository workoutRepo;
+
+    @Autowired
+    DiaryRepository diaryRepo;
 
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
@@ -49,8 +47,22 @@ public class GameServiceImpl implements GameService{
                 buildGame(game).buildWorkout(workout).buildScore(result.getScore()).
                 buildRank(result.getRank()).getUserGame();
 
-        Long userGameId = userGameRepo.save(gameResult).getId();
+        Long userGameId = gameRecordRepo.save(gameResult).getId();
 
         return userGameId;
     }
+
+    @Override
+    public void insertDiary(DiaryReqDto diaryReq, UserDetailsImpl user) {
+        User writer = userRepo.findById(user.id()).get();
+        GameRecord gameRecord = gameRecordRepo.findById(diaryReq.getUserGameId()).get();
+
+        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(diaryReq.getFileName()).
+                buildDate(diaryReq.getDate()).buildRecord(gameRecord).getDiary();
+
+        diaryRepo.save(diary);
+        return;
+    }
+
+
 }
