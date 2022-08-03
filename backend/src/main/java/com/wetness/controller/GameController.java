@@ -44,9 +44,6 @@ public class GameController {
 
         Long userGameId = gameService.insertResult(gameResult,user);
 
-        //today_rank에 점수 계산해서 record 추가 필요!!!!!!!!!
-        //medal에 rank 따라 record 추가 필요!!!!!!!!
-
         Map<String,Long> result = new HashMap<>();
         result.put("userGameId",userGameId);
         return new ResponseEntity<>(result,HttpStatus.OK);

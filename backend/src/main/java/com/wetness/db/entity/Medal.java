@@ -1,11 +1,15 @@
 package com.wetness.db.entity;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 @Entity
 @Table(name="medal")
 public class Medal {

@@ -29,6 +29,11 @@ public class GameRecord {
     @Column(name="`rank`")
     private int rank;
 
+//여기
+    public void setId(long id) {
+        this.id = id;
+    }
+
     private GameRecord(UserGameBuilder builder){
         this.id = builder.id;
         this.user = builder.user;
@@ -72,5 +77,6 @@ public class GameRecord {
         public GameRecord getUserGame(){
             return new GameRecord(this);
         }
+
     }
 }
