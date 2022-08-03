@@ -35,29 +35,11 @@ const checkEmail = createAsyncThunk('checkEmail', async (payload, { rejectWithVa
 });
 
 const addInfo = createAsyncThunk('addInfo', async (payload, { rejectWithValue }) => {
-  console.log(payload)
+  console.log(payload);
   try {
     const res = await axios.get(api.addInfo(payload));
-    console.log(res)
+    console.log(res);
     return res.data;
-  } catch (err) {
-    return rejectWithValue(err.response);
-  }
-});
-
-const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (payload, { rejectWithValue }) => {
-  try {
-    const response = await axios.get(api.fetchUserInfo());
-    return response;
-  } catch (err) {
-    return rejectWithValue(err.response);
-  }
-});
-
-const changePassword = createAsyncThunk('changePassword', async (payload, { rejectWithValue }) => {
-  try {
-    const response = await axios.get(api.changePassword());
-    return response;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -69,10 +51,6 @@ const initialState = {
     email: '',
     password: '',
     pwdVerify: '',
-    gender: '',
-    addressCode: '',
-    weight: '',
-    height: '',
   },
   isModal: false,
   isPossibleNickname: false,
@@ -95,21 +73,9 @@ export const SignupSlice = createSlice({
     fetchPwdVerify: (state, action) => {
       state.userInfo.pwdVerify = action.payload;
     },
-    fetchGender: (state, action) => {
-      state.userInfo.gender = action.payload;
-    },
-    fetchAddressCode: (state, action) => {
-      state.userInfo.addressCode = action.payload;
-    },
-    fetchHeight: (state, action) => {
-      state.userInfo.height = action.payload;
-    },
-    fetchWeight: (state, action) => {
-      state.userInfo.weight = action.payload;
-    },
     toggleIsModal: state => {
-      state.isModal = !state.isModal
-    }
+      state.isModal = !state.isModal;
+    },
   },
   extraReducers: {
     [signup.pending]: state => {
@@ -122,32 +88,19 @@ export const SignupSlice = createSlice({
       state.isLoading = false;
     },
     [checkNickname.fulfilled]: (state, action) => {
-      state.isPossibleNickname = action.payload.possible;
+      state.isPossibleNickname = !action.payload.isExist;
     },
     [checkEmail.fulfilled]: (state, action) => {
-      state.isPossibleEmail = action.payload.possible;
-    },
-    [fetchUserInfo.fulfilled]: (state, action) => {
-      state.userInfo = action.payload;
+      state.isPossibleEmail = !action.payload.isExist;
     },
     [addInfo.fulfilled]: state => {
-      state.isModal = false
-    }
+      state.isModal = false;
+    },
   },
 });
 
-export { signup, checkNickname, checkEmail, fetchUserInfo, changePassword, addInfo };
+export { signup, checkNickname, checkEmail, addInfo };
 
-export const {
-  fetchNickname,
-  fetchEmail,
-  fetchPassword,
-  fetchPwdVerify,
-  fetchGender,
-  fetchAddressCode,
-  fetchHeight,
-  fetchWeight,
-  toggleIsModal,
-} = SignupSlice.actions;
+export const { fetchNickname, fetchEmail, fetchPassword, fetchPwdVerify, toggleIsModal } = SignupSlice.actions;
 
 export default SignupSlice.reducer;

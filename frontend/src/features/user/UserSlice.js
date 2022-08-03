@@ -57,15 +57,6 @@ const kakaoLogin = createAsyncThunk('kakaoLogin', async (payload, { rejectWithVa
   }
 });
 
-const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
-  try {
-    const response = await axios.post(api.edit(), payload);
-    return response;
-  } catch (err) {
-    return rejectWithValue(err.response);
-  }
-});
-
 const findPassword = createAsyncThunk('findPassword', async (payload, { rejectWithValue }) => {
   try {
     console.log(payload);
@@ -125,7 +116,7 @@ export const UserSlice = createSlice({
   },
 });
 
-export { login, logout, fetchFollowList, kakaoLogin, edit, findPassword };
+export { login, logout, fetchFollowList, kakaoLogin, findPassword };
 export const { fetchCurrentUser, checkLogin, toggleIsLoding } = UserSlice.actions;
 
 export default UserSlice.reducer;
