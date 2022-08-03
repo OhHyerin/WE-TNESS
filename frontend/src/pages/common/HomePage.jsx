@@ -35,15 +35,13 @@ const SubmitForm = styled.form`
 `;
 
 export default function Home() {
-  
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUser = useSelector(state => state.user.currentUser)
-  const isAuthenticated = useSelector(state => state.user.isAuthenticated)
+  const currentUser = useSelector(state => state.user.currentUser);
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
-  const isModal = useSelector(state => state.user.isModal);
+  const isModal = useSelector(state => state.signup.isModal);
   const isPossibleNickname = useSelector(state => state.user.isPossibleNickname);
   const [nickname, setNickname] = useState('');
   const [isCheckNN, setIsCheckNN] = useState(false);
@@ -69,24 +67,18 @@ export default function Home() {
     const payload = nickname;
     console.log(payload);
     dispatch(addInfo(payload))
-      .then(() => {
-      })
+      .then(() => {})
       .catch(err => {
-        console.log(err)
-      })
+        console.log(err);
+      });
   }
 
   return (
     <div>
+      <div>{isAuthenticated ? <p> 닉네임 : {currentUser.nickname} </p> : null}</div>
+
       <div>
-        {isAuthenticated ? (<p> 닉네임 : {currentUser.nickname} </p>) : null}
-      </div>
-      
-      <div>
-        <Modal
-          open={isModal}
-          onClose={handleClose}
-        >
+        <Modal open={isModal} onClose={handleClose}>
           <Box sx={style}>
             <FormBox>
               <SubmitForm onSubmit={onSubmitHandler}>
