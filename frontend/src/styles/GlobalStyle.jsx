@@ -4,6 +4,8 @@ const GlobalStyle = createGlobalStyle`
 /* 컬러 설정 */
 :root {
   --primary-color: #4287f5;
+  --prim-bg-color:#FFFFFF;
+  --sec-bg-color:#e9e9e9;
 }
 
 /* css 리셋 */
