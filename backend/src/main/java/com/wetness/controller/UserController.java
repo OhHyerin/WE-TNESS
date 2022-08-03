@@ -4,7 +4,9 @@ import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
 import com.wetness.model.dto.request.JoinUserDto;
+import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.RefreshTokenDto;
+import com.wetness.model.dto.request.UpdateUserDto;
 import com.wetness.model.dto.response.*;
 import com.wetness.model.service.CommonCodeService;
 import com.wetness.model.service.MailService;
@@ -52,28 +54,18 @@ public class UserController {
     @PostMapping("/join")
     @ApiOperation(value = "회원가입")
     public ResponseEntity<BaseResponseEntity> registerUser(@Valid @RequestBody JoinUserDto joinUserDto) {
-        System.out.println("회원가입시 원래 암호 : " + joinUserDto.getPassword());
-        System.out.println("회원가입시 변경된 암호 : " + passwordEncoder.encode(joinUserDto.getPassword()));
-        User user = new User(
-                joinUserDto.getEmail(),
-                passwordEncoder.encode(joinUserDto.getPassword()),
-                joinUserDto.getNickname(),
-                null,
-                null,
-                null,
-                "wetness",
-                "user"
-        );
-
-        userService.registerUser(user);
-        return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+//        System.out.println("회원가입시 원래 암호 : " + joinUserDto.getPassword());
+//        System.out.println("회원가입시 변경된 암호 : " + passwordEncoder.encode(joinUserDto.getPassword()));
+        if (userService.registerUser(joinUserDto)) {
+            return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
-    //TODO sql error 처리 추가 필요
+    //TODO security Role 체크하여 drop인 유저는 제외 로직 추가 필요
     @PostMapping("/login")
     @ApiOperation(value = "로그인")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
-
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
         );
@@ -97,26 +89,35 @@ public class UserController {
 
     @GetMapping("/duplicate-email/{email}")
     @ApiOperation(value = "이메일 중복확인")
-    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@AuthenticationPrincipal UserDetailsImpl user, @PathVariable @Valid @Pattern(regexp = EMAIL_REGEX, message = "email 형식이 틀립니다") String email) {
-        //true면 이미 존재, false면 사용가능
+    public ResponseEntity<DuplicateCheckResDto> duplicatedEmail(@PathVariable @Valid @Pattern(regexp = EMAIL_REGEX, message = "email 형식이 틀립니다") String email) {
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkEmailDuplicate(email)));
     }
 
     @GetMapping("/duplicate-nickname/{nickname}")
     @ApiOperation(value = "닉네임 중복확인")
     public ResponseEntity<DuplicateCheckResDto> duplicatedNickname(@PathVariable String nickname) {
-
-        //true면 이미 존재, false면 사용가능
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
     }
-
+    
     @PutMapping
     @ApiOperation(value = "회원정보 수정")
-    public ResponseEntity<BaseResponseEntity> updateUser(@RequestBody User user) {
-        System.out.println("회원정보 수정 id : " + user.getId());
-        userService.updateUser(user.getId(), user);
+    public ResponseEntity<BaseResponseEntity> updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                         @RequestBody UpdateUserDto updateUserDto) {
+        if (userService.updateUser(userDetails.getId(), updateUserDto)) {
+            return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+    }
 
-        return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+    //TODO security User role 체크 추가 필요
+    @PatchMapping("/pw")
+    @ApiOperation(value = "비밀번호 수정")
+    public ResponseEntity<BaseResponseEntity> updateUserPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                 @Valid @RequestBody PasswordDto passwordDto) {
+        if (userService.updateUserPassword(userDetails.getId(), passwordDto)) {
+            return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
 //    @PostMapping("/findEmail")
@@ -130,10 +131,9 @@ public class UserController {
 //        return ResponseEntity.status(200).body(resDto);
 //    }
 
-    @GetMapping("/sendPw")
+    @GetMapping("/send-pw")
     @ApiOperation(value = "비밀번호 찾기를 위한 이메일 인증")
     public ResponseEntity<String> sendPwd(@RequestParam("email") @Valid @Pattern(regexp = EMAIL_REGEX, message = "이메일 형식이 올바르지 않습니다") String email) {
-        System.out.println("sendPwd EMAIL : " + email);
 
         try {
             mailService.sendMail(email);
@@ -144,9 +144,9 @@ public class UserController {
         }
     }
 
+
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenDto refreshTokenDto) {
-
         String requestRefreshToken = refreshTokenDto.getRefreshToken();
         String nickname = refreshTokenDto.getNickname();
         User user = userService.findByNickname(nickname);
@@ -161,17 +161,12 @@ public class UserController {
             }
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
-
-
     }
 
     @DeleteMapping
     @ApiOperation(value = "회원 탈퇴")
-    public ResponseEntity<String> deleteUser(HttpServletRequest request) {
-//    public ResponseEntity<String> deleteUser(HttpServletRequest request){
-        String nickname = (String) request.getAttribute("nickname");
-        userService.deleteUser(nickname);
-
+    public ResponseEntity<String> deleteUser(@RequestBody RefreshTokenDto refreshTokenDto) {
+        userService.deleteUser(refreshTokenDto.getNickname());
         return ResponseEntity.ok().body(SUCCESS);
     }
 
