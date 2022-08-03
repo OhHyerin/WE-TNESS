@@ -4,11 +4,15 @@ import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
 import com.wetness.db.repository.LoggedContinueRepository;
 import com.wetness.db.repository.UserRepository;
+import com.wetness.model.dto.request.JoinUserDto;
+import com.wetness.model.dto.request.PasswordDto;
+import com.wetness.model.dto.request.UpdateUserDto;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +29,26 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final LoggedContinueRepository loggedContinueRepository;
+    private final PasswordEncoder passwordEncoder;
+
     private final String hostKakao = "https://kauth.kakao.com/oauth/token";
 
     @Override
     @Transactional
-    public void registerUser(User user) {
-        userRepository.save(user);
+    public boolean registerUser(JoinUserDto joinUserDto) {
+        if (!checkEmailDuplicate(joinUserDto.getEmail()) &&
+                !checkNicknameDuplicate(joinUserDto.getNickname())) {
+            User user = new User(
+                    joinUserDto.getEmail(),
+                    passwordEncoder.encode(joinUserDto.getPassword()),
+                    joinUserDto.getNickname(),
+                    "wetness",
+                    "user"
+            );
+            userRepository.save(user);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -42,9 +60,47 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    public boolean updateUser(Long id, UpdateUserDto updateUserDto) {
+        User user = userRepository.findById(id).orElse(null);
+        if (user != null) {
+            if (updateUserDto.getEmail() != null &&
+                    !updateUserDto.getEmail().isEmpty() &&
+                    !checkEmailDuplicate(updateUserDto.getEmail())) {
+                user.setEmail(updateUserDto.getEmail());
+            }
+
+            if (updateUserDto.getNickname() != null &&
+                    !updateUserDto.getNickname().isEmpty() &&
+                    !checkNicknameDuplicate(updateUserDto.getNickname())) {
+                user.setNickname(updateUserDto.getNickname());
+            }
+
+            if (updateUserDto.getAddressCode() != null) {
+                String inputAddressCode = updateUserDto.getAddressCode();
+                if (inputAddressCode != null && inputAddressCode.length() == 10) {
+                    user.setSidoCode(inputAddressCode.substring(0, 2) + "00000000");
+                    user.setGugunCode(inputAddressCode.substring(0, 5) + "00000");
+                }
+            }
+            if (updateUserDto.getGender() != null && !updateUserDto.getGender().isEmpty()) {
+                user.setGender(updateUserDto.getGender());
+            }
+            if (updateUserDto.getHeight() != null && updateUserDto.getHeight() != 0.0) {
+                user.setHeight(updateUserDto.getHeight());
+            }
+            if (updateUserDto.getWeight() != null && updateUserDto.getWeight() != 0.0) {
+                user.setWeight(updateUserDto.getWeight());
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
     public void updateUser(Long id, User reqDto) {
         User user = userRepository.getOne(id);
-        System.out.println("여기여기 : "+user.getId());
+        System.out.println("여기여기 : " + user.getId());
         if (reqDto.getPassword() != null) {
             user.setPassword(reqDto.getPassword());
         }
@@ -93,8 +149,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void deleteUser(String nickname) {
         User user = userRepository.findByNickname(nickname);
-        System.out.println("user.nickname : "+user.getNickname());
-        if(user!=null){
+        if (user != null) {
             user.setRole("drop");
         }
     }
@@ -109,7 +164,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         User findUser = userRepository.findByEmail(email)
-                .orElseThrow(()-> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
+                .orElseThrow(() -> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
         return findUser;
     }
 
@@ -265,10 +320,20 @@ public class UserServiceImpl implements UserService {
     }
 
 
-
     @Override
     public LoggedContinue getLoginData(Long userId) {
         return loggedContinueRepository.findByUserId(userId);
+    }
+
+    @Override
+    @Transactional
+    public boolean updateUserPassword(long id, PasswordDto passwordDto) {
+        User user = userRepository.getOne(id);
+        if (user != null) {
+            user.setPassword(passwordEncoder.encode(passwordDto.getPassword()));
+            return true;
+        }
+        return false;
     }
 
 }

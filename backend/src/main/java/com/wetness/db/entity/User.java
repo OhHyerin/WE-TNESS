@@ -7,7 +7,6 @@ import java.util.Date;
 
 @Entity
 @Data
-@Table(name = "user")
 public class User {
 
     @Id
@@ -16,7 +15,6 @@ public class User {
 
     private String email;
     private String password;
-    @Column(name = "nickname")
     private String nickname;
 
     private String sidoCode;
@@ -26,7 +24,6 @@ public class User {
     private Double height;
     private Double weight;
     private String social;
-    //    @Enumerated(EnumType.STRING)
     private String role;
     private String socialToken;
     private String refreshToken;
@@ -37,13 +34,10 @@ public class User {
     public User() {
     }
 
-    public User(String email, String password, String nickname, String gender, Double height, Double weight, String social, String role) {
+    public User(String email, String password, String nickname, String social, String role) {
         this.email = email;
         this.password = password;
         this.nickname = nickname;
-        this.gender = gender;
-        this.height = height;
-        this.weight = weight;
         this.social = social;
         this.role = role;
     }
