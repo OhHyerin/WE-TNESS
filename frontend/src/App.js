@@ -13,10 +13,10 @@ function App() {
   useEffect(() => {
     const token = getAccessToken();
     if (token) {
-      dispatch(toggleIsLoding());
       dispatch(fetchCurrentUser(getCurrentUser()));
       dispatch(checkLogin());
     }
+    dispatch(toggleIsLoding());
   }, []);
   if (isLoding) {
     return (
