@@ -14,9 +14,9 @@ export default function HistoryPage() {
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const nickname = params.userNickname;
 
-  useEffect(() => {
-    dispatch(fetchHistory());
-  });
+  // useEffect(() => {
+  //   dispatch(fetchHistory());
+  // });
 
   if (isAuthenticated) {
     return (
