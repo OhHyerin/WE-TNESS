@@ -6,14 +6,15 @@ import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import SearchForm from '../search/SearchForm';
 import AccountMenu from './Dropdown';
+import logo from '../../assets/images/logo.jpg';
 
 const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 80px;
-  /* background: var(--prim-bg-color); */
-  background-color: grey;
+  height: 60px;
+  background: var(--prim-bg-color);
+  font-weight: 700;
 `;
 const Nav = styled.div`
   display: flex;
@@ -26,16 +27,23 @@ const NavBtns = styled.div`
   padding-left: 20px;
   a {
     text-decoration: none;
-    font-size: 20px;
+    font-size: 18px;
+    font-weight: 700;
     padding: 0px 10px;
   }
 `;
 
 const LoginMenu = styled.div`
-  width: 144px;
+  width: 180px;
   a {
     text-decoration: none;
     padding: 0px 8px;
+  }
+`;
+
+const Logo = styled.div`
+  a {
+    padding: 0px 15px;
   }
 `;
 
@@ -45,7 +53,11 @@ export default function NavBar() {
   return (
     <>
       <Header>
-        <Link to="/">Logo</Link>
+        <Logo>
+          <Link to="/">
+            <img src={logo} alt="Logo" width={'40px'} height={'auto'} />
+          </Link>
+        </Logo>
         <SearchForm />
         <div>
           {isAuthenticated ? (
