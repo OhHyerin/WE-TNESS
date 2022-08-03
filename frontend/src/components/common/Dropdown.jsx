@@ -10,7 +10,7 @@ import { Link } from 'react-router-dom';
 import { logout } from '../../features/user/UserSlice';
 
 export default function AccountMenu() {
-  const userNickname = useSelector(state => state.user.nickname);
+  const userNickname = useSelector(state => state.user.currentUser.nickname);
   const dispatch = useDispatch();
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);

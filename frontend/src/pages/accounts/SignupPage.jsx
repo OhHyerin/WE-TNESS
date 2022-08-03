@@ -2,24 +2,23 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import { InputAdornment, TextField } from '@mui/material';
-import TaskAltIcon from '@mui/icons-material/TaskAlt';
-import AccountCircle from "@mui/icons-material/AccountCircle";
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import { signup, checkNickname, checkEmail, fetchNickname, fetchEmail } from '../../features/user/SignupSlice';
+import PageBox from '../../components/common/auth/PageBox';
 import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import PasswordForm from '../../components/common/auth/PasswordForm';
-import AddressForm from '../../components/common/auth/AddressForm';
-import GenderForm from '../../components/common/auth/GenderForm';
-import BodyForm from '../../components/common/auth/BodyForm';
 import IconTextField from '../../components/common/IconTextField';
+import CheckBtn from '../../components/common/CheckBtn';
+import logo from '../../assets/images/logo.jpg';
 
 const SignupForm = styled.form`
   display: flex;
   flex-direction: column;
+  margin-top: 100px;
   padding: 10px;
-  gap: 10px;
+  gap: 15px;
 `;
 
 export default function SignupPage() {
@@ -29,17 +28,17 @@ export default function SignupPage() {
   const userInfo = useSelector(state => state.signup.userInfo);
   const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
   const isPossibleEmail = useSelector(state => state.signup.isPossibleEmail);
-  const [isSignupError, setIsSignupError] = useState(false)
+  const [isSignupError, setIsSignupError] = useState(false);
 
   const [isCheckNN, setIsCheckNN] = useState(false);
   const [isCheckEmail, setIsCheckEmail] = useState(false);
 
   const onNicknameHandler = e => {
-    setIsCheckNN(false)
+    setIsCheckNN(false);
     dispatch(fetchNickname(e.target.value));
   };
   const onEmailHandler = e => {
-    setIsCheckEmail(false)
+    setIsCheckEmail(false);
     dispatch(fetchEmail(e.target.value));
   };
 
@@ -59,14 +58,17 @@ export default function SignupPage() {
 
   function onSubmitHandler(e) {
     e.preventDefault();
-    const payload = userInfo;
-    console.log(payload);
+    const payload = {
+      email: userInfo.email,
+      nickname: userInfo.nickname,
+      password: userInfo.password,
+    };
     dispatch(signup(payload))
       .then(res => {
         if (res.type === 'signup/fulfilled') {
-          navigate('/login')
+          navigate('/login');
         } else {
-          setIsSignupError(true)
+          setIsSignupError(true);
         }
       })
       .catch(err => {
@@ -75,39 +77,44 @@ export default function SignupPage() {
   }
 
   return (
-    <div>
+    <PageBox>
       <FormBox>
-        <h1>회원가입 페이지입니당</h1>
         <SignupForm onSubmit={onSubmitHandler}>
+          <h1>회원가입</h1>
           <InputBox>
             <IconTextField
               error={isCheckNN && !isPossibleNickname}
               iconStart={<AccountCircle />}
+              iconEnd={
+                userInfo.nickname ? (
+                  <CheckBtn onClick={onCheckNicknameHandler}>확인</CheckBtn>
+                ) : (
+                  <CheckBtn disabled deactive={!userInfo.nickname}>
+                    확인
+                  </CheckBtn>
+                )
+              }
               label="*닉네임"
               value={userInfo.nickname}
               onChange={onNicknameHandler}
               helperText={
                 isCheckNN ? (isPossibleNickname ? '사용 가능한 닉네임입니다.' : '사용중인 닉네임입니다.') : null
               }
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <TaskAltIcon color='success'/>
-                  </InputAdornment>
-                ),
-              }}
             />
           </InputBox>
-          {userInfo.nickname ? (
-            <SubmitBtn onClick={onCheckNicknameHandler}>닉네임 확인</SubmitBtn>
-          ) : (
-            <SubmitBtn disabled deactive={!userInfo.nickname}>
-              닉네임확인
-            </SubmitBtn>
-          )}
+
           <InputBox>
-            <TextField
+            <IconTextField
               error={isCheckEmail && !isPossibleEmail}
+              iconEnd={
+                userInfo.email ? (
+                  <CheckBtn onClick={onCheckEmailHandler}>확인</CheckBtn>
+                ) : (
+                  <CheckBtn disabled deactive={!userInfo.email}>
+                    확인
+                  </CheckBtn>
+                )
+              }
               type="email"
               label="*이메일"
               value={userInfo.email}
@@ -117,36 +124,26 @@ export default function SignupPage() {
               }
             />
           </InputBox>
-          {userInfo.email ? (
-            <SubmitBtn onClick={onCheckEmailHandler}>이메일 확인</SubmitBtn>
-          ) : (
-            <SubmitBtn disabled deactive={!userInfo.email}>
-              이메일 확인
-            </SubmitBtn>
-          )}
 
-          <PasswordForm isSignupError={isSignupError}></PasswordForm>
+          <PasswordForm isError={isSignupError}></PasswordForm>
 
-          <InputBox>
-            <GenderForm></GenderForm>
-          </InputBox>
-          <InputBox>
-            <label>주소</label>
-            <AddressForm />
-          </InputBox>
-          <BodyForm></BodyForm>
           <SubmitBtn
             disabled={
-              !isCheckNN || !isPossibleNickname ||
-              !isCheckEmail || !isPossibleEmail ||
+              !isCheckNN ||
+              !isPossibleNickname ||
+              !isCheckEmail ||
+              !isPossibleEmail ||
               userInfo.password !== userInfo.pwdVerify ||
-              userInfo.password === ''}
+              userInfo.password === ''
+            }
             deactive={
-              !isCheckNN || !isPossibleNickname ||
-              !isCheckEmail || !isPossibleEmail ||
+              !isCheckNN ||
+              !isPossibleNickname ||
+              !isCheckEmail ||
+              !isPossibleEmail ||
               userInfo.password !== userInfo.pwdVerify ||
-              userInfo.password === ''}
-          >
+              userInfo.password === ''
+            }>
             회원가입
           </SubmitBtn>
         </SignupForm>
@@ -154,7 +151,9 @@ export default function SignupPage() {
           회원이신가요? <Link to="/login">로그인</Link>{' '}
         </p>
       </FormBox>
-    </div>
+      <FormBox>
+        <img src={logo} alt="로고이미지" />
+      </FormBox>
+    </PageBox>
   );
 }
-
