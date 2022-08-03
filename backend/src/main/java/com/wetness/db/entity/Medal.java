@@ -16,4 +16,8 @@ public class Medal {
     private int gold;
     private int silver;
     private int bronze;
+
+    public void setUser(User user) {
+        this.user = user;
+    }
 }
