@@ -5,6 +5,7 @@ import { getAccessToken, getCurrentUser } from './features/Token';
 import { fetchCurrentUser, checkLogin, toggleIsLoding } from './features/user/UserSlice';
 import NavBar from './components/common/NavBar';
 import GlobalStyle from './styles/GlobalStyle';
+import Resolution from './styles/Resolution';
 
 function App() {
   const dispatch = useDispatch();
@@ -20,11 +21,15 @@ function App() {
   }, []);
   if (isLoding) {
     return (
-      <div className="App">
+      <div>
         <GlobalStyle />
         <NavBar></NavBar>
 
-        <Outlet></Outlet>
+        <Resolution>
+          <div>
+            <Outlet></Outlet>
+          </div>
+        </Resolution>
       </div>
     );
   }
