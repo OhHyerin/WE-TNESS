@@ -20,8 +20,9 @@ export default function RoomFilter1() {
   return (
     <>
       <Stack spacing={2} direction="row">
-        {workouts.map(nowWorkout => (
+        {workouts.map((nowWorkout, i) => (
           <Button
+            key={i}
             variant={nowWorkout === workout ? 'contained' : 'outlined'}
             onClick={() => {
               handleBtnChange(nowWorkout);
