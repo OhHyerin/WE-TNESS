@@ -15,15 +15,19 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
 //@EnableGlobalMethodSecurity()
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
-    public PasswordEncoder passwordEncoder(){
+    public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
@@ -41,10 +45,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
     private static final String[] Exclude_Paths =
-            {"/", "/user/login", "/user/join","/user/duplicate-email/*", "/user/duplicate-nickname/*",
-             "/user/refresh", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
-                    , "/swagger-resources/**","/v2/api-docs","/csrf", "/error"};
-//"/user/duplicate-email/*",
+            {"/", "/user/login", "/user/join", "/user/duplicate-email/*", "/user/duplicate-nickname/*",
+                    "/user/refresh", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
+                    , "/swagger-resources/**", "/v2/api-docs", "/csrf", "/error"};
+
+    //"/user/duplicate-email/*",
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
 
@@ -52,16 +57,30 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Override
-    protected void configure(HttpSecurity http) throws Exception{
+    protected void configure(HttpSecurity http) throws Exception {
 
         http.cors().and().csrf().disable()
                 .authorizeRequests().antMatchers(Exclude_Paths).permitAll()
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                ;
+        ;
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
+    //TODO cors 관련 확인 필요
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedHeader("*");
+        configuration.addAllowedMethod("*");
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
 
 }
