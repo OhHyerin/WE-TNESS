@@ -54,7 +54,7 @@ export const RoomSlice = createSlice({
     testShowPrivate: state => {
       state.showPrivate = !state.showPrivate;
     },
-    testRadioChange: (state, action) => {
+    workoutChange: (state, action) => {
       state.workout = action.payload;
     },
     testRoomList: state => {
@@ -88,6 +88,6 @@ export const RoomSlice = createSlice({
 });
 
 export { getAllRooms, getWorksouts, searchRooms };
-export const { testWorkout, testShowPrivate, testRadioChange, testRoomList } = RoomSlice.actions;
+export const { testWorkout, testShowPrivate, workoutChange, testRoomList } = RoomSlice.actions;
 
 export default RoomSlice.reducer;
