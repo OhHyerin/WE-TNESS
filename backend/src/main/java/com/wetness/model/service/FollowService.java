@@ -1,15 +1,12 @@
 package com.wetness.model.service;
 
-import com.wetness.db.entity.Follow;
-
-import java.util.Collection;
+import com.wetness.model.dto.response.FollowUserResDto;
 
 public interface FollowService {
 
-    void save(Follow follow);
-    Collection<Follow> findByFollowerId (Long id);
-
     boolean removeFollow(String followerNickname, String followingNickname);
 
-    boolean registerFollow(String nickname, String nickname1);
+    boolean registerFollow(String followerNickname, String followingNickname);
+
+    FollowUserResDto getFollowers(Long followerId);
 }
