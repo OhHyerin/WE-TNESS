@@ -2,6 +2,9 @@ package com.wetness.model.service;
 
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
+import com.wetness.model.dto.request.JoinUserDto;
+import com.wetness.model.dto.request.PasswordDto;
+import com.wetness.model.dto.request.UpdateUserDto;
 
 import java.io.IOException;
 import java.util.Map;
@@ -10,14 +13,17 @@ public interface UserService {
 
     boolean checkEmailDuplicate(String email);
 
-
     boolean checkNicknameDuplicate(String nickname);
 
-    void registerUser(User user);
+    boolean registerUser(JoinUserDto user);
 
     boolean registerUserBySocial(User user);
 
+    boolean updateUser(Long id, UpdateUserDto updateUserDto);
+
     void updateUser(Long id, User user);
+
+    boolean updateUserPassword(long id, PasswordDto passwordDto);
 
     User findByNickname(String nickname);
 
@@ -28,7 +34,6 @@ public interface UserService {
     void saveRefreshToken(String nickname, String refreshToken);
 
     String getRefreshToken(String nickname);
-
 
     String getSocialToken(int social, String code) throws IOException;
 
@@ -41,4 +46,5 @@ public interface UserService {
     void setLoginData(Long userId);
 
     LoggedContinue getLoginData(Long userId);
+
 }

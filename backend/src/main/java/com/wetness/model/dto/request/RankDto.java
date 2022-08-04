@@ -18,7 +18,7 @@ public class RankDto {
 //    private Date date;
 
     private long workoutId;
-    private String address;
+//    private String address;
 
     RankDto(boolean divideWorkout, boolean divideGugun){
         this.divideWorkout = divideWorkout;
