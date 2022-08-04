@@ -1,40 +1,46 @@
-import Carousel from 'react-material-ui-carousel';
-import { useEffect, useRef, useState } from 'react';
-import { Button } from '@mui/material';
+import styled from 'styled-components'
+import Carousel from 'nuka-carousel';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import items from '../../assets/data/bannerItems';
 
+const Button = styled.button`
+  padding: 10px;
+  background-color: transparent;
+  border: none;
+  opacity: 60%;
+  :hover {
+    cursor: pointer;
+    opacity: 90%;
+  }
+  > * {
+    color: white;
+    font-size: large;
+  }
+`
+
 export default function Banner() {
-  const [imgSize, setImgSize] = useState({
-    width: '',
-    height: '',
-  });
-
-  const imgRef = useRef();
-  const checkSize = () => {
-    console.log('width : ' + imgRef.current.width);
-    console.log('height : ' + imgRef.current.height);
-  };
-  const handleResize = () => {
-    console.log(`img 사이즈 x: ${imgRef.current.width}, y: ${imgRef.current.height}`);
-    checkSize();
-    setImgSize({
-      width: imgRef.current.width,
-      height: imgRef.current.height,
-    });
-  };
-
-  useEffect(() => {
-    window.addEventListener('resize', handleResize);
-    return () => {
-      window.removeEventListener('resize', handleResize);
-    };
-  }, []);
-
   return (
     <>
-      <Carousel interval={'6000'} navButtonsAlwaysVisible={'true'} height={imgSize.height}>
+      <Carousel autoplay={true} autoplayInterval={'4000'} wrapAround={true}
+        renderCenterLeftControls={({ previousSlide }) => (
+          <Button>
+            <ArrowBackIosIcon fontSize='large'  onClick={previousSlide}></ArrowBackIosIcon>
+          </Button>
+        )}
+        renderCenterRightControls={({ nextSlide }) => (
+          <Button>
+            <ArrowForwardIosIcon fontSize='large'  onClick={nextSlide}></ArrowForwardIosIcon>
+          </Button>
+        )}
+        defaultControlsConfig={{
+          pagingDotsStyle: {
+            padding: '0px 3px'
+          }
+        }}
+        >
         {items.map((item, i) => (
-          <Item key={i} item={item} imgRef={imgRef} />
+          <Item key={i} item={item}/>
         ))}
       </Carousel>
     </>
@@ -43,7 +49,7 @@ export default function Banner() {
 function Item(props) {
   return (
     <div>
-      <img src={props.item.img} alt="banner img" width={'100%'} height={'auto'} ref={props.imgRef} />
+      <img src={props.item.img} alt="banner img" width={'100%'} height={'auto'} />
     </div>
   );
 }
