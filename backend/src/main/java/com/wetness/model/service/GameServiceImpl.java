@@ -32,18 +32,23 @@ public class GameServiceImpl implements GameService{
     @Autowired
     RankRepository rankRepo;
 
+    @Autowired
+    RoomRepository roomRepo;
+
 
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
-        
+        System.out.println(gameReqDto.getRoomId()+" ================");
+        Room room = roomRepo.findById(gameReqDto.getRoomId()).get();
+
         //userId validation 체크 추가하기
-        Game game = new Game.GameBuilder().buildIds(gameReqDto.getRoomId()).
+        Game game = new Game.GameBuilder().buildRoom(room).
                 buildCreateTime(gameReqDto.getCreateDate()).
                 buildTerminateTime(gameReqDto.getTerminateDate())
                 .getGame();
 
         gameRepo.save(game);
-        Long gameId = gameRepo.findByRoomIdAndCreateDate(game.getRoomId(),game.getCreateDate()).get(0).getId();
+        Long gameId = gameRepo.findByRoomAndCreateDate(game.getRoom(),game.getCreateDate()).get(0).getId();
         return gameId;
     }
 

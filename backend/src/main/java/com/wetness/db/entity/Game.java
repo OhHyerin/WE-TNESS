@@ -15,13 +15,10 @@ import java.time.LocalDateTime;
 public class Game {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Column(name = "room_id")
-    private long roomId;  //refactor 필요! -> class Room 을 참조하도록
-/***
- * @ManyToOne
- * @JoinColumn(name="room_id")
- * private Room room;
- * ***/
+
+    @ManyToOne
+    @JoinColumn(name="room_id")
+    private Room room;
 
     @Column(name = "create_date")
     private LocalDateTime createDate;
@@ -29,20 +26,20 @@ public class Game {
     private LocalDateTime terminateDate;
     private Game(GameBuilder builder){
         this.id = builder.id;
-        this.roomId = builder.roomId;
+        this.room = builder.room;
         this.createDate = builder.createDate;
         this.terminateDate = builder.terminateDate;
     }
 
     public static class GameBuilder{
         private long id;
-        private long roomId;
+        private Room room;
         private LocalDateTime createDate;
         private LocalDateTime terminateDate;
 
         public GameBuilder(){}
-        public GameBuilder buildIds(long roomId){
-            this.roomId = roomId;
+        public GameBuilder buildRoom(Room room){
+            this.room = room;
             return this;
         }
         public GameBuilder buildCreateTime(int[] created){
