@@ -15,23 +15,20 @@ import config from '../authHeader';
 
 const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => {
   try {
-    const res = await axios.post(api.login(), payload);
+    const res = await axios.post(api.login(), payload, {});
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
     setCurrentUser(decodeAccessToken(res.data.accessToken));
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
 });
 
-const logout = createAsyncThunk('logout', async (state, { rejectWithValue }) => {
+const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.logout(), {}, config);
-    removeAccessToken();
-    removeRefreshToken();
-    removeCurrentUser();
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -97,15 +94,18 @@ export const UserSlice = createSlice({
     },
   },
   extraReducers: {
-    [login.fulfilled]: state => {
+    [login.fulfilled]: (state, action) => {
       state.isAuthenticated = true;
       state.currentUser = getCurrentUser();
     },
     [login.rejected]: state => {
       state.isAuthenticated = false;
     },
-    [logout.fulfilled]: state => {
+    [logout.fulfilled]: (state, action) => {
       state.isAuthenticated = false;
+      removeAccessToken();
+      removeRefreshToken();
+      removeCurrentUser();
     },
     [fetchFollowList.fulfilled]: (state, action) => {
       state.followList = action.payload;
