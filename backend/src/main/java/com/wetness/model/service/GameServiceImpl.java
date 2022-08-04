@@ -8,6 +8,10 @@ import com.wetness.model.dto.request.GameResultReqDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service("gameService")
 public class GameServiceImpl implements GameService{
 
@@ -98,15 +102,33 @@ public class GameServiceImpl implements GameService{
 
 
 /***
+
     void insertRank(GameRecord gameRecord){
 
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore();
-        Rank rank = new Rank(0,gameRecord.getUser(),gameRecord.getWorkout(),gameRecord.getUser().getSidoCode(),
-                gameRecord.getUser().getGugunCode(), calorie, gameRecord.getGame().getTerminateDate());
-        rankRepo.save(rank);
+
+
+        LocalDateTime reg_date = gameRecord.getGame().getCreateDate();
+        LocalDate start = LocalDate.of(reg_date.getYear(),reg_date.getMonth(),reg_date.getDayOfMonth());
+
+        List<Rank> rankList = rankRepo.findByUserIdAndWorkoutIdAAndDateAfter(gameRecord.getUser().getId(),
+                gameRecord.getWorkout().getId(),start);
+
+        if(rankList.size()==1){
+            Rank rank = rankList.get(0);
+            rank.setCalorie(rank.getCalorie()+calorie);
+        }else if(rankList.size()==0){
+            Rank rank = new Rank(0,gameRecord.getUser(),gameRecord.getWorkout(),gameRecord.getUser().getSidoCode(),
+                    gameRecord.getUser().getGugunCode(), calorie, gameRecord.getGame().getTerminateDate());
+            rankRepo.save(rank);
+        }else{
+            System.out.println("rank에 기록이 2개 이상 삽입됨");
+        }
+
         return;
     }
+    
 ***/
 
 }
