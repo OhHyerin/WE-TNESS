@@ -6,7 +6,7 @@ import { Button } from '@mui/material';
 import FormBox from '../../components/common/auth/FormBox';
 import FollowingList from '../../components/myPage/FollowingList';
 import FollowerList from '../../components/myPage/FollowerList';
-import { fetchFollowList } from '../../features/user/UserSlice';
+import { fetchFollowingList, fetchFollowerList } from '../../features/user/UserSlice';
 
 const ContentBox = styled.div`
   display: flex;
@@ -33,7 +33,8 @@ export default function MyPage() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchFollowList());
+    dispatch(fetchFollowingList());
+    dispatch(fetchFollowerList());
   });
 
   const followerList = useSelector(state => state.user.followList?.followerList);

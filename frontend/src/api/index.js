@@ -11,7 +11,9 @@ const SIGNUP_URL = '/join';
 const CHECK_NICKNAME_URL = '/duplicate-nickname';
 const CHECK_EMAIL_URL = '/duplicate-email';
 
-const FETCH_FOLLOW_LIST_URL = '';
+const FETCH_FOLLOWING_LIST_URL = '/follow';
+const FETCH_FOLLOWER_LIST_URL = '/follow/me';
+
 const FETCH_USER_INFO_URL = '/me';
 const CHANGE_PASSWORD = '/pw';
 const FIND_PASSWORD = '/findpassword';
@@ -27,7 +29,8 @@ export default {
   findPassword: () => API_BASE_URL + USER_URL + FIND_PASSWORD,
   kakao: () => API_BASE_URL + USER_URL + LOGIN_URL + KAKAO_URL,
   addInfo: () => API_BASE_URL + USER_URL + ADD_INFO_URL,
-  fetchFollowList: () => API_BASE_URL + FETCH_FOLLOW_LIST_URL,
+  fetchFollowingList: () => API_BASE_URL + FETCH_FOLLOWING_LIST_URL,
+  fetchFollowerList: () => API_BASE_URL + FETCH_FOLLOWER_LIST_URL,
   fetchUserInfo: () => API_BASE_URL + USER_URL + FETCH_USER_INFO_URL,
   edit: () => API_BASE_URL + USER_URL,
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
