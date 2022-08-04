@@ -20,8 +20,8 @@ public class User {
     private String gugunCode;
 
     private String gender;
-    private Double height;
-    private Double weight;
+    private double height;
+    private double weight;
     private String social;
 //    @Enumerated(EnumType.STRING)
     private String role;

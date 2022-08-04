@@ -4,15 +4,11 @@ import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
 import com.wetness.db.repository.LoggedContinueRepository;
 import com.wetness.db.repository.UserRepository;
-import com.wetness.model.dto.request.JoinUserDto;
-import com.wetness.model.dto.request.PasswordDto;
-import com.wetness.model.dto.request.UpdateUserDto;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -164,7 +160,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(String email) {
         User findUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
+                .orElseThrow(()-> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
         return findUser;
     }
 
