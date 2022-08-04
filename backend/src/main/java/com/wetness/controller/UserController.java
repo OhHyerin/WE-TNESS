@@ -252,9 +252,13 @@ public class UserController {
     public ResponseEntity<?> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         User user = userService.findByNickname(userDetails.getNickname());
         if (user != null) {
-            String sido = commonCodeService.findCommonCodeName(user.getSidoCode());
-            String gugun = commonCodeService.findCommonCodeName(user.getGugunCode());
-            return ResponseEntity.ok().body(UserInfoResDto.generateUserInfoResDto(user, sido + " " + gugun));
+            String address = null;
+            if (user.getSidoCode() != null && user.getGugunCode() != null) {
+                String sido = commonCodeService.findCommonCodeName(user.getSidoCode());
+                String gugun = commonCodeService.findCommonCodeName(user.getGugunCode());
+                address = sido + " " + gugun;
+            }
+            return ResponseEntity.ok().body(UserInfoResDto.generateUserInfoResDto(user, address));
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
