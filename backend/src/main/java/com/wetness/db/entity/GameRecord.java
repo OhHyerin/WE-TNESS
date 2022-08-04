@@ -9,7 +9,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@Table(name="user_game")
+@Table(name="game_record")
 public class GameRecord {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
