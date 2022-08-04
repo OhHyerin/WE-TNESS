@@ -1,7 +1,7 @@
 export const API_BASE_URL = 'http://localhost:8080';
 
 const USER_URL = '/user';
-const RANK_URL = '/rank'
+const RANK_URL = '/rank';
 
 const LOGIN_URL = '/login';
 const KAKAO_URL = '/kakao';
@@ -13,7 +13,7 @@ const CHECK_EMAIL_URL = '/duplicate-email';
 
 const FETCH_FOLLOW_LIST_URL = '';
 const FETCH_USER_INFO_URL = '/me';
-const CHANGE_PASSWORD = '';
+const CHANGE_PASSWORD = '/pw';
 const FIND_PASSWORD = '/findpassword';
 
 const HISTORY_URL = '';
@@ -30,7 +30,7 @@ export default {
   fetchFollowList: () => API_BASE_URL + FETCH_FOLLOW_LIST_URL,
   fetchUserInfo: () => API_BASE_URL + USER_URL + FETCH_USER_INFO_URL,
   edit: () => API_BASE_URL + USER_URL,
-  changePassword: () => API_BASE_URL + CHANGE_PASSWORD,
+  changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
   fetchHistory: nickname => API_BASE_URL + USER_URL + HISTORY_URL + `/${nickname}`,
-  fetchRankList: () => API_BASE_URL + RANK_URL
+  fetchRankList: () => API_BASE_URL + RANK_URL,
 };

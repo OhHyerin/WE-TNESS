@@ -3,9 +3,9 @@ import axios from 'axios';
 import api from '../../api/index';
 import config from '../authHeader';
 
-const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (payload, { rejectWithValue }) => {
+const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (arg, { rejectWithValue }) => {
   try {
-    const res = await axios.get(api.fetchUserInfo(), {}, config);
+    const res = await axios.get(api.fetchUserInfo(), config);
     console.log(res);
     return res;
   } catch (err) {
