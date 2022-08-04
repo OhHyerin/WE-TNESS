@@ -17,6 +17,12 @@ public class Game {
     private long id;
     @Column(name = "room_id")
     private long roomId;  //refactor 필요! -> class Room 을 참조하도록
+/***
+ * @ManyToOne
+ * @JoinColumn(name="room_id")
+ * private Room room;
+ * ***/
+
     @Column(name = "create_date")
     private LocalDateTime createDate;
     @Column(name = "terminate_date")

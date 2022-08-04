@@ -1,6 +1,6 @@
 package com.wetness.db.entity;
 
-import lombok.AccessLevel;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import javax.persistence.*;
 @Entity
 @Table(name="medal")
 public class Medal {
-    @Id @ManyToOne
+    @Id @OneToOne
     @JoinColumn(name="user_id")
     private User user;
 
