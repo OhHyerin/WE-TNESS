@@ -9,16 +9,18 @@ import Resolution from './styles/Resolution';
 
 function App() {
   const dispatch = useDispatch();
-
+  
   const isLoding = useSelector(state => state.user.isLoding);
+  const token = getAccessToken();
+
   useEffect(() => {
-    const token = getAccessToken();
     if (token) {
       dispatch(fetchCurrentUser(getCurrentUser()));
       dispatch(checkLogin());
     }
     dispatch(toggleIsLoding());
   }, []);
+
   if (isLoding) {
     return (
       <div>

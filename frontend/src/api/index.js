@@ -1,6 +1,7 @@
 export const API_BASE_URL = 'http://localhost:8080';
 
 const USER_URL = '/user';
+const RANK_URL = '/rank'
 
 const LOGIN_URL = '/login';
 const KAKAO_URL = '/kakao';
@@ -31,4 +32,5 @@ export default {
   edit: () => API_BASE_URL + USER_URL,
   changePassword: () => API_BASE_URL + CHANGE_PASSWORD,
   fetchHistory: nickname => API_BASE_URL + USER_URL + HISTORY_URL + `/${nickname}`,
+  fetchRankList: () => API_BASE_URL + RANK_URL
 };
