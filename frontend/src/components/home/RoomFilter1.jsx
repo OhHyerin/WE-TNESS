@@ -20,25 +20,15 @@ export default function RoomFilter1() {
   return (
     <>
       <Stack spacing={2} direction="row">
-        {workouts.map(nowWorkout =>
-          nowWorkout === workout ? (
-            <Button
-              variant="contained"
-              onClick={() => {
-                handleBtnChange(nowWorkout);
-              }}>
-              {nowWorkout}
-            </Button>
-          ) : (
-            <Button
-              variant="outlined"
-              onClick={() => {
-                handleBtnChange(nowWorkout);
-              }}>
-              {nowWorkout}
-            </Button>
-          )
-        )}
+        {workouts.map(nowWorkout => (
+          <Button
+            variant={nowWorkout === workout ? 'contained' : 'outlined'}
+            onClick={() => {
+              handleBtnChange(nowWorkout);
+            }}>
+            {nowWorkout}
+          </Button>
+        ))}
       </Stack>
       {workout}
     </>
