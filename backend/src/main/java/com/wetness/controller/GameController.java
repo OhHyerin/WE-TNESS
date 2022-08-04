@@ -26,7 +26,7 @@ public class GameController {
     @Autowired
     UserService userService;
 
-    @PostMapping
+    @PostMapping("/start")
     public ResponseEntity<Map<String,Long>> startGame(@RequestBody GameReqDto gameReqDto,
                                                       @AuthenticationPrincipal UserDetailsImpl user){
 

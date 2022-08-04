@@ -24,11 +24,16 @@ public class Game {
     private LocalDateTime createDate;
     @Column(name = "terminate_date")
     private LocalDateTime terminateDate;
+
+    @Column(name="is_playing")
+    private Boolean isPlaying;
+
     private Game(GameBuilder builder){
         this.id = builder.id;
         this.room = builder.room;
         this.createDate = builder.createDate;
         this.terminateDate = builder.terminateDate;
+        this.isPlaying = builder.isPlaying;
     }
 
     public static class GameBuilder{
@@ -36,6 +41,7 @@ public class Game {
         private Room room;
         private LocalDateTime createDate;
         private LocalDateTime terminateDate;
+        private boolean isPlaying;
 
         public GameBuilder(){}
         public GameBuilder buildRoom(Room room){
@@ -53,6 +59,10 @@ public class Game {
             return this;
         }
 
+        public GameBuilder buildIsPlaying(Boolean isPlaying){
+            this.isPlaying = isPlaying;
+            return this;
+        }
         public Game getGame(){
             return new Game(this);
         }

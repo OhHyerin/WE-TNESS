@@ -39,13 +39,13 @@ public class GameServiceImpl implements GameService{
 
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
-        System.out.println(gameReqDto.getRoomId()+" ================");
+        System.out.println(gameReqDto.getRoomId()+" ================gameServiceImpl startGame 함수");
+
         Room room = roomRepo.findById(gameReqDto.getRoomId()).get();
 
         //userId validation 체크 추가하기
         Game game = new Game.GameBuilder().buildRoom(room).
-                buildCreateTime(gameReqDto.getCreateDate()).
-                buildTerminateTime(gameReqDto.getTerminateDate())
+                buildCreateTime(gameReqDto.getCreateDate()).buildIsPlaying(true)
                 .getGame();
 
         gameRepo.save(game);
@@ -67,7 +67,7 @@ public class GameServiceImpl implements GameService{
 
         gameResult.setId(userGameId);
 
-        //this.insertRank(gameResult);
+        this.insertRank(gameResult);
 
         if(gameResult.getRank()>=3){
             this.insertMedal(gameResult);
