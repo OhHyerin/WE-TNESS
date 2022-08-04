@@ -109,10 +109,10 @@ public class GameServiceImpl implements GameService{
                 * gameRecord.getScore();
 
 
-        LocalDateTime reg_date = gameRecord.getGame().getCreateDate();
+        LocalDateTime reg_date = gameRecord.getGame().getTerminateDate()ㄴ;
         LocalDate start = LocalDate.of(reg_date.getYear(),reg_date.getMonth(),reg_date.getDayOfMonth());
 
-        List<Rank> rankList = rankRepo.findByUserIdAndWorkoutIdAAndDateAfter(gameRecord.getUser().getId(),
+        List<Rank> rankList = rankRepo.findByUserIdAndWorkoutIdAndDateAfter(gameRecord.getUser().getId(),
                 gameRecord.getWorkout().getId(),start);
 
         if(rankList.size()==1){
@@ -128,7 +128,7 @@ public class GameServiceImpl implements GameService{
 
         return;
     }
-    
+
 ***/
 
 }
