@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,7 +14,12 @@ import javax.persistence.*;
 @Entity
 @Table(name="medal")
 public class Medal {
-    @Id @OneToOne
+
+    @Id
+    private Long id;
+
+    @OneToOne
+    @MapsId
     @JoinColumn(name="user_id")
     private User user;
 

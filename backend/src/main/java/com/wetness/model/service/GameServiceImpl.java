@@ -90,11 +90,11 @@ public class GameServiceImpl implements GameService{
         User user = gameRecord.getUser();
 
         if(gameRecord.getRank()==1){
-            medalRepo.save(new Medal(user,1,0,0));
+            medalRepo.save(new Medal(user.getId(),user,1,0,0));
         }else if(gameRecord.getRank()==2){
-            medalRepo.save(new Medal(user,0,1,0));
+            medalRepo.save(new Medal(user.getId(),user,0,1,0));
         }else if(gameRecord.getRank()==3){
-            medalRepo.save(new Medal(user,0,0,1));
+            medalRepo.save(new Medal(user.getId(),user,0,0,1));
         }
 
         return;
