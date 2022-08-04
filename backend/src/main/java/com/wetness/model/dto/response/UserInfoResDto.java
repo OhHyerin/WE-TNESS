@@ -11,8 +11,8 @@ public class UserInfoResDto {
 
     private String address;
     private String gender;
-    private double height;
-    private double weight;
+    private Double height;
+    private Double weight;
 
     public static UserInfoResDto generateUserInfoResDto(User user, String address) {
         UserInfoResDto u = new UserInfoResDto();
