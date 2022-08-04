@@ -9,4 +9,7 @@ public interface FollowService {
     boolean registerFollow(String followerNickname, String followingNickname);
 
     FollowUserResDto getFollowers(Long followerId);
+
+    FollowUserResDto getFollowings(Long followingId);
+
 }

@@ -11,5 +11,6 @@ import java.util.ArrayList;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FollowUserResDto {
-    ArrayList<String> nickname;
+    ArrayList<FollowDto> followList;
+
 }

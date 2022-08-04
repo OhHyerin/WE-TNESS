@@ -4,6 +4,7 @@ import com.wetness.db.entity.Follow;
 import com.wetness.db.entity.User;
 import com.wetness.db.repository.FollowRepository;
 import com.wetness.db.repository.UserRepository;
+import com.wetness.model.dto.response.FollowDto;
 import com.wetness.model.dto.response.FollowUserResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,13 @@ public class FollowServiceImpl implements FollowService {
     @Override
     @Transactional
     public FollowUserResDto getFollowers(Long followerId) {
-        ArrayList<String> byFollowerId = followRepository.findFollowingNicknameByFollowerId(followerId);
+        ArrayList<FollowDto> byFollowerId = followRepository.findFollowingDataByFollowerId(followerId);
+        return new FollowUserResDto(byFollowerId);
+    }
+
+    @Override
+    public FollowUserResDto getFollowings(Long followingId) {
+        ArrayList<FollowDto> byFollowerId = followRepository.findFollowerDataByFollowerId(followingId);
         return new FollowUserResDto(byFollowerId);
     }
 }

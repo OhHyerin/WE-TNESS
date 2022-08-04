@@ -37,8 +37,14 @@ public class FollowController {
     }
 
     @GetMapping
-    public ResponseEntity<?> getFollow(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+    public ResponseEntity<?> getFollower(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         FollowUserResDto followUserResDto = followService.getFollowers(userDetails.getId());
+        return ResponseEntity.ok().body(followUserResDto);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> getFollowing(@AuthenticationPrincipal UserDetailsImpl userDetails) {
+        FollowUserResDto followUserResDto = followService.getFollowings(userDetails.getId());
         return ResponseEntity.ok().body(followUserResDto);
     }
 }
