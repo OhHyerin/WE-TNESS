@@ -34,7 +34,7 @@ const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
   }
 });
 
-const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (payload, { rejectWithValue }) => {
+const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios.get(api.fetchFollowingList(), config);
     console.log(res);
@@ -44,7 +44,7 @@ const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (payload
   }
 });
 
-const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (payload, { rejectWithValue }) => {
+const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios({
       method: 'get',
