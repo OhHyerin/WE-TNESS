@@ -1,13 +1,7 @@
 import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
-import Radio from '@mui/material/Radio';
-import FormControlLabel from '@mui/material/FormControlLabel';
-
-import { testRadioChange, testWorkout } from '../../features/room/RoomSlice';
+import { Stack, Button } from '@mui/material';
+import { workoutChange, testWorkout } from '../../features/room/RoomSlice';
 
 export default function RoomFilter1() {
   const workouts = useSelector(state => state.room.workouts);
@@ -18,26 +12,34 @@ export default function RoomFilter1() {
     dispatch(testWorkout());
   }, []);
 
-  const handleRadioChange = e => {
-    console.log(e.target.value);
-    dispatch(testRadioChange(e.target.value));
+  const handleBtnChange = e => {
+    console.log(e);
+    dispatch(workoutChange(e));
   };
 
   return (
     <>
-      <FormControl>
-        <FormLabel id="demo-radio-buttons-group-label">운동 종류</FormLabel>
-        <RadioGroup
-          row
-          aria-labelledby="demo-radio-buttons-group-label"
-          defaultValue="전체"
-          name="radio-buttons-group"
-          onChange={handleRadioChange}>
-          {workouts.map(workout => (
-            <FormControlLabel value={workout} control={<Radio />} label={workout} />
-          ))}
-        </RadioGroup>
-      </FormControl>
+      <Stack spacing={2} direction="row">
+        {workouts.map(nowWorkout =>
+          nowWorkout === workout ? (
+            <Button
+              variant="contained"
+              onClick={() => {
+                handleBtnChange(nowWorkout);
+              }}>
+              {nowWorkout}
+            </Button>
+          ) : (
+            <Button
+              variant="outlined"
+              onClick={() => {
+                handleBtnChange(nowWorkout);
+              }}>
+              {nowWorkout}
+            </Button>
+          )
+        )}
+      </Stack>
       {workout}
     </>
   );
