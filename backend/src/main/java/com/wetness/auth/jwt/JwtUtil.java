@@ -2,7 +2,7 @@ package com.wetness.auth.jwt;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Map;
-
+import com.wetness.db.entity.User;
 import org.springframework.security.core.Authentication;
 
 import javax.servlet.ServletException;

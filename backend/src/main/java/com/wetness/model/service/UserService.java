@@ -1,6 +1,7 @@
 package com.wetness.model.service;
 
 import com.wetness.db.entity.LoggedContinue;
+import com.wetness.db.entity.User;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;

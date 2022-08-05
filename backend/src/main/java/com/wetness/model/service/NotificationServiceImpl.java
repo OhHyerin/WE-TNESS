@@ -1,6 +1,7 @@
 package com.wetness.model.service;
 
 import com.wetness.db.entity.Notification;
+import com.wetness.db.entity.User;
 import com.wetness.db.repository.NotificationRepository;
 import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.NotificationReqDto;

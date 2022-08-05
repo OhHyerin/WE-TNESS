@@ -1,20 +1,20 @@
 package com.wetness.db.entity;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+public enum Workout {
 
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Data
-@Entity
-@Table(name="workout")
-public class Workout {
-    @Id
-    private long id;
-    private String type;
-    private Double met;
+    PushUp(1),
+    SitUp(2),
+    Burpee(3),
+    Squirt(4)
+    ;
+
+
+    private int workoutId;
+
+    Workout(int workoutId){
+        this.workoutId = workoutId;
+    }
+
+
 }

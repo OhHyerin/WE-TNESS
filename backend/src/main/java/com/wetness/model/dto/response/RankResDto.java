@@ -1,5 +1,6 @@
 package com.wetness.model.dto.response;
 
+import com.wetness.db.entity.Rank;
 import lombok.Data;
 
 import java.util.List;

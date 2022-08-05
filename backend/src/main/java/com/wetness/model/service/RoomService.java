@@ -1,7 +1,10 @@
 package com.wetness.model.service;
 
 import com.wetness.db.entity.MapSessionRoom;
+import com.wetness.db.entity.Room;
 import com.wetness.db.entity.RoomUser;
+import com.wetness.db.entity.User;
+import com.wetness.db.repository.RoomRepository;
 import com.wetness.db.repository.RoomUserRepository;
 import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.DisconnectionReq;
@@ -9,6 +12,7 @@ import com.wetness.model.dto.request.EnterRoomReq;
 import com.wetness.model.dto.request.MakeRoomReq;
 import com.wetness.model.dto.response.RoomListRes;
 import io.openvidu.java.client.*;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;

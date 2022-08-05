@@ -1,5 +1,6 @@
 package com.wetness.db.repository;
 
+import com.wetness.db.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
