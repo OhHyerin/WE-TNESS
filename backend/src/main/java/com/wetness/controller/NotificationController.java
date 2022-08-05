@@ -44,5 +44,15 @@ public class NotificationController {
         ArrayList<NotificationDto> notification = notificationService.getNotification(userDetails.getId());
         return ResponseEntity.ok().body(new NotificationListResDto(notification));
     }
+
+    @PostMapping("check")
+    public ResponseEntity<?> checkNotification(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                               @RequestBody NotificationReqDto notificationReqDto) {
+        if (notificationService.checkNotification(userDetails.id(), notificationReqDto.getNotificationId())) {
+            return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+    }
+
 }
 

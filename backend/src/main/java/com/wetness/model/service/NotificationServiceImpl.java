@@ -5,14 +5,14 @@ import com.wetness.db.entity.User;
 import com.wetness.db.repository.NotificationRepository;
 import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.NotificationReqDto;
-import com.wetness.model.dto.response.FollowDto;
 import com.wetness.model.dto.response.NotificationDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +22,7 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     @Override
+    @Transactional
     public boolean registerInviteMessage(NotificationReqDto notificationReqDto, String nickname) {
         User user = userRepository.findByNickname(nickname);
         User target = userRepository.findByNickname(notificationReqDto.getNickname());
@@ -38,6 +39,7 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional
     public boolean registerFollowMessage(NotificationReqDto notificationReqDto, String nickname) {
         User user = userRepository.findByNickname(nickname);
         User target = userRepository.findByNickname(notificationReqDto.getNickname());
@@ -53,8 +55,23 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
+    @Transactional
     public ArrayList<NotificationDto> getNotification(Long receiverId) {
         return notificationRepository.findUncheckedNotifications(receiverId);
+    }
+
+    @Override
+    @Transactional
+    public boolean checkNotification(Long userId, Long notificationId) {
+        Optional<Notification> byId = notificationRepository.findById(notificationId);
+        if (byId.isPresent()) {
+            Notification notification = byId.get();
+            if (notification.getReceiver().getId().equals(userId)) {
+                notification.setChecked(true);
+                return true;
+            }
+        }
+        return false;
     }
 
 }
