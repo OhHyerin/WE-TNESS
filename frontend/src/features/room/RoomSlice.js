@@ -71,6 +71,12 @@ export const RoomSlice = createSlice({
         { name: 'test2', scope: 'private', workout: '운동2', started: true, numOfPeople: 2 },
       ];
     },
+    fetchTitle: (state, action) => {
+      state.roomInfo.title = action.payload;
+    },
+    fetchPassword: (state, action) => {
+      state.roomInfo.password = action.payload;
+    },
   },
   extraReducers: {
     [getAllRooms.pending]: state => {
@@ -95,6 +101,7 @@ export const RoomSlice = createSlice({
 });
 
 export { getAllRooms, getWorksouts, searchRooms };
-export const { testWorkout, testShowPrivate, workoutChange, testRoomList } = RoomSlice.actions;
+export const { testWorkout, testShowPrivate, workoutChange, testRoomList, fetchTitle, fetchPassword } =
+  RoomSlice.actions;
 
 export default RoomSlice.reducer;

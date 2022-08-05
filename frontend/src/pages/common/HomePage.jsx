@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Box, Modal, TextField, Fab } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import ClearIcon from '@mui/icons-material/Clear';
 import Banner from '../../components/home/Banner';
 import RankingPreview from '../../components/home/RankingPreview';
 import RoomList from '../../components/home/RoomList';
@@ -13,6 +14,7 @@ import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
+import { fetchTitle, fetchPassword } from '../../features/room/RoomSlice';
 
 const style = {
   position: 'absolute',
@@ -21,7 +23,22 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: 800,
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  border: '1px solid var(--primary-color)',
+  borderRadius: '10px',
+  boxShadow: 24,
+  p: 4,
+};
+
+const addStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 800,
+  bgcolor: 'background.paper',
+  border: '1px solid var(--primary-color)',
+
+  borderRadius: '10px',
   boxShadow: 24,
   p: 4,
 };
@@ -29,6 +46,8 @@ const style = {
 const SubmitForm = styled.form`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding: 10px;
   gap: 10px;
 `;
@@ -38,10 +57,20 @@ const fabStyle = {
   bottom: 16,
   right: 16,
   color: 'white',
-  backgroundColor: '#009688',
+  backgroundColor: 'var(--primary-color)',
   '&:hover': {
-    bgcolor: '#18b4a4',
+    bgcolor: 'var(--primary-color)',
     color: '#d5d8d8',
+  },
+};
+
+const closeStyle = {
+  position: 'absolute',
+  top: '10px',
+  right: '10px',
+  '&:hover': {
+    cursor: 'pointer',
+    opacity: '80%',
   },
 };
 
@@ -63,12 +92,14 @@ export default function Home() {
   }
   function onTitleHandler(e) {
     e.preventDefault();
+    dispatch(fetchTitle(e.target.value));
   }
   function onWorkoutHandler(e) {
     e.preventDefault();
   }
   function onPasswordHandler(e) {
     e.preventDefault();
+    dispatch(fetchPassword(e.target.value));
   }
   function onSubmitRoom(e) {
     e.preventDefault();
@@ -132,6 +163,7 @@ export default function Home() {
       {/* 카카오 로그인 추가정보 입력 모달 */}
       <Modal open={isModal} onClose={handleClose}>
         <Box sx={style}>
+          <ClearIcon sx={closeStyle} onClick={handleClose}></ClearIcon>
           <FormBox>
             <SubmitForm onSubmit={onSubmitHandler}>
               <h1>추가 정보 입력</h1>
@@ -153,40 +185,42 @@ export default function Home() {
                   닉네임확인
                 </SubmitBtn>
               )}
-              <SubmitBtn disabled={!isPossibleNickname} deactive={!isPossibleNickname}>
+              <SubmitBtn disabled={!isCheckNN || !isPossibleNickname} deactive={!isCheckNN || !isPossibleNickname}>
                 제출
               </SubmitBtn>
             </SubmitForm>
           </FormBox>
-          <button onClick={handleClose}>닫기</button>
         </Box>
       </Modal>
 
+      {/* 방 생성 모달 */}
       <Modal open={isAddRoom} onClose={onClose}>
-        <Box sx={style}>
+        <Box sx={addStyle}>
+          <ClearIcon sx={closeStyle} onClick={onClose}></ClearIcon>
           <FormBox>
             <SubmitForm onSubmit={onSubmitRoom}>
-              <h1>추가 정보 입력</h1>
               <p>운동종류</p>
               <InputBox>
                 <TextField label="방 제목" value={roomInfo.title} onChange={onTitleHandler} />
               </InputBox>
               <InputBox>
-                <TextField label="방 비밀번호" value={roomInfo.password} onChange={onTitleHandler} />
+                <TextField label="방 비밀번호" value={roomInfo.password} onChange={onPasswordHandler} />
               </InputBox>
               <SubmitBtn disabled={false} deactive={false}>
-                제출
+                방 생성하기
               </SubmitBtn>
             </SubmitForm>
           </FormBox>
-          <button onClick={onClose}>닫기</button>
         </Box>
       </Modal>
 
       {/* 방 생성 버튼 */}
-      <Fab sx={fabStyle} onClick={onOpen}>
-        <AddIcon />
-      </Fab>
+      {isAuthenticated ? (
+        <Fab variant="extended" sx={fabStyle} onClick={onOpen}>
+          <SportsEsportsIcon style={{ marginRight: '5px' }} />
+          <p>방 만들기</p>
+        </Fab>
+      ) : null}
     </div>
   );
 }
