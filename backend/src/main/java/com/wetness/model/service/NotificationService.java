@@ -14,4 +14,6 @@ public interface NotificationService {
     boolean registerFollowMessage(NotificationReqDto notificationReqDto, String nickname);
 
     ArrayList<NotificationDto> getNotification(Long receiverId);
+
+    boolean checkNotification(Long userId, Long notificationId);
 }
