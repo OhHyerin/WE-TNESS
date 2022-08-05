@@ -12,6 +12,7 @@ import com.wetness.model.dto.request.EnterRoomReq;
 import com.wetness.model.dto.request.MakeRoomReq;
 import com.wetness.model.dto.response.RoomListRes;
 import io.openvidu.java.client.*;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,22 +28,20 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @RequiredArgsConstructor
 public class RoomService {
+
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
-
     private final RoomUserRepository roomUserRepository;
 
-    private UserDetailsImpl userDetails;
     @Value("${wetness.openvidu.url}")
     private String OPENVIDU_URL;
     @Value("${wetness.openvidu.secret}")
     private String SECRET;
-    private OpenVidu openVidu = new OpenVidu(OPENVIDU_URL,SECRET);
+    private OpenVidu openVidu = new OpenVidu("localhost:4443","MY_SECRET");
     // 운동종류(int) : {방제목 : 세션+방}
     private Map<String, MapSessionRoom> mapSessions = new ConcurrentHashMap<>();
     // 방 제목 : {유저 닉네임 : 커넥션}
     private Map<String, Map<String, Connection>> mapSessionNamesConnections = new ConcurrentHashMap<>();
-
 
 
     public void generateRoom(UserDetailsImpl userDetails, MakeRoomReq req) throws OpenViduJavaClientException, OpenViduHttpException {
@@ -139,7 +138,7 @@ public class RoomService {
             this.mapSessionNamesConnections.get(sessionName).remove(req.getNickname());
         }
         // room_user 테이블에서 방을 나간 시간 설정
-        RoomUser roomUser = roomUserRepository.findByroomIdanduserId(room.getId(),user.getId());
+        RoomUser roomUser = roomUserRepository.findByRoomIdAndUserId(room.getId(), user.getId());
         roomUser.setLeaveTime(new Timestamp(System.currentTimeMillis()));
 
     }

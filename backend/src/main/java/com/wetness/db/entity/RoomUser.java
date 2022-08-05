@@ -1,20 +1,19 @@
 package com.wetness.db.entity;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import java.sql.Time;
 import java.sql.Timestamp;
 // TODO : 사용여부 논의 후 삭제
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
-@RequiredArgsConstructor
+@AllArgsConstructor
+@NoArgsConstructor
 @Table(name="room_user")
 public class RoomUser {
 
