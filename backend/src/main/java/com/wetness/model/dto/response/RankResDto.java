@@ -9,13 +9,33 @@ import java.util.List;
 public class RankResDto {
 
      String message;
-     List<Rank> ranks;
+     List<Rank> squatRanks;
+     List<Rank> pushUpRanks;
+     List<Rank> burpeeRanks;
+     List<Rank> plankRanks;
 
-     public RankResDto(List<Rank> ranks) {
-          this.ranks = ranks;
+     List<Rank> regionSquatRanks;
+     List<Rank> regionPushUpRanks;
+     List<Rank> regionBurpeeRanks;
+     List<Rank> regionPlankRanks;
 
-          if(ranks.isEmpty()) this.message = "주소 정보가 없습니다.";
-          else this.message = "success";
+     public RankResDto(String message, List<Rank> squatRanks, List<Rank> pushUpRanks, List<Rank> burpeeRanks, List<Rank> plankRanks) {
+          this.message = message;
+          this.squatRanks = squatRanks;
+          this.pushUpRanks = pushUpRanks;
+          this.burpeeRanks = burpeeRanks;
+          this.plankRanks = plankRanks;
+     }
 
+     public RankResDto(String message, List<Rank> squatRanks, List<Rank> pushUpRanks, List<Rank> burpeeRanks, List<Rank> plankRanks, List<Rank> regionSquatRanks, List<Rank> regionPushUpRanks, List<Rank> regionBurpeeRanks, List<Rank> regionPlankRanks) {
+          this.message = message;
+          this.squatRanks = squatRanks;
+          this.pushUpRanks = pushUpRanks;
+          this.burpeeRanks = burpeeRanks;
+          this.plankRanks = plankRanks;
+          this.regionSquatRanks = regionSquatRanks;
+          this.regionPushUpRanks = regionPushUpRanks;
+          this.regionBurpeeRanks = regionBurpeeRanks;
+          this.regionPlankRanks = regionPlankRanks;
      }
 }

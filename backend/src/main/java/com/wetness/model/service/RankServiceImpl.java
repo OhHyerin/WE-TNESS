@@ -26,7 +26,7 @@ public class RankServiceImpl implements RankService{
     @Autowired
     UserRepository userRepository;
     @Override
-    public List<Rank> getRank(RankDto rankDto, long userId) {
+    public List<Rank> getRank(long userId) {
         //조회할 날짜
         LocalDate date = LocalDate.now();
         Date cur = java.sql.Date.valueOf(date);
@@ -37,32 +37,45 @@ public class RankServiceImpl implements RankService{
         //반환할 list
         List<Rank> list = new ArrayList<>();
 
-        if(!rankDto.isDivideGugun() && !rankDto.isDivideWorkout()){
-            //gugun 구분 X, workout 구분 X
-            System.out.println("gugun 구분 x, workout 구분 x");
-            list = rankRepository.findTop20ByDateOrderByCalorieDesc(cur);
+        if(user.get().getGugunCode()==null){
+            //로그인 한 유저가 주소 정보가 없으면
 
-        }else if(!rankDto.isDivideGugun() && rankDto.isDivideWorkout()){
-            //gugun 구분 X, workout 구분 O
-            System.out.println("gugun 구분 x, workout 구분 o");
-            list = rankRepository.findTop20ByDateAndWorkoutIdOrderByCalorieDesc(cur, rankDto.getWorkoutId());
-        }else if(rankDto.isDivideGugun() && !rankDto.isDivideWorkout()){
-            //gugun 구분 O, workout 구분 X
-            System.out.println("gugun 구분 o, workout 구분 x");
-//            System.out.println(rankDto.getAddress());
 
-            if(user.get().getGugunCode()!=null){
-                list = rankRepository.findTop20ByDateAndGugunCodeOrderByCalorieDesc(cur, user.get().getGugunCode());
-            }
-        }else {
-            //gugun 구분 O, workout 구분 O
-            System.out.println("gugun 구분 o, workout 구분 o");
-
-            if(user.get().getGugunCode()!=null){
-                list = rankRepository.findTop20ByDateAndGugunCodeAndWorkoutIdOrderByCalorieDesc(cur, user.get().getGugunCode(), rankDto.getWorkoutId());
-            }
+        }else{
+            //로그인 한 유저가 주소 정보가 있으면
 
         }
+
+
+
+
+//
+//        if(!rankDto.isDivideGugun() && !rankDto.isDivideWorkout()){
+//            //gugun 구분 X, workout 구분 X
+//            System.out.println("gugun 구분 x, workout 구분 x");
+//            list = rankRepository.findTop20ByDateOrderByCalorieDesc(cur);
+//
+//        }else if(!rankDto.isDivideGugun() && rankDto.isDivideWorkout()){
+//            //gugun 구분 X, workout 구분 O
+//            System.out.println("gugun 구분 x, workout 구분 o");
+//            list = rankRepository.findTop20ByDateAndWorkoutIdOrderByCalorieDesc(cur, rankDto.getWorkoutId());
+//        }else if(rankDto.isDivideGugun() && !rankDto.isDivideWorkout()){
+//            //gugun 구분 O, workout 구분 X
+//            System.out.println("gugun 구분 o, workout 구분 x");
+////            System.out.println(rankDto.getAddress());
+//
+//            if(user.get().getGugunCode()!=null){
+//                list = rankRepository.findTop20ByDateAndGugunCodeOrderByCalorieDesc(cur, user.get().getGugunCode());
+//            }
+//        }else {
+//            //gugun 구분 O, workout 구분 O
+//            System.out.println("gugun 구분 o, workout 구분 o");
+//
+//            if(user.get().getGugunCode()!=null){
+//                list = rankRepository.findTop20ByDateAndGugunCodeAndWorkoutIdOrderByCalorieDesc(cur, user.get().getGugunCode(), rankDto.getWorkoutId());
+//            }
+//
+//        }
 
 
         return list;

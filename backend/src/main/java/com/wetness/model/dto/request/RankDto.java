@@ -12,17 +12,15 @@ import java.util.Date;
 @AllArgsConstructor
 public class RankDto {
 
-    private boolean divideWorkout;
-    private boolean divideGugun;
-
-//    private Date date;
-
-    private long workoutId;
-//    private String address;
-
-    RankDto(boolean divideWorkout, boolean divideGugun){
-        this.divideWorkout = divideWorkout;
-        this.divideGugun = divideGugun;
-    }
+//    private boolean divideWorkout;
+//    private boolean divideGugun;
+//
+//    private long workoutId;
+////    private String address;
+//
+//    RankDto(boolean divideWorkout, boolean divideGugun){
+//        this.divideWorkout = divideWorkout;
+//        this.divideGugun = divideGugun;
+//    }
 
 }
