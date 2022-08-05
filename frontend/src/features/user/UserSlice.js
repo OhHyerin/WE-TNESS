@@ -11,7 +11,7 @@ import {
   getCurrentUser,
 } from '../Token';
 import api from '../../api/index';
-import config from '../authHeader';
+import setConfig from '../authHeader';
 
 const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => {
   try {
@@ -27,7 +27,7 @@ const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => 
 
 const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
   try {
-    const res = await axios.post(api.logout(), {}, config);
+    const res = await axios.post(api.logout(), {}, setConfig());
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
@@ -36,9 +36,9 @@ const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
 
 const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { rejectWithValue }) => {
   try {
-    const res = await axios.get(api.fetchFollowingList(), config);
+    const res = await axios.get(api.fetchFollowingList(), setConfig());
     console.log(res);
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -46,13 +46,9 @@ const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { 
 
 const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (arg, { rejectWithValue }) => {
   try {
-    const res = await axios({
-      method: 'get',
-      url: api.fetchFollowerList(),
-      headers: config.headers,
-    });
+    const res = await axios.get(api.fetchFollowerList(), setConfig());
     console.log(res);
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -134,10 +130,10 @@ export const UserSlice = createSlice({
       removeCurrentUser();
     },
     [fetchFollowingList.fulfilled]: (state, action) => {
-      state.followingList = action.payload;
+      state.followingList = action.payload.followList;
     },
     [fetchFollowerList.fulfilled]: (state, action) => {
-      state.followerList = action.payload;
+      state.followerList = action.payload.followList;
     },
     [kakaoLogin.fulfilled]: (state, action) => {
       state.kakaoInfo = action.payload;

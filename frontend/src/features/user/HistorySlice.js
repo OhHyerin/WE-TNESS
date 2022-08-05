@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../../api/index';
-import config from '../authHeader';
+import setConfig from '../authHeader';
 
-const fetchHistory = createAsyncThunk('fetchHistory', async (state, { rejectWithValue }) => {
+const fetchHistory = createAsyncThunk('fetchHistory', async (arg, { rejectWithValue }) => {
   try {
-    const response = await axios.get(api.fetchHistory(), {}, config);
+    const response = await axios.get(api.fetchHistory(), {}, setConfig());
     return response;
   } catch (err) {
     return rejectWithValue(err.response);
