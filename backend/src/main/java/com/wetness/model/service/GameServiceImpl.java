@@ -40,7 +40,6 @@ public class GameServiceImpl implements GameService{
 
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
-        System.out.println(gameReqDto.getRoomId()+" ================gameServiceImpl startGame 함수");
 
         Room room = roomRepo.findById(gameReqDto.getRoomId()).get();
 
@@ -75,43 +74,39 @@ public class GameServiceImpl implements GameService{
         Long userGameId = gameRecordRepo.save(gameResult).getId();
 
         gameResult.setId(userGameId);
-
+//ranking 저장
         this.insertRank(gameResult);
-
-//        if(gameResult.getRank()<=3){
-//            this.insertMedal(gameResult);
-//        }
+//medal 저장
+        if(gameResult.getRank()<=3){
+            this.insertMedal(gameResult);
+        }
 
 
         return userGameId;
     }
 
-    @Override
-    public void insertDiary(DiaryReqDto diaryReq, UserDetailsImpl user) {
-        User writer = userRepo.findById(user.id()).get();
-        GameRecord gameRecord = gameRecordRepo.findById(diaryReq.getUserGameId()).get();
-
-        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(diaryReq.getFileName()).
-                buildDate(diaryReq.getDate()).buildRecord(gameRecord).getDiary();
-
-        diaryRepo.save(diary);
-        return;
-    }
 
 
     void insertMedal(GameRecord gameRecord){
         //다른 service 호출하지 않고, 순환 관계 참조를 막도록 작성
 
         User user = gameRecord.getUser();
+        Medal medal = new Medal();
+        if(medalRepo.findById(user.getId()).isPresent()) {
+            medal = medalRepo.findById(user.getId()).get();
+        }else{
+            medal.setUserId(user.getId());
+        }
 
         if(gameRecord.getRank()==1){
-            System.out.println("1등해서 메달 땀==================================");
-            medalRepo.save(new Medal(user.getId(),user,1,0,0));
+            medal.setGold(medal.getGold()+1);
         }else if(gameRecord.getRank()==2){
-            medalRepo.save(new Medal(user.getId(),user,0,1,0));
+            medal.setSilver(medal.getSilver()+1);
         }else if(gameRecord.getRank()==3){
-            medalRepo.save(new Medal(user.getId(),user,0,0,1));
+            medal.setBronze(medal.getBronze()+1);
         }
+
+        medalRepo.save(medal);
 
         return;
     }
@@ -132,7 +127,6 @@ public class GameServiceImpl implements GameService{
 
         if(rankRepo.findByUserIdAndWorkoutAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isPresent()){
             List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
-            System.out.println(" old List 있음 ========================================");
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);
                 if((old.getWorkout() & (1<<N) )== 0) continue;
@@ -140,7 +134,6 @@ public class GameServiceImpl implements GameService{
                 rankRepo.save(old);
             }
         }else{
-            System.out.println(" new List 삽입 ===============================");
             List<Rank> newList = new ArrayList<>();
             newList.add(new Rank(0L, user, (1<<N), user.getSidoCode(), user.getGugunCode(), calorie, regDate));
 
@@ -158,6 +151,18 @@ public class GameServiceImpl implements GameService{
     }
 
 
+
+    @Override
+    public void insertDiary(DiaryReqDto diaryReq, UserDetailsImpl user) {
+        User writer = userRepo.findById(user.id()).get();
+        GameRecord gameRecord = gameRecordRepo.findById(diaryReq.getUserGameId()).get();
+
+        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(diaryReq.getFileName()).
+                buildDate(diaryReq.getDate()).buildRecord(gameRecord).getDiary();
+
+        diaryRepo.save(diary);
+        return;
+    }
 
 }
 

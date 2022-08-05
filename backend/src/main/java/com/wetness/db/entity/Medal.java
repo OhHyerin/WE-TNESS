@@ -15,19 +15,20 @@ import java.io.Serializable;
 @Table(name="medal")
 public class Medal {
 
-    @Id
-    private Long id;
+//    @Id
+//    private Long id;
+//
+//    @OneToOne
+//    @MapsId
+//    @JoinColumn(name="user_id")
+//    private User user;
+//    객체를 id로 하니까 repository.save가 잘 안돼서, 일단 Long userId로 해놓았다
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name="user_id")
-    private User user;
+    @Id
+    private Long userId;
 
     private int gold;
     private int silver;
     private int bronze;
 
-    public void setUser(User user) {
-        this.user = user;
-    }
 }
