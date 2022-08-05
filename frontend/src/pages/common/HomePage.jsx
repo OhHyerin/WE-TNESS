@@ -40,6 +40,7 @@ export default function Home() {
 
   const currentUser = useSelector(state => state.user.currentUser);
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  const isSearched = useSelector(state => state.room.isSearched);
 
   const isModal = useSelector(state => state.signup.isModal);
   const isPossibleNickname = useSelector(state => state.user.isPossibleNickname);
@@ -109,13 +110,12 @@ export default function Home() {
             <button onClick={handleClose}>닫기</button>
           </Box>
         </Modal>
+
         <Banner />
         <RankingPreview />
         <>
           {/* 운동 목록 */}
           <RoomFilter1 />
-        </>
-        <>
           {/* 비밀방 여부 */}
           <RoomFilter2 />
         </>
