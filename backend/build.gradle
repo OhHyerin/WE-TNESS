@@ -45,6 +45,8 @@ dependencies {
 
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	// 오픈비두
+	implementation 'io.openvidu:openvidu-java-client:2.20.0'
 }
 
 tasks.named('test') {
