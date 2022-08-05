@@ -5,6 +5,7 @@ import setConfig from '../authHeader';
 
 const fetchRankList = createAsyncThunk('fetchRankList', async (payload, { rejectWithValue }) => {
   try {
+    console.log(payload);
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     console.log(res);
     return res.data;
@@ -16,14 +17,14 @@ const fetchRankList = createAsyncThunk('fetchRankList', async (payload, { reject
 
 const initialState = {
   workoutIds: [],
-  rankList: [
+  ranks: [
     {
       rank: '1',
       nickname: 'gg',
       calories: '100',
     },
   ],
-  region: '',
+  msg: '',
   isRegion: false,
 };
 
@@ -37,8 +38,8 @@ export const RankSlice = createSlice({
   },
   extraReducers: {
     [fetchRankList.fulfilled]: (state, action) => {
-      state.rankList = action.payload?.rankList;
-      state.region = action.payload?.region;
+      state.ranks = action.payload?.ranks;
+      state.msg = action.payload?.msg;
     },
   },
 });

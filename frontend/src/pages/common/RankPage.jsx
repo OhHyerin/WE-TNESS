@@ -44,16 +44,16 @@ export default function RankPage() {
       plank,
       isRegion,
     };
-    // dispatch(fetchRankList(payload))
+    dispatch(fetchRankList(payload));
   }, []);
 
-  function handleChange() {
+  function handleChange(e) {
+    e.preventDefault();
     setIsRegion(!isRegion);
-    onClickBtn();
+    onClickBtn(e);
   }
 
   function onClickBtn(e) {
-    e.preventDefault();
     const payload = {
       pushup,
       burpee,
