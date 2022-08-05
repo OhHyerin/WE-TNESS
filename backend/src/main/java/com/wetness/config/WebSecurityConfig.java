@@ -27,6 +27,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
     @Autowired
     private AuthEntryPointJwt unauthorizedHandler;
 
@@ -46,7 +47,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String[] Exclude_Paths =
             {"/", "/user/login", "/user/join","/user/duplicate-email/*", "/user/duplicate-nickname/*",
              "/user/refresh", "/room/disconnect", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
-                    , "/swagger-resources/**","/v2/api-docs","/csrf", "/error"};
+                    , "/swagger-resources/**","/v2/api-docs","/csrf", "/error", "/report", "/report/*"};
 //"/user/duplicate-email/*",
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
