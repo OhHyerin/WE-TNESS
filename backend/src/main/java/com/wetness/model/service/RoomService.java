@@ -13,6 +13,7 @@ import com.wetness.model.dto.request.MakeRoomReq;
 import com.wetness.model.dto.response.RoomListRes;
 import io.openvidu.java.client.*;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,9 +52,9 @@ public class RoomService {
                 .title(req.getTitle())
                 .password(req.getPassword())
                 .workoutId(req.getWorkout())
-                .isLocked(req.getPassword()==""?true:false)
+                .isLocked(!req.getPassword().equals(""))
                 .createDate(new Timestamp(System.currentTimeMillis()))
-                .manager_id(userDetails.getId())
+                .managerId(userDetails.getId())
                 .build();
 
         // DB에 새로 생성된 방 저장
@@ -83,7 +84,7 @@ public class RoomService {
 
         Room room = mapSessionRoom.getRoom();
         // 방이 잠겨있는데 비밀번호가 다르다면
-        if(room.isLocked()&&!(room.getPassword()==enterRoomReq.getPassword())) {
+        if(room.isLocked()&&!(room.getPassword().equals(enterRoomReq.getPassword()))) {
             return "Unauthorized";
         }
 
@@ -103,6 +104,7 @@ public class RoomService {
 
     }
 
+    @SneakyThrows
     @Transactional
     public void disconnect(DisconnectionReq req) throws OpenViduJavaClientException, OpenViduHttpException {
 
@@ -111,9 +113,10 @@ public class RoomService {
         Session session = this.mapSessions.get(sessionName).getSession();
         long roomId = this.mapSessions.get(sessionName).getRoom().getId();
         Room room = roomRepository.findById(roomId).orElse(null);
+        if(room==null) throw new Exception("해당하는 방이 디비에 없습니다");
 
         // disconnection 된 사람이 방장이라면 방 삭제
-        int managerId = (int) this.mapSessions.get(sessionName).getRoom().getManager_id();
+        int managerId = (int) this.mapSessions.get(sessionName).getRoom().getManagerId();
         if(managerId==user.getId()){
 
             room.setTerminateDate(new Timestamp(System.currentTimeMillis()));
@@ -192,7 +195,7 @@ public class RoomService {
                 .title(room.getTitle())
                 .headcount(headcount)
                 .isLocked(room.isLocked())
-                .managerNickname(userRepository.getOne(room.getManager_id()).getNickname())
+                .managerNickname(userRepository.getOne(room.getManagerId()).getNickname())
                 //.isGaming()
                 .build();
     }

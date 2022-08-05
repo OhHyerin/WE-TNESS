@@ -27,6 +27,6 @@ public class Room {
     private boolean isLocked;
     private Timestamp createDate;
     private Timestamp terminateDate;
-    private long manager_id;
+    private long managerId;
 
 }
