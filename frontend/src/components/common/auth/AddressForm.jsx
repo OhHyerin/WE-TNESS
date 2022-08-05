@@ -1,11 +1,11 @@
 import styled from 'styled-components';
-import React, { useState } from 'react';
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import DaumPostcode from 'react-daum-postcode';
-import { useDispatch } from 'react-redux';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-import { fetchAddressCode } from '../../../features/user/EditSlice';
+import { fetchAddress, fetchAddressCode } from '../../../features/user/EditSlice';
 
 const LabelBox = styled.div`
   display: flex;
@@ -27,18 +27,16 @@ const style = {
 export default function AddressForm() {
   const dispatch = useDispatch();
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
   // state 추가
-  const [zipCode, setZipcode] = useState('');
-  const [roadAddress, setRoadAddress] = useState('');
+  const address = useSelector(state => state.edit.userInfo.address);
 
   const completeHandler = data => {
     console.log(data);
-    setZipcode(data.zonecode);
-    setRoadAddress(data.roadAddress);
+    dispatch(fetchAddress(data.roadAddress));
     dispatch(fetchAddressCode(data.bcode));
     handleClose();
   };
@@ -46,15 +44,14 @@ export default function AddressForm() {
   return (
     <div>
       <LabelBox>
-        <Button onClick={handleOpen}>우편번호 찾기</Button>
+        <Button onClick={handleOpen}>주소 찾기</Button>
       </LabelBox>
       <Modal open={open} onClose={handleClose}>
         <Box sx={style}>
           <DaumPostcode onComplete={completeHandler} />
         </Box>
       </Modal>
-      <p>우편번호 : {zipCode} </p>
-      <p>주소 : {roadAddress}</p>
+      <p>주소 : {address}</p>
     </div>
   );
 }

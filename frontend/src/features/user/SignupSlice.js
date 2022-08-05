@@ -5,7 +5,6 @@ import api from '../../api/index';
 const signup = createAsyncThunk('signup', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.signup(), payload);
-    console.log(res);
     return res;
   } catch (err) {
     console.log(err);
@@ -17,7 +16,6 @@ const checkNickname = createAsyncThunk('checkNickname', async (payload, { reject
   const nickname = payload;
   try {
     const res = await axios.get(api.checkNickname(nickname));
-    console.log(res);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response);

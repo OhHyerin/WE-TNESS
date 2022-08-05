@@ -98,7 +98,8 @@ export default function EditPage() {
       });
   }
 
-  function onChangePassword() {
+  function onChangePassword(e) {
+    e.preventDefault();
     const payload = {
       password,
     };
