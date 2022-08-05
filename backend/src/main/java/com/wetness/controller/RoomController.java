@@ -6,22 +6,16 @@ import com.wetness.model.dto.request.EnterRoomReq;
 import com.wetness.model.dto.response.EnterRoomRes;
 import com.wetness.model.dto.response.MakeRoomRes;
 import com.wetness.model.dto.response.RoomListRes;
-import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.RoomService;
-import io.openvidu.java.client.OpenViduHttpException;
-import io.openvidu.java.client.OpenViduJavaClientException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor

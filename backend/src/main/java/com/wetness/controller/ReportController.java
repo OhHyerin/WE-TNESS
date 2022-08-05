@@ -3,7 +3,6 @@ package com.wetness.controller;
 import com.wetness.model.dto.request.ReportReqDto;
 import com.wetness.model.dto.response.*;
 import com.wetness.model.service.ReportService;
-import com.wetness.model.service.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;

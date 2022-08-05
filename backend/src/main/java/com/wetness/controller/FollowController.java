@@ -4,7 +4,6 @@ import com.wetness.model.dto.request.FollowReqDto;
 import com.wetness.model.dto.response.BaseResponseEntity;
 import com.wetness.model.dto.response.FollowUserResDto;
 import com.wetness.model.service.FollowService;
-import com.wetness.model.service.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

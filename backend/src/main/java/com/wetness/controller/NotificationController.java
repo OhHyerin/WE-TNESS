@@ -5,14 +5,12 @@ import com.wetness.model.dto.response.BaseResponseEntity;
 import com.wetness.model.dto.response.NotificationDto;
 import com.wetness.model.dto.response.NotificationListResDto;
 import com.wetness.model.service.NotificationService;
-import com.wetness.model.service.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
 @RestController
 @RequestMapping("/notice")

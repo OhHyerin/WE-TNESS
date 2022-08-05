@@ -2,7 +2,6 @@ package com.wetness.model.service;
 
 import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
-import com.wetness.db.entity.User;
 import com.wetness.db.repository.LoggedContinueRepository;
 import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.JoinUserDto;
