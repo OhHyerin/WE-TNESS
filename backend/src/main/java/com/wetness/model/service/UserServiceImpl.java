@@ -1,5 +1,6 @@
 package com.wetness.model.service;
 
+import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
 import com.wetness.db.repository.LoggedContinueRepository;
@@ -7,14 +8,20 @@ import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
+import com.wetness.model.dto.response.LoginDto;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
@@ -30,6 +37,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LoggedContinueRepository loggedContinueRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     private final String hostKakao = "https://kauth.kakao.com/oauth/token";
 
@@ -63,12 +72,6 @@ public class UserServiceImpl implements UserService {
     public boolean updateUser(Long id, UpdateUserDto updateUserDto) {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
-            if (updateUserDto.getEmail() != null &&
-                    !updateUserDto.getEmail().isEmpty() &&
-                    !checkEmailDuplicate(updateUserDto.getEmail())) {
-                user.setEmail(updateUserDto.getEmail());
-            }
-
             if (updateUserDto.getNickname() != null &&
                     !updateUserDto.getNickname().isEmpty() &&
                     !checkNicknameDuplicate(updateUserDto.getNickname())) {
@@ -126,7 +129,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User loginUser(String email, String password) {
         User findUser = userRepository.findByEmail(email)
-                .orElseThrow(()-> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
+                .orElseThrow(() -> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
         return findUser;
     }
 
@@ -166,6 +169,11 @@ public class UserServiceImpl implements UserService {
         User findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
         return findUser;
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -336,4 +344,38 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
+    //TODO security Role 체크하여 drop인 유저는 제외 로직 추가 필요
+    @Override
+    @Transactional
+    public LoginDto loginUser(User user) {
+        Authentication authentication = getAuthentication(user);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String accessToken = jwtUtil.createAccessToken(authentication);
+        String refreshToken = jwtUtil.createRefreshToken();
+
+        saveRefreshToken(userDetails.getNickname(), refreshToken);
+        setLoginData(userDetails.getId());
+
+        return new LoginDto("200", null, accessToken, refreshToken);
+    }
+
+
+    @Override
+    public Authentication getAuthentication(User user) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
+    }
+
+    @Override
+    public LoginDto getCurrentUserLoginDto(String headerAuth, String nickname) {
+        String accessToken = null;
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            accessToken = headerAuth.substring(7, headerAuth.length());
+        }
+        String refreshToken = getRefreshToken(nickname);
+        return new LoginDto("200", null, accessToken, refreshToken);
+    }
 }
