@@ -1,9 +1,6 @@
 package com.wetness.db.entity;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,10 +9,11 @@ import javax.persistence.Table;
 import java.sql.Timestamp;
 
 @Entity
-@Data
+@Getter
+@Setter
 @Builder
-@RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Table(name="room")
 public class Room {
 
