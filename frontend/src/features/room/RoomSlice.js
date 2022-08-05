@@ -10,6 +10,13 @@ const initialState = {
   isRoomsLoaded: false,
   isWorkoutsLoaded: false,
   isSearched: false,
+
+  // 방 생성 관련
+  roomInfo: {
+    title: '',
+    workoutId: '',
+    password: '',
+  },
 };
 
 const getAllRooms = createAsyncThunk('getAllRooms', async (state, { rejectWithValue }) => {

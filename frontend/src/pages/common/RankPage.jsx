@@ -25,8 +25,6 @@ const RankBox = styled.div`
 export default function RankPage() {
   const dispatch = useDispatch();
 
-  // const workoutIds = useSelector(state => state.rank.workoutIds)
-
   const region = useSelector(state => state.rank.region);
 
   const [pushup, setPushup] = useState(true);
@@ -37,12 +35,11 @@ export default function RankPage() {
 
   useEffect(() => {
     const payload = {
-      // workoutIds,
-      pushup,
-      burpee,
-      squat,
-      plank,
-      isRegion,
+      pushup: true,
+      burpee: false,
+      squat: false,
+      plank: false,
+      isRegion: false,
     };
     dispatch(fetchRankList(payload));
   }, []);

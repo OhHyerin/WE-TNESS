@@ -10,7 +10,6 @@ import {
   decodeAccessToken,
   setCurrentUser,
   removeCurrentUser,
-  getCurrentUser,
 } from '../Token';
 
 const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (arg, { rejectWithValue }) => {
