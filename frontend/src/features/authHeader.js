@@ -1,9 +1,11 @@
 import { getAccessToken } from './Token';
 
-const header = { Authorization: `Bearer ${getAccessToken()}` };
+function setConfig() {
+  const header = { Authorization: `Bearer ${getAccessToken()}` };
+  const config = {
+    headers: header,
+  };
+  return config;
+}
 
-const config = {
-  headers: header,
-};
-
-export default config;
+export default setConfig;
