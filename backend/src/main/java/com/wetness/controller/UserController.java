@@ -14,14 +14,15 @@ import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -62,30 +63,11 @@ public class UserController {
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
-    //TODO security Role 체크하여 drop인 유저는 제외 로직 추가 필요
     @PostMapping("/login")
     @ApiOperation(value = "로그인")
     public ResponseEntity<?> loginUser(@RequestBody User user) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-
-        String accessToken = jwtUtil.createAccessToken(authentication);
-        String refreshToken = jwtUtil.createRefreshToken();
-
-        userService.saveRefreshToken(userDetails.getNickname(), refreshToken);
-
-        User targetUser = userService.findByNickname(userDetails.getNickname());
-        userService.setLoginData(targetUser.getId());
-
-        LoginDto loginDto = new LoginDto("200", null, accessToken, refreshToken);
-        return ResponseEntity.ok().body(loginDto);
+        return ResponseEntity.ok().body(userService.loginUser(user));
     }
-
 
     @GetMapping("/duplicate-email/{email}")
     @ApiOperation(value = "이메일 중복확인")
@@ -98,13 +80,16 @@ public class UserController {
     public ResponseEntity<DuplicateCheckResDto> duplicatedNickname(@PathVariable String nickname) {
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
     }
-    
-    @PutMapping
+
+    @PatchMapping
     @ApiOperation(value = "회원정보 수정")
-    public ResponseEntity<BaseResponseEntity> updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                         @RequestBody UpdateUserDto updateUserDto) {
+    public ResponseEntity<?> updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                        @RequestBody UpdateUserDto updateUserDto) {
         if (userService.updateUser(userDetails.getId(), updateUserDto)) {
-            return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+            User user = userService.findById(userDetails.getId());
+            String accessToken = jwtUtil.createTokenForRefresh(user);
+            String refreshToken = jwtUtil.createRefreshToken();
+            return ResponseEntity.ok().body(new LoginDto("200", null, accessToken, refreshToken));
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
