@@ -34,7 +34,7 @@ const SubmitForm = styled.form`
 `;
 
 const fabStyle = {
-  position: 'absolute',
+  position: 'fixed',
   bottom: 16,
   right: 16,
   color: 'white',
