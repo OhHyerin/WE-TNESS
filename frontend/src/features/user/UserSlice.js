@@ -11,36 +11,44 @@ import {
   getCurrentUser,
 } from '../Token';
 import api from '../../api/index';
-import config from '../authHeader';
+import setConfig from '../authHeader';
 
 const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => {
   try {
-    const res = await axios.post(api.login(), payload);
+    const res = await axios.post(api.login(), payload, {});
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
     setCurrentUser(decodeAccessToken(res.data.accessToken));
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
 });
 
-const logout = createAsyncThunk('logout', async (state, { rejectWithValue }) => {
+const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
   try {
-    const res = await axios.post(api.logout(), {}, config);
-    removeAccessToken();
-    removeRefreshToken();
-    removeCurrentUser();
-    return res;
+    const res = await axios.post(api.logout(), {}, setConfig());
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
 });
 
-const fetchFollowList = createAsyncThunk('fetchFollowList', async (payload, { rejectWithValue }) => {
+const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { rejectWithValue }) => {
   try {
-    const response = await axios.get(api.fetchFollowList());
-    return response;
+    const res = await axios.get(api.fetchFollowingList(), setConfig());
+    console.log(res);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response);
+  }
+});
+
+const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (arg, { rejectWithValue }) => {
+  try {
+    const res = await axios.get(api.fetchFollowerList(), setConfig());
+    console.log(res);
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -78,7 +86,18 @@ const initialState = {
     exist_user: false,
     accessToken: '',
   },
-  followList: {},
+  followingList: [
+    {
+      nickname: '',
+      loginState: false,
+    },
+  ],
+  followerList: [
+    {
+      nickname: '',
+      loginState: false,
+    },
+  ],
   isLoding: false,
 };
 
@@ -97,18 +116,24 @@ export const UserSlice = createSlice({
     },
   },
   extraReducers: {
-    [login.fulfilled]: state => {
+    [login.fulfilled]: (state, action) => {
       state.isAuthenticated = true;
       state.currentUser = getCurrentUser();
     },
     [login.rejected]: state => {
       state.isAuthenticated = false;
     },
-    [logout.fulfilled]: state => {
+    [logout.fulfilled]: (state, action) => {
       state.isAuthenticated = false;
+      removeAccessToken();
+      removeRefreshToken();
+      removeCurrentUser();
     },
-    [fetchFollowList.fulfilled]: (state, action) => {
-      state.followList = action.payload;
+    [fetchFollowingList.fulfilled]: (state, action) => {
+      state.followingList = action.payload.followList;
+    },
+    [fetchFollowerList.fulfilled]: (state, action) => {
+      state.followerList = action.payload.followList;
     },
     [kakaoLogin.fulfilled]: (state, action) => {
       state.kakaoInfo = action.payload;
@@ -116,7 +141,7 @@ export const UserSlice = createSlice({
   },
 });
 
-export { login, logout, fetchFollowList, kakaoLogin, findPassword };
+export { login, logout, fetchFollowingList, fetchFollowerList, kakaoLogin, findPassword };
 export const { fetchCurrentUser, checkLogin, toggleIsLoding } = UserSlice.actions;
 
 export default UserSlice.reducer;

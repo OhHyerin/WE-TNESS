@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../../api';
-import config from '../authHeader';
+import setConfig from '../authHeader';
 
 const fetchRankList = createAsyncThunk('fetchRankList', async (payload, { rejectWithValue }) => {
   try {
-    const res = await axios.post(api.fetchRankList(), payload, config);
-    console.log(res)
+    console.log(payload);
+    const res = await axios.post(api.fetchRankList(), payload, setConfig());
+    console.log(res);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -16,14 +17,14 @@ const fetchRankList = createAsyncThunk('fetchRankList', async (payload, { reject
 
 const initialState = {
   workoutIds: [],
-  rankList: [
+  ranks: [
     {
       rank: '1',
       nickname: 'gg',
       calories: '100',
-    }
+    },
   ],
-  region: '',
+  msg: '',
   isRegion: false,
 };
 
@@ -32,14 +33,13 @@ export const RankSlice = createSlice({
   initialState,
   reducers: {
     toggleIsRegion: state => {
-      state.isRegion = !state.isRegion
-    }
-    
+      state.isRegion = !state.isRegion;
+    },
   },
   extraReducers: {
     [fetchRankList.fulfilled]: (state, action) => {
-      state.rankList = action.payload?.rankList
-      state.region = action.payload?.region
+      state.ranks = action.payload?.ranks;
+      state.msg = action.payload?.msg;
     },
   },
 });

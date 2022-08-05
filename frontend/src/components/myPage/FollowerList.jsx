@@ -52,25 +52,13 @@ const rows = [
 ];
 
 function ColumnGroupingTable() {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const handleChangePage = (event, newPage) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = event => {
-    setRowsPerPage(+event.target.value);
-    setPage(0);
-  };
-
   return (
     <Paper>
       <TableContainer>
         <Table stickyHeader>
           <TableHead>
             <TableRow>
-              <TableCell align="start" colSpan={5}>
+              <TableCell align="right" colSpan={5}>
                 Follower
               </TableCell>
             </TableRow>
@@ -83,8 +71,8 @@ function ColumnGroupingTable() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map(row => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={row.code}>
+            {rows.map((row, i) => (
+              <TableRow hover role="checkbox" tabIndex={-1} key={i}>
                 {columns.map(column => {
                   const value = row[column.id];
                   return (
@@ -98,15 +86,6 @@ function ColumnGroupingTable() {
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={null}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
     </Paper>
   );
 }

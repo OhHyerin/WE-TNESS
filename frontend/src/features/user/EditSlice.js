@@ -1,13 +1,23 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../../api/index';
-import config from '../authHeader';
+import setConfig from '../authHeader';
+import {
+  setAccessToken,
+  removeAccessToken,
+  setRefreshToken,
+  removeRefreshToken,
+  decodeAccessToken,
+  setCurrentUser,
+  removeCurrentUser,
+  getCurrentUser,
+} from '../Token';
 
-const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (payload, { rejectWithValue }) => {
+const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (arg, { rejectWithValue }) => {
   try {
-    const res = await axios.get(api.fetchUserInfo(), {}, config);
+    const res = await axios.get(api.fetchUserInfo(), setConfig());
     console.log(res);
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -15,9 +25,15 @@ const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (payload, { reject
 
 const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
   try {
-    const res = await axios.put(api.edit(), payload, config);
-    console.log(res);
-    return res;
+    const res = await axios.put(api.edit(), payload, setConfig());
+    console.log(res.data);
+    removeAccessToken();
+    removeRefreshToken();
+    removeCurrentUser();
+    setAccessToken(res.data.accessToken);
+    setRefreshToken(res.data.refreshToken);
+    setCurrentUser(decodeAccessToken(res.data.accessToken));
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -25,7 +41,7 @@ const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
 
 const changePassword = createAsyncThunk('changePassword', async (payload, { rejectWithValue }) => {
   try {
-    const res = await axios.patch(api.changePassword(), payload, config);
+    const res = await axios.patch(api.changePassword(), payload, setConfig());
     return res;
   } catch (err) {
     return rejectWithValue(err.response);
@@ -63,6 +79,9 @@ export const SignupSlice = createSlice({
     fetchGender: (state, action) => {
       state.userInfo.gender = action.payload;
     },
+    fetchAddress: (state, action) => {
+      state.userInfo.address = action.payload;
+    },
     fetchAddressCode: (state, action) => {
       state.addressCode = action.payload;
     },
@@ -77,7 +96,7 @@ export const SignupSlice = createSlice({
     [edit.pending]: state => {
       state.isLoading = true;
     },
-    [edit.fulfilled]: state => {
+    [edit.fulfilled]: (state, action) => {
       state.isLoading = false;
     },
     [edit.rejected]: state => {
@@ -97,6 +116,7 @@ export const {
   fetchPassword,
   fetchPwdVerify,
   fetchGender,
+  fetchAddress,
   fetchAddressCode,
   fetchHeight,
   fetchWeight,
