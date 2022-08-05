@@ -3,6 +3,7 @@ package com.wetness.controller;
 import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
+import com.wetness.model.dto.request.TerminateGameReqDto;
 import com.wetness.model.service.GameService;
 import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
@@ -37,6 +38,16 @@ public class GameController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @PostMapping("/end")
+    public ResponseEntity<String> terminateGame(@RequestBody TerminateGameReqDto terminateDto,
+                                                          @AuthenticationPrincipal UserDetailsImpl user){
+
+        gameService.terminateGame(terminateDto,user.id()); //exception 처리 필요
+
+        return new ResponseEntity<>(SUCCESS, HttpStatus.OK);
+    }
+
 
     @PostMapping("/result")
     public ResponseEntity<Map<String,Long>> saveResult(@RequestBody GameResultReqDto gameResult,

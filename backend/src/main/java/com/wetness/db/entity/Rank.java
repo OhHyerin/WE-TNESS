@@ -24,13 +24,14 @@ public class Rank {
     //private long userId;
 //    @ManyToOne
 //    private Workout workout;
-
+    @Column(name="workout_id")
     private String workout; //여기
 
     //private long workoutId;
 
-
+    @Column(name="sido_code")
     private String sidoCode;
+    @Column(name="gugun_code")
     private String gugunCode;
 
     private double calorie;

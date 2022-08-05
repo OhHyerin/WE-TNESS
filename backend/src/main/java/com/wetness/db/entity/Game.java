@@ -36,6 +36,11 @@ public class Game {
         this.isPlaying = builder.isPlaying;
     }
 
+    public void setTerminateDate(int[] terminating){
+        this.terminateDate = LocalDateTime.of(terminating[0],terminating[1],terminating[2],
+                terminating[3],terminating[4],terminating[5]);
+    }
+
     public static class GameBuilder{
         private long id;
         private Room room;

@@ -5,9 +5,11 @@ import com.wetness.db.repository.*;
 import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
+import com.wetness.model.dto.request.TerminateGameReqDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,14 +45,23 @@ public class GameServiceImpl implements GameService{
 
         Room room = roomRepo.findById(gameReqDto.getRoomId()).get();
 
-        //userId validation 체크 추가하기
+        //userId validation 체크 추가하기 -> Room 생성할 때 생성한 user 정보가 없어서 애매함
+        
         Game game = new Game.GameBuilder().buildRoom(room).
                 buildCreateTime(gameReqDto.getCreateDate()).buildIsPlaying(true)
                 .getGame();
 
-        gameRepo.save(game);
-        Long gameId = gameRepo.findByRoomAndCreateDate(game.getRoom(),game.getCreateDate()).get(0).getId();
+
+        Long gameId = gameRepo.save(game).getId();
         return gameId;
+    }
+
+    @Override
+    public void terminateGame(TerminateGameReqDto terminateDto, Long userId) {
+        Game game = gameRepo.findById(terminateDto.getGameId()).get();
+        game.setTerminateDate(terminateDto.getTerminateDate());
+        gameRepo.save(game);
+        return;
     }
 
     @Override
@@ -132,7 +143,7 @@ public class GameServiceImpl implements GameService{
         }
         String workoutId = sb.toString();
 
-        List<Rank> oldList = rankRepo.findByUserIdAndWorkoutIdLikeAndDateGreaterThanEqual(user.getId(),  //여기 DateAfter 말고 그냥 Date 써도 될런지..
+        List<Rank> oldList = rankRepo.findByUserIdAndWorkoutLikeAndDateGreaterThanEqual(user.getId(),  //여기 DateAfter 말고 그냥 Date 써도 될런지..
                 workoutId, regDate);
 
         

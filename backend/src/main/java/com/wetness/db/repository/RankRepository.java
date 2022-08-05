@@ -15,7 +15,7 @@ public interface RankRepository extends JpaRepository<Rank, Long> {
     List<Rank> findTop20ByDateOrderByCalorieDesc(Date date);
 
 
-    List<Rank> findByUserIdAndWorkoutIdLikeAndDateGreaterThanEqual(long userId, String workoutId, LocalDate start);
+    List<Rank> findByUserIdAndWorkoutLikeAndDateGreaterThanEqual(long userId, String workoutId, LocalDate start);
 
     List<Rank> findByUserIdAndDateGreaterThanEqual(long userId, LocalDate regDate);
 
