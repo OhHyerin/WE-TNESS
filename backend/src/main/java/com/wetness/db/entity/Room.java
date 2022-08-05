@@ -19,7 +19,6 @@ public class Room {
 
     @Id @GeneratedValue
     private long id;
-    @Column(name="`name`")
     private String title;
     private String password;
 
