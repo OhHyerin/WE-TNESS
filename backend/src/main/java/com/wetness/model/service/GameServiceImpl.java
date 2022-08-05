@@ -5,11 +5,10 @@ import com.wetness.db.repository.*;
 import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
-import com.wetness.model.dto.request.TerminateGameReqDto;
+import com.wetness.model.dto.request.TerminateGameDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,10 +56,9 @@ public class GameServiceImpl implements GameService{
     }
 
     @Override
-    public void terminateGame(TerminateGameReqDto terminateDto, Long userId) {
-        Game game = gameRepo.findById(terminateDto.getGameId()).get();
-        game.setTerminateDate(terminateDto.getTerminateDate());
-        gameRepo.save(game);
+    public void terminateGame(GameResultReqDto result, Long userId) {
+        Game game = gameRepo.findById(result.getGameId()).get();
+        game.setTerminateDate(result.getTerminateDate());
         return;
     }
 
@@ -80,9 +78,9 @@ public class GameServiceImpl implements GameService{
 
         this.insertRank(gameResult);
 
-        if(gameResult.getRank()>=3){
-            this.insertMedal(gameResult);
-        }
+//        if(gameResult.getRank()<=3){
+//            this.insertMedal(gameResult);
+//        }
 
 
         return userGameId;
@@ -107,6 +105,7 @@ public class GameServiceImpl implements GameService{
         User user = gameRecord.getUser();
 
         if(gameRecord.getRank()==1){
+            System.out.println("1등해서 메달 땀==================================");
             medalRepo.save(new Medal(user.getId(),user,1,0,0));
         }else if(gameRecord.getRank()==2){
             medalRepo.save(new Medal(user.getId(),user,0,1,0));
@@ -129,33 +128,57 @@ public class GameServiceImpl implements GameService{
         LocalDateTime gameDate = gameRecord.getGame().getTerminateDate();
         LocalDate regDate = LocalDate.of(gameDate.getYear(),gameDate.getMonth(), gameDate.getDayOfMonth());
 
-
         int N = (int)gameRecord.getWorkout().getId()-1;
 
-        StringBuilder sb = new StringBuilder();
-
-        for(int i=0; i<4; i++){
-            if(i==N){
-                sb.append("_");
-            }else{
-                sb.append("0");
+        if(rankRepo.findByUserIdAndWorkoutAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isPresent()){
+            List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
+            System.out.println(" old List 있음 ========================================");
+            for(int i=0; i<oldList.size(); i++){
+                Rank old = oldList.get(i);
+                if((old.getWorkout() & (1<<N) )== 0) continue;
+                old.setCalorie(old.getCalorie()+calorie);
+                rankRepo.save(old);
             }
+        }else{
+            System.out.println(" new List 삽입 ===============================");
+            List<Rank> newList = new ArrayList<>();
+            newList.add(new Rank(0L, user, (1<<N), user.getSidoCode(), user.getGugunCode(), calorie, regDate));
+
+            List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
+            for(int i=0; i<oldList.size(); i++){
+                Rank old = oldList.get(i);
+                newList.add(new Rank(0L, user, (old.getWorkout()|(1<<N)),user.getSidoCode(),
+                        user.getGugunCode(), old.getCalorie()+calorie, regDate));
+            }
+            rankRepo.saveAll(newList);
         }
-        String workoutId = sb.toString();
 
-        List<Rank> oldList = rankRepo.findByUserIdAndWorkoutLikeAndDateGreaterThanEqual(user.getId(),  //여기 DateAfter 말고 그냥 Date 써도 될런지..
-                workoutId, regDate);
 
-        
+        return;
+    }
+
+
+
+}
+
+
+
+
+/***
 //case1 : 이미 해당 운동을 한 적이 있는 경우
         if(oldList.size()>0){
+            System.out.println("오늘 이미 한 운동");
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);
                 old.setCalorie(old.getCalorie()+calorie);
             }
         }
+
+
+
 //case2 : 해당 운동을 오늘 처음하는 경우
         else{
+            System.out.println("오늘 처음 하는 운동");
             List<Rank> records = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
 
             List<Rank> newList = new ArrayList<>();
@@ -164,7 +187,7 @@ public class GameServiceImpl implements GameService{
                 Rank old = records.get(i);
 
                 sb = new StringBuilder();
-                String tmp = Integer.toBinaryString( Integer.parseInt(old.getWorkout()) | (1<<N) );
+                String tmp = Integer.toBinaryString( (Integer.parseInt(old.getWorkout()) | (1<<N)) );
                 for(int j=0; j <( 4 - tmp.length()); j++){
                     sb.append("0");
                 }
@@ -175,7 +198,7 @@ public class GameServiceImpl implements GameService{
             }
 
             sb = new StringBuilder();
-            for(int i=0; i<4; i++){
+            for(int i=4; i>=0; i--){
                 if(i==N){
                     sb.append("1");
                 }else{
@@ -191,7 +214,7 @@ public class GameServiceImpl implements GameService{
 
 
 
-/***
+
         if(rankList.size()==1){
             Rank rank = rankList.get(0);
             rank.setCalorie(rank.getCalorie()+calorie);
@@ -203,9 +226,4 @@ public class GameServiceImpl implements GameService{
             System.out.println("rank에 기록이 2개 이상 삽입됨");
         }
 ***/
-        return;
-    }
 
-
-
-}

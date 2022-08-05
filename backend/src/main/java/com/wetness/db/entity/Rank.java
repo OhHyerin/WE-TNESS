@@ -25,7 +25,7 @@ public class Rank {
 //    @ManyToOne
 //    private Workout workout;
     @Column(name="workout_id")
-    private String workout; //여기
+    private int workout; //여기
 
     //private long workoutId;
 

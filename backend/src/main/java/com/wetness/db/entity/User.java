@@ -8,7 +8,7 @@ import java.util.Date;
 @Entity
 @Data
 @Table(name="user")
-public class User {
+public class User implements Serializable{
 
     @Id @GeneratedValue // DB AUTO_INCREMENT 작업을 DB 테이블에서 수행 - application.properties 에서 속성 추가됨.
     private Long id;

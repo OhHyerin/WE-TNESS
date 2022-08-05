@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GameResultReqDto {
     Long userId;
+    int[] terminateDate;
     Long gameId;
     Long workoutId;
     double score;
