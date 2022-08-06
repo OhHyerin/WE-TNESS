@@ -10,5 +10,5 @@ import java.util.Optional;
 
 public interface GameRepository extends JpaRepository<Game, Long> {
     //List<Game> findByRoomAndCreateDate(Room room, LocalDateTime createDate);
-
+    
 }

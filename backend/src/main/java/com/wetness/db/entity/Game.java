@@ -41,6 +41,10 @@ public class Game {
                 terminating[3],terminating[4],terminating[5]);
     }
 
+    public void setIsPlaying(Boolean isPlaying){
+        this.isPlaying = isPlaying;
+    }
+
     public static class GameBuilder{
         private long id;
         private Room room;

@@ -58,6 +58,7 @@ public class GameServiceImpl implements GameService{
     public void terminateGame(GameResultReqDto result, Long userId) {
         Game game = gameRepo.findById(result.getGameId()).get();
         game.setTerminateDate(result.getTerminateDate());
+        game.setIsPlaying(false);
         return;
     }
 
