@@ -3,12 +3,14 @@ package com.wetness.model.service;
 import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
+import com.wetness.db.repository.CommonCodeRepository;
 import com.wetness.db.repository.LoggedContinueRepository;
 import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
 import com.wetness.model.dto.response.LoginDto;
+import com.wetness.model.dto.response.UserInfoResDto;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -27,6 +29,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +39,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final LoggedContinueRepository loggedContinueRepository;
+    private final CommonCodeRepository commonCodeRepository;
+
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
@@ -378,4 +383,40 @@ public class UserServiceImpl implements UserService {
         String refreshToken = getRefreshToken(nickname);
         return new LoginDto("200", null, accessToken, refreshToken);
     }
+
+    @Override
+    @Transactional
+    public ArrayList<UserInfoResDto> getUsersInfoResDto(ArrayList<String> users) {
+        ArrayList<UserInfoResDto> list = new ArrayList<UserInfoResDto>();
+        for (String userNickname : users) {
+            User user = userRepository.findByNickname(userNickname);
+            String address = getAddress(user.getSidoCode(), user.getGugunCode());
+            UserInfoResDto userInfoResDto = UserInfoResDto.generateUserInfoResDto(user, address);
+            list.add(userInfoResDto);
+        }
+        return list;
+    }
+
+    @Override
+    @Transactional
+    public UserInfoResDto getUserInfoResDto(String nickname) {
+        User user = findByNickname(nickname);
+        if (user != null) {
+            String address = getAddress(user.getSidoCode(), user.getGugunCode());
+            return UserInfoResDto.generateUserInfoResDto(user, address);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public String getAddress(String sidoCode, String gugunCode) {
+        if (sidoCode != null && gugunCode != null) {
+            String sido = commonCodeRepository.findByCode(sidoCode).getName();
+            String gugun = commonCodeRepository.findByCode(gugunCode).getName();
+            return sido + " " + gugun;
+        }
+        return null;
+    }
+
 }

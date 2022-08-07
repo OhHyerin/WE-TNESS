@@ -6,9 +6,11 @@ import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
 import com.wetness.model.dto.response.LoginDto;
+import com.wetness.model.dto.response.UserInfoResDto;
 import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Map;
 
 public interface UserService {
@@ -51,9 +53,16 @@ public interface UserService {
 
     LoggedContinue getLoginData(Long userId);
 
-    public LoginDto loginUser(User user);
+    LoginDto loginUser(User user);
 
-    public Authentication getAuthentication(User user);
+    Authentication getAuthentication(User user);
 
-    public LoginDto getCurrentUserLoginDto(String headerAuth, String nickname);
+    LoginDto getCurrentUserLoginDto(String headerAuth, String nickname);
+
+    ArrayList<UserInfoResDto> getUsersInfoResDto(ArrayList<String> users);
+
+    UserInfoResDto getUserInfoResDto(String nickname);
+
+    String getAddress(String sidoCode, String gugunCode);
+
 }
