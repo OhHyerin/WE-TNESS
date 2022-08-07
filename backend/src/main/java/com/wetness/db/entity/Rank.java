@@ -20,12 +20,14 @@ public class Rank {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name="user_id")
     private User user;
     //private long userId;
-//    @ManyToOne
-//    private Workout workout;
-    @Column(name="workout_id")
-    private int workout; //여기
+    @ManyToOne
+    @JoinColumn(name="workout_id")
+    private Workout workout;
+//    @Column(name="workout_id")
+//    private int workout; //여기
 
     //private long workoutId;
 
@@ -38,7 +40,42 @@ public class Rank {
 
 //    @Temporal(TemporalType.DATE)  //년, 월, 일 저장
     private LocalDate date;  //임시로 타입 변환
- 
+
+    private Rank(RankBuilder builder){
+        this.id = builder.id;
+        this.user = builder.user;
+        this.workout = builder.workout;
+        this.sidoCode = builder.sidoCode;
+        this.gugunCode = builder.gugunCode;
+        this.calorie = builder.calorie;
+        this.date = LocalDate.now();
+
+    }
+
+    public static class RankBuilder{
+        private long id;
+        private User user;
+        private Workout workout;
+        private String sidoCode;
+        private String gugunCode;
+        private double calorie;
+        private LocalDate date;
+
+        public RankBuilder(){}
+
+        public RankBuilder buildUser(User user){
+            this.user = user;
+            return this;
+        }
+
+        public RankBuilder buildWorkout(Workout workout){
+            this.workout = workout;
+            return this;
+        }
+
+
+    }
+
 //    public Rank(long userId, long workoutId, String sidoCode, String gugunCode, long calorie){
 //        this.userId = userId;
 //        this.workoutId = workoutId;
