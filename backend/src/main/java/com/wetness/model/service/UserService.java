@@ -65,4 +65,5 @@ public interface UserService {
 
     String getAddress(String sidoCode, String gugunCode);
 
+    void setLoggedInData(long userId);
 }
