@@ -4,8 +4,8 @@ import { Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Box, Button, Modal } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { checkNickname, checkEmail } from '../../features/user/SignupSlice';
-import { fetchUserInfo, edit, changePassword, fetchNickname, fetchEmail } from '../../features/user/EditSlice';
+import { checkNickname } from '../../features/user/SignupSlice';
+import { fetchUserInfo, edit, changePassword, fetchNickname } from '../../features/user/EditSlice';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import IconTextField from '../../components/common/IconTextField';
 import FormBox from '../../components/common/auth/FormBox';
@@ -45,17 +45,15 @@ export default function EditPage() {
 
   useEffect(() => {
     dispatch(fetchUserInfo());
-  }, []);
+  }, [dispatch]);
 
   const userInfo = useSelector(state => state.edit.userInfo);
   const addressCode = useSelector(state => state.edit.addressCode);
   const password = useSelector(state => state.signup.userInfo.password);
   const pwdVerify = useSelector(state => state.signup.userInfo.pwdVerify);
   const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
-  const isPossibleEmail = useSelector(state => state.signup.isPossibleEmail);
 
   const [isCheckNN, setIsCheckNN] = useState(false);
-  const [isCheckEmail, setIsCheckEmail] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
 
   const [isEditError, setIsEditError] = useState(false);
@@ -66,22 +64,12 @@ export default function EditPage() {
   const onNicknameHandler = e => {
     dispatch(fetchNickname(e.target.value));
   };
-  const onEmailHandler = e => {
-    dispatch(fetchEmail(e.target.value));
-  };
 
   function onCheckNicknameHandler(e) {
     e.preventDefault();
     const payload = userInfo.nickname;
     setIsCheckNN(true);
     dispatch(checkNickname(payload));
-  }
-
-  function onCheckEmailHandler(e) {
-    e.preventDefault();
-    const payload = userInfo.email;
-    setIsCheckEmail(true);
-    dispatch(checkEmail(payload));
   }
 
   function onSubmitHandler(e) {
@@ -159,27 +147,6 @@ export default function EditPage() {
               />
             </InputBox>
             <InputBox>
-              <IconTextField
-                error={isCheckEmail && !isPossibleEmail}
-                iconEnd={
-                  userInfo.email ? (
-                    <CheckBtn onClick={onCheckEmailHandler}>확인</CheckBtn>
-                  ) : (
-                    <CheckBtn disabled deactive={!userInfo.email}>
-                      확인
-                    </CheckBtn>
-                  )
-                }
-                type="email"
-                label="*이메일"
-                value={userInfo.email}
-                onChange={onEmailHandler}
-                helperText={
-                  isCheckEmail ? (isPossibleEmail ? '사용 가능한 이메일입니다.' : '사용중인 이메일입니다.') : null
-                }
-              />
-            </InputBox>
-            <InputBox>
               <GenderForm></GenderForm>
             </InputBox>
             <InputBox>
@@ -187,9 +154,7 @@ export default function EditPage() {
               <AddressForm />
             </InputBox>
             <BodyForm></BodyForm>
-            <SubmitBtn
-              disabled={!isCheckNN || !isPossibleNickname || !isCheckEmail || !isPossibleEmail}
-              deactive={!isCheckNN || !isPossibleNickname || !isCheckEmail || !isPossibleEmail}>
+            <SubmitBtn disabled={!isCheckNN || !isPossibleNickname} deactive={!isCheckNN || !isPossibleNickname}>
               수정하기
             </SubmitBtn>
           </SignupForm>
