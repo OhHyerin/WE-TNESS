@@ -8,6 +8,7 @@ import java.sql.Date;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface RankRepository extends JpaRepository<Rank, Long> {
 
@@ -20,6 +21,12 @@ public interface RankRepository extends JpaRepository<Rank, Long> {
     List<Rank> findTop20ByDateAndGugunCodeOrderByCalorieDesc(Date date, String gugunCode);
     //지역 구분 o, 운동 구분 o
     List<Rank> findTop20ByDateAndGugunCodeAndWorkoutIdOrderByCalorieDesc(Date date, String gugunCode, long workoutId);
+
+
+
+    Optional<Rank> findByUserIdAndWorkoutAndDateGreaterThanEqual(long userId, int workoutId, LocalDate start);
+
+    List<Rank> findByUserIdAndDateGreaterThanEqual(long userId, LocalDate regDate);
 
 
 

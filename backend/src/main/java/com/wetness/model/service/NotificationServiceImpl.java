@@ -56,6 +56,22 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
+    public boolean registerAwardMessage(Long receiverId, Long awardId) {
+        Notification notification = new Notification();
+        User target = userRepository.findById(receiverId).orElse(null);
+        if (target != null) {
+            notification.setReceiver(target);
+            notification.setNotifyDate(LocalDateTime.now());
+            notification.setNotifyType("award");
+            notification.setBadgeId(awardId);
+            notificationRepository.save(notification);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional
     public ArrayList<NotificationDto> getNotification(Long receiverId) {
         return notificationRepository.findUncheckedNotifications(receiverId);
     }
