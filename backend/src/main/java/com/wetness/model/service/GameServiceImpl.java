@@ -54,6 +54,22 @@ public class GameServiceImpl implements GameService{
         return gameId;
     }
 
+
+    @Override
+    public void insertDiary(DiaryReqDto diaryReq, UserDetailsImpl user) {
+        User writer = userRepo.findById(user.id()).get();
+        GameRecord gameRecord = gameRecordRepo.findById(diaryReq.getUserGameId()).get();
+
+        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(diaryReq.getFileName()).
+                buildDate(diaryReq.getDate()).buildRecord(gameRecord).getDiary();
+
+        diaryRepo.save(diary);
+        return;
+    }
+
+
+
+
     @Override
     public void terminateGame(GameResultReqDto result, Long userId) {
         Game game = gameRepo.findById(result.getGameId()).get();
@@ -152,18 +168,6 @@ public class GameServiceImpl implements GameService{
     }
 
 
-
-    @Override
-    public void insertDiary(DiaryReqDto diaryReq, UserDetailsImpl user) {
-        User writer = userRepo.findById(user.id()).get();
-        GameRecord gameRecord = gameRecordRepo.findById(diaryReq.getUserGameId()).get();
-
-        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(diaryReq.getFileName()).
-                buildDate(diaryReq.getDate()).buildRecord(gameRecord).getDiary();
-
-        diaryRepo.save(diary);
-        return;
-    }
 
 }
 
