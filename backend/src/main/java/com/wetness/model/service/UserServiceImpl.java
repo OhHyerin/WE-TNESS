@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LoggedContinueRepository loggedContinueRepository;
     private final CommonCodeRepository commonCodeRepository;
+    private final AwardService awardService;
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
@@ -360,6 +361,8 @@ public class UserServiceImpl implements UserService {
 
         saveRefreshToken(userDetails.getNickname(), refreshToken);
         setLoginData(userDetails.getId());
+
+        awardService.loginAwardCheck(userDetails.getId());
 
         return new LoginDto("200", null, accessToken, refreshToken);
     }

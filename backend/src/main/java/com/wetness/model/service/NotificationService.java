@@ -13,6 +13,8 @@ public interface NotificationService {
 
     boolean registerFollowMessage(NotificationReqDto notificationReqDto, String nickname);
 
+    boolean registerAwardMessage(Long receiverId, Long awardId);
+
     ArrayList<NotificationDto> getNotification(Long receiverId);
 
     boolean checkNotification(Long userId, Long notificationId);
