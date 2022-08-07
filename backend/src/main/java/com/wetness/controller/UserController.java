@@ -3,10 +3,7 @@ package com.wetness.controller;
 import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
-import com.wetness.model.dto.request.JoinUserDto;
-import com.wetness.model.dto.request.PasswordDto;
-import com.wetness.model.dto.request.RefreshTokenDto;
-import com.wetness.model.dto.request.UpdateUserDto;
+import com.wetness.model.dto.request.*;
 import com.wetness.model.dto.response.*;
 import com.wetness.model.service.CommonCodeService;
 import com.wetness.model.service.MailService;
@@ -14,7 +11,6 @@ import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -22,13 +18,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -235,15 +230,9 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<?> getUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
-        User user = userService.findByNickname(userDetails.getNickname());
-        if (user != null) {
-            String address = null;
-            if (user.getSidoCode() != null && user.getGugunCode() != null) {
-                String sido = commonCodeService.findCommonCodeName(user.getSidoCode());
-                String gugun = commonCodeService.findCommonCodeName(user.getGugunCode());
-                address = sido + " " + gugun;
-            }
-            return ResponseEntity.ok().body(UserInfoResDto.generateUserInfoResDto(user, address));
+        UserInfoResDto userInfoResDto = userService.getUserInfoResDto(userDetails.getNickname());
+        if (userInfoResDto != null) {
+            return ResponseEntity.ok().body(userInfoResDto);
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
@@ -254,6 +243,17 @@ public class UserController {
         if (loggedContinue != null) {
             return ResponseEntity.ok().body(LoginContinueDto.generateLoginContinueDto(loggedContinue));
         }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+    }
+
+    @PostMapping("/info")
+    public ResponseEntity<?> getUsersInfo(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                          @RequestBody UsersNicknameReqDto usersNicknameReqDto) {
+        ArrayList<UserInfoResDto> list = userService.getUsersInfoResDto(usersNicknameReqDto.getUsers());
+        if (!list.isEmpty()) {
+            return ResponseEntity.ok().body(new UsersInfoResDto(list));
+        }
+
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 }
