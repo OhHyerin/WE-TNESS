@@ -1,6 +1,9 @@
 import { styled as muiStyled, alpha } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import InputBase from '@mui/material/InputBase';
+import { useSelector, useDispatch } from 'react-redux';
+import { useEffect } from 'react';
+import { setKeyword, setIsSearch } from '../../features/room/RoomSlice';
 
 const Search = muiStyled('div')(({ theme }) => ({
   position: 'relative',
@@ -49,12 +52,28 @@ const StyledInputBase = muiStyled(InputBase)(({ theme }) => ({
 }));
 
 export default function SearchForm() {
+  const keyword = useSelector(state => state.room.keyword);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setIsSearch(!!keyword));
+  }, [keyword]);
+
+  const handelKeyword = e => {
+    dispatch(setKeyword(e.target.value));
+  };
+
   return (
     <Search>
       <SearchIconWrapper>
         <SearchIcon />
       </SearchIconWrapper>
-      <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+      <StyledInputBase
+        id="searchBar"
+        placeholder="Search…"
+        inputProps={{ 'aria-label': 'search' }}
+        onChange={handelKeyword}
+      />
     </Search>
   );
 }

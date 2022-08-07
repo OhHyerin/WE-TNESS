@@ -4,12 +4,14 @@ import axios from 'axios';
 const initialState = {
   rooms: [],
   workouts: [],
-  searchResult: {},
+  searchRoomResult: [],
+  searchUserResult: [],
   workout: '전체',
   showPrivate: true,
   isRoomsLoaded: false,
   isWorkoutsLoaded: false,
   isSearched: false,
+  keyword: '',
 };
 
 const getAllRooms = createAsyncThunk('getAllRooms', async (state, { rejectWithValue }) => {
@@ -64,6 +66,12 @@ export const RoomSlice = createSlice({
         { name: 'test2', scope: 'private', workout: '운동2', started: true, numOfPeople: 2 },
       ];
     },
+    setKeyword: (state, action) => {
+      state.keyword = action.payload;
+    },
+    setIsSearch: (state, action) => {
+      state.isSearched = action.payload;
+    },
   },
   extraReducers: {
     [getAllRooms.pending]: state => {
@@ -88,6 +96,6 @@ export const RoomSlice = createSlice({
 });
 
 export { getAllRooms, getWorksouts, searchRooms };
-export const { testWorkout, testShowPrivate, workoutChange, testRoomList } = RoomSlice.actions;
+export const { testWorkout, testShowPrivate, workoutChange, testRoomList, setKeyword, setIsSearch } = RoomSlice.actions;
 
 export default RoomSlice.reducer;
