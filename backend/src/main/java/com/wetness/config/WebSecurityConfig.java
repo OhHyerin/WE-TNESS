@@ -45,11 +45,10 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
     private static final String[] Exclude_Paths =
-            {"/", "/user/login", "/user/join", "/user/duplicate-email/*", "/user/duplicate-nickname/*",
-                    "/user/refresh", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
-                    , "/swagger-resources/**", "/v2/api-docs", "/csrf", "/error"};
-
-    //"/user/duplicate-email/*",
+            {"/", "/user/login", "/user/join","/user/duplicate-email/*", "/user/duplicate-nickname/*",
+             "/user/refresh", "/room/disconnect", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
+                    , "/swagger-resources/**","/v2/api-docs","/csrf", "/error", "/report", "/report/*"};
+//"/user/duplicate-email/*",
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
 

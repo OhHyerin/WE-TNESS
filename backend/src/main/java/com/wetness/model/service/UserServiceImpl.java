@@ -1,25 +1,35 @@
 package com.wetness.model.service;
 
+import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
+import com.wetness.db.repository.CommonCodeRepository;
 import com.wetness.db.repository.LoggedContinueRepository;
 import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
+import com.wetness.model.dto.response.LoginDto;
+import com.wetness.model.dto.response.UserInfoResDto;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +39,11 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final LoggedContinueRepository loggedContinueRepository;
+    private final CommonCodeRepository commonCodeRepository;
+
     private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
 
     private final String hostKakao = "https://kauth.kakao.com/oauth/token";
 
@@ -63,12 +77,6 @@ public class UserServiceImpl implements UserService {
     public boolean updateUser(Long id, UpdateUserDto updateUserDto) {
         User user = userRepository.findById(id).orElse(null);
         if (user != null) {
-            if (updateUserDto.getEmail() != null &&
-                    !updateUserDto.getEmail().isEmpty() &&
-                    !checkEmailDuplicate(updateUserDto.getEmail())) {
-                user.setEmail(updateUserDto.getEmail());
-            }
-
             if (updateUserDto.getNickname() != null &&
                     !updateUserDto.getNickname().isEmpty() &&
                     !checkNicknameDuplicate(updateUserDto.getNickname())) {
@@ -126,7 +134,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public User loginUser(String email, String password) {
         User findUser = userRepository.findByEmail(email)
-                .orElseThrow(()-> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
+                .orElseThrow(() -> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
         return findUser;
     }
 
@@ -166,6 +174,11 @@ public class UserServiceImpl implements UserService {
         User findUser = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
         return findUser;
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     @Override
@@ -334,6 +347,76 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    //TODO security Role 체크하여 drop인 유저는 제외 로직 추가 필요
+    @Override
+    @Transactional
+    public LoginDto loginUser(User user) {
+        Authentication authentication = getAuthentication(user);
+        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        String accessToken = jwtUtil.createAccessToken(authentication);
+        String refreshToken = jwtUtil.createRefreshToken();
+
+        saveRefreshToken(userDetails.getNickname(), refreshToken);
+        setLoginData(userDetails.getId());
+
+        return new LoginDto("200", null, accessToken, refreshToken);
+    }
+
+
+    @Override
+    public Authentication getAuthentication(User user) {
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getEmail(), user.getPassword())
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        return authentication;
+    }
+
+    @Override
+    public LoginDto getCurrentUserLoginDto(String headerAuth, String nickname) {
+        String accessToken = null;
+        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith("Bearer ")) {
+            accessToken = headerAuth.substring(7, headerAuth.length());
+        }
+        String refreshToken = getRefreshToken(nickname);
+        return new LoginDto("200", null, accessToken, refreshToken);
+    }
+
+    @Override
+    @Transactional
+    public ArrayList<UserInfoResDto> getUsersInfoResDto(ArrayList<String> users) {
+        ArrayList<UserInfoResDto> list = new ArrayList<UserInfoResDto>();
+        for (String userNickname : users) {
+            User user = userRepository.findByNickname(userNickname);
+            String address = getAddress(user.getSidoCode(), user.getGugunCode());
+            UserInfoResDto userInfoResDto = UserInfoResDto.generateUserInfoResDto(user, address);
+            list.add(userInfoResDto);
+        }
+        return list;
+    }
+
+    @Override
+    @Transactional
+    public UserInfoResDto getUserInfoResDto(String nickname) {
+        User user = findByNickname(nickname);
+        if (user != null) {
+            String address = getAddress(user.getSidoCode(), user.getGugunCode());
+            return UserInfoResDto.generateUserInfoResDto(user, address);
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public String getAddress(String sidoCode, String gugunCode) {
+        if (sidoCode != null && gugunCode != null) {
+            String sido = commonCodeRepository.findByCode(sidoCode).getName();
+            String gugun = commonCodeRepository.findByCode(gugunCode).getName();
+            return sido + " " + gugun;
+        }
+        return null;
     }
 
 }
