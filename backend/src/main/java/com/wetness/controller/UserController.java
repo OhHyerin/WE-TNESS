@@ -18,6 +18,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -33,6 +34,7 @@ import static com.wetness.util.InputUtil.EMAIL_REGEX;
 @RestController
 @RequestMapping("/user")
 @RequiredArgsConstructor
+@Validated
 public class UserController {
 
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
