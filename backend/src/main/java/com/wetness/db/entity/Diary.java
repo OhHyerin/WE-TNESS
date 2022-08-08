@@ -26,7 +26,7 @@ public class Diary {
     private LocalDateTime date;
 
     @ManyToOne
-    @JoinColumn(name="user_game_id")
+    @JoinColumn(name="game_record_id")
     private GameRecord gameRecord;
 
     @Column(name="is_valid")

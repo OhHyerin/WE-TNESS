@@ -9,7 +9,7 @@ public class GameResultReqDto {
     Long userId;
     int[] terminateDate;
     Long gameId;
-    Long workoutId;
+    int workoutId;
     double score;
     int rank;
 }

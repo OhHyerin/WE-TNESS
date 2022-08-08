@@ -10,5 +10,5 @@ public interface GameService {
     void terminateGame(GameResultReqDto result, Long userId);
 
     Long insertResult(GameResultReqDto result, UserDetailsImpl user);
-    void insertDiary(DiaryReqDto diaryReq, UserDetailsImpl user);
+    void insertDiary(Long gameRecordId,String fileName,UserDetailsImpl user);
 }

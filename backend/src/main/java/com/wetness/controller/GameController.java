@@ -58,14 +58,12 @@ public class GameController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @PostMapping("/diary")
-    public ResponseEntity<String> writeDiary( DiaryReqDto diary,
-                                             @RequestParam("data") MultipartFile multipartFile,
+    @PostMapping("/diary/{gameRecordId}")
+    public ResponseEntity<String> writeDiary( @RequestParam("data") MultipartFile multipartFile,@PathVariable long userGameId,
                                              @AuthenticationPrincipal UserDetailsImpl user) throws IOException {
-        System.out.println(diary.getUserGameId()+"=================================");
 
-      //  gameService.insertDiary(diary,user);
-        awsS3Util.upload(diary.getData(),"diary");
+        String fileName = awsS3Util.upload(multipartFile,"diary");
+        gameService.insertDiary(userGameId, fileName, user);
         return new ResponseEntity<>(SUCCESS,HttpStatus.OK);
     }
 
