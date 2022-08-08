@@ -6,6 +6,7 @@ import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
 import com.wetness.model.dto.response.LoginDto;
+import com.wetness.model.dto.response.LoginLogResDto;
 import com.wetness.model.dto.response.UserInfoResDto;
 import org.springframework.security.core.Authentication;
 
@@ -65,4 +66,9 @@ public interface UserService {
 
     String getAddress(String sidoCode, String gugunCode);
 
+    void setLoggedInData(long userId);
+
+    ArrayList<LoginLogResDto> getLoginLog(long userId);
+
+    ArrayList<String> getLoginDateLog(long userId);
 }

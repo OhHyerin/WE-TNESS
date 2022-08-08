@@ -2,14 +2,17 @@ package com.wetness.model.service;
 
 import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
+import com.wetness.db.entity.LoggedIn;
 import com.wetness.db.entity.User;
 import com.wetness.db.repository.CommonCodeRepository;
 import com.wetness.db.repository.LoggedContinueRepository;
+import com.wetness.db.repository.LoggedInRepository;
 import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
 import com.wetness.model.dto.response.LoginDto;
+import com.wetness.model.dto.response.LoginLogResDto;
 import com.wetness.model.dto.response.UserInfoResDto;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
@@ -29,6 +32,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +44,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final LoggedContinueRepository loggedContinueRepository;
     private final CommonCodeRepository commonCodeRepository;
+    private final LoggedInRepository loggedInRepository;
     private final AwardService awardService;
 
     private final PasswordEncoder passwordEncoder;
@@ -312,6 +317,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+
     @Override
     @Transactional
     public void setLoginData(Long userId) {
@@ -361,10 +367,33 @@ public class UserServiceImpl implements UserService {
 
         saveRefreshToken(userDetails.getNickname(), refreshToken);
         setLoginData(userDetails.getId());
+        setLoggedInData(userDetails.getId());
 
         awardService.loginAwardCheck(userDetails.getId());
 
         return new LoginDto("200", null, accessToken, refreshToken);
+    }
+
+    @Override
+    @Transactional
+    public void setLoggedInData(long userId) {
+        User user = findById(userId);
+        if (user != null) {
+            LoggedIn loggedIn = new LoggedIn();
+            loggedIn.setUser(user);
+            loggedIn.setDate(LocalDateTime.now());
+            loggedInRepository.save(loggedIn);
+        }
+    }
+
+    @Override
+    public ArrayList<LoginLogResDto> getLoginLog(long userId) {
+        return loggedInRepository.getLoginLog(userId);
+    }
+
+    @Override
+    public ArrayList<String> getLoginDateLog(long userId) {
+        return loggedInRepository.getLoginDateLog(userId);
     }
 
 

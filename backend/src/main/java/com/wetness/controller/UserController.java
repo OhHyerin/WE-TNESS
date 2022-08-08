@@ -258,4 +258,16 @@ public class UserController {
 
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
+
+    @GetMapping("/login/log")
+    public ResponseEntity<?> getLoginLog(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        ArrayList<LoginLogResDto> loginLog = userService.getLoginLog(userDetails.getId());
+        return ResponseEntity.ok().body(loginLog);
+    }
+
+    @GetMapping("/login/date-log")
+    public ResponseEntity<?> getDateLoginLog(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        ArrayList<String> loginDateLog = userService.getLoginDateLog(userDetails.getId());
+        return ResponseEntity.ok().body(loginDateLog);
+    }
 }
