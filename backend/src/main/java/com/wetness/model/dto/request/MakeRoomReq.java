@@ -8,7 +8,7 @@ import javax.validation.constraints.NotBlank;
 public class MakeRoomReq {
 
     @NotBlank
-    private int workout;
+    private int workoutId;
     @NotBlank
     private String title;
     private String password;

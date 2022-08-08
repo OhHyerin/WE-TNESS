@@ -10,6 +10,7 @@ import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.DisconnectionReq;
 import com.wetness.model.dto.request.EnterRoomReq;
 import com.wetness.model.dto.request.MakeRoomReq;
+import com.wetness.model.dto.response.EnterRoomRes;
 import com.wetness.model.dto.response.RoomListRes;
 import io.openvidu.java.client.*;
 import lombok.AllArgsConstructor;
@@ -37,7 +38,7 @@ public class RoomService {
     private String OPENVIDU_URL;
     @Value("${wetness.openvidu.secret}")
     private String SECRET;
-    private OpenVidu openVidu = new OpenVidu("localhost:4443","MY_SECRET");
+    private OpenVidu openVidu = new OpenVidu("https://localhost:4443/","WETNESS");
     // 운동종류(int) : {방제목 : 세션+방}
     private Map<String, MapSessionRoom> mapSessions = new ConcurrentHashMap<>();
     // 방 제목 : {유저 닉네임 : 커넥션}
@@ -50,7 +51,7 @@ public class RoomService {
         Room room = Room.builder()
                 .title(req.getTitle())
                 .password(req.getPassword())
-                .workoutId(req.getWorkout())
+                .workoutId(req.getWorkoutId())
                 .isLocked(!req.getPassword().equals(""))
                 .createDate(new Timestamp(System.currentTimeMillis()))
                 .managerId(userDetails.getId())
@@ -63,12 +64,11 @@ public class RoomService {
         String roomTitle = room.getTitle();
         // 방을 만들고
         Session session = this.openVidu.createSession();
-
         mapSessions.put(roomTitle,new MapSessionRoom(room,session));
 
     }
 
-    public String makeToken(UserDetailsImpl userDetails, EnterRoomReq enterRoomReq) throws OpenViduJavaClientException, OpenViduHttpException {
+    public EnterRoomRes makeToken(UserDetailsImpl userDetails, EnterRoomReq enterRoomReq) throws OpenViduJavaClientException, OpenViduHttpException {
 
         // 다른 참가자가 나를 닉네임으로 판변하기 위한 데이터
         String userData = "{\"nickname\": \"" + userDetails.getNickname() + "\"}";
@@ -84,20 +84,22 @@ public class RoomService {
         Room room = mapSessionRoom.getRoom();
         // 방이 잠겨있는데 비밀번호가 다르다면
         if(room.isLocked()&&!(room.getPassword().equals(enterRoomReq.getPassword()))) {
-            return "Unauthorized";
+            return new EnterRoomRes("Unauthorized", room.getTitle(), userRepository.getOne(room.getManagerId()).getNickname());
         }
+        Connection connection = mapSessionRoom.getSession()
+                                .createConnection(connectionProperties);
 
-            Connection connection = mapSessionRoom.getSession()
-                    .createConnection(connectionProperties);
+        if(!this.mapSessionNamesConnections.containsKey(enterRoomReq.getSessionName())){
+            this.mapSessionNamesConnections.put(enterRoomReq.getSessionName(), new ConcurrentHashMap<>());
+        }
+        this.mapSessionNamesConnections.get(enterRoomReq.getSessionName()).put(userDetails.getNickname(), connection);
 
-            this.mapSessionNamesConnections.get(enterRoomReq.getSessionName()).put(userDetails.getNickname(), connection);
-            RoomUser roomUser = roomUserRepository.save(RoomUser.builder()
+        roomUserRepository.save(RoomUser.builder()
                     .roomId(room.getId())
                     .userId(userDetails.getId())
                     .enterTime(new Timestamp(System.currentTimeMillis()))
                     .build());
-
-            return connection.getToken();
+            return new EnterRoomRes(connection.getToken(), room.getTitle(), userRepository.getOne(room.getManagerId()).getNickname());
 
 
 
@@ -105,7 +107,7 @@ public class RoomService {
 
     @SneakyThrows
     @Transactional
-    public void disconnect(DisconnectionReq req) throws OpenViduJavaClientException, OpenViduHttpException {
+    public void disconnect(DisconnectionReq req) {
 
         User user = userRepository.findByNickname(req.getNickname());
         String sessionName = req.getSessionName();

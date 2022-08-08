@@ -12,4 +12,6 @@ public class EnterRoomRes {
 
     @NotBlank
     private String token;
+    private String title;
+    private String managerNickname;
 }
