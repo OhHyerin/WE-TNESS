@@ -23,7 +23,7 @@ public interface UserService {
 
     LoginSocialDto registerSocialUser(Map<String,Object> data);
 
-    boolean registerUserBySocial(User user);
+    LoginDto setSocialAccount(UserDetailsImpl userDetails, String changedNickname);
 
     boolean updateUser(Long id, UpdateUserDto updateUserDto);
 
@@ -42,7 +42,7 @@ public interface UserService {
 
     String getRefreshToken(String nickname);
 
-    String getSocialAccessToken(int social, String code) throws IOException;
+    String getSocialAccessToken(String social, String code) throws IOException;
 
     Map<String, Object> getUserInfo(String accessToken) throws IOException;
 

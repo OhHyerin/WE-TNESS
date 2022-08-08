@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService {
         User user = new User();
 
         user.setSocial("kakao");
-        user.setSocialToken((String) data.get("id"));
+        user.setSocialId((String) data.get("id"));
         // 임시 닉네임 발급
         user.setNickname(randomString.make());
         // email, gender 정보 유무에 따라 유저 세팅
@@ -96,10 +96,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean registerUserBySocial(User user) {
+    @Transactional
+    public LoginDto setSocialAccount(UserDetailsImpl userDetails, String changedNickname) {
 
-        userRepository.save(user);
-        return true;
+        User user = userRepository.getOne(userDetails.getId());
+        user.setNickname(changedNickname);
+
+        return new ObjectMapper().convertValue(loginSocialUser(user), LoginDto.class);
     }
 
     @Override
@@ -218,13 +221,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String getSocialAccessToken(int social, String code) throws IOException {
+    public String getSocialAccessToken(String auth, String code) throws IOException {
+
+
         URL url = new URL(hostKakao);
-        switch (social) {
-            case 2:
-                url = new URL(hostKakao);
-                break;
-        }
 
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         String token = "";
@@ -328,7 +328,7 @@ public class UserServiceImpl implements UserService {
 
         String id = data.get("id").toString();
 
-        return userRepository.findBySocialAndSocialToken("kakao", id);
+        return userRepository.findBySocialAndSocialId("kakao", id);
 
     }
 

@@ -162,18 +162,8 @@ public class UserController {
     @GetMapping("/login/{auth}")
     @ApiOperation(value = "소셜 로그인")
     public ResponseEntity<?> loginSocial(@PathVariable("auth") String auth, @RequestParam(value = "code") String code) throws IOException {
-        // social 종류 : 카카오(2), 구글(3), 페이스북(4) 등
-        int social = 2;
-        // 리턴할 json
-        Map<String, Object> result = new HashMap<>();
 
-        switch (auth) {
-            case "kakao":
-                social = 2;
-                break;
-        }
-
-        String token = userService.getSocialAccessToken(social, code);
+        String token = userService.getSocialAccessToken(auth, code);
 
         // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
         Map<String, Object> data = userService.getUserInfo(token);
@@ -195,21 +185,11 @@ public class UserController {
     }
 
     @PostMapping("/login/create-account")
-    public ResponseEntity<Map<String, Object>> createAccount(@RequestParam(value = "changeNickname") String changeNickname) {
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        String email = (String) authentication.getPrincipal();
+    public ResponseEntity<?> createAccount(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String changeNickname) {
 
         // 이전에 발급한 토큰으로 닉네임 추출 - 새로 전달받은 닉네임으로 DB 수정 후 토큰 다시 발급
-        User user = userService.findByEmail(email);
-        user.setNickname(changeNickname);
-        userService.updateUser(user.getId(), user);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("accessToken", jwtUtil.createAccessToken(authentication));
-
-        return ResponseEntity.ok(result);
+        return ResponseEntity.ok(userService.setSocialAccount(userDetails,changeNickname));
     }
 
     @PostMapping("/logout")

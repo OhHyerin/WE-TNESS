@@ -25,7 +25,7 @@ public class User {
     private Double weight;
     private String social;
     private String role;
-    private String socialToken;
+    private String socialId;
     private String refreshToken;
 
     private boolean banState;
