@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface RankService {
 
-    List<Rank> getRank(long userId);
+    List<Rank> getRank(RankDto rankDto, long userId);
 
 
 

@@ -5,7 +5,6 @@ import com.wetness.db.repository.*;
 import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
-import com.wetness.model.dto.request.TerminateGameDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -124,13 +123,13 @@ public class GameServiceImpl implements GameService{
         LocalDateTime gameDate = gameRecord.getGame().getTerminateDate();
         LocalDate regDate = LocalDate.of(gameDate.getYear(),gameDate.getMonth(), gameDate.getDayOfMonth());
 
-        int N = (int)gameRecord.getWorkout().getId()-1;
+        int N = gameRecord.getWorkout().getId()-1;
 
-        if(rankRepo.findByUserIdAndWorkoutAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isPresent()){
+        if(rankRepo.findByUserIdAndWorkoutIdAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isPresent()){
             List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);
-                if((old.getWorkout() & (1<<N) )== 0) continue;
+                if((old.getWorkoutId() & (1<<N) )== 0) continue;
                 old.setCalorie(old.getCalorie()+calorie);
                 rankRepo.save(old);
             }
@@ -141,7 +140,7 @@ public class GameServiceImpl implements GameService{
             List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);
-                newList.add(new Rank(0L, user, (old.getWorkout()|(1<<N)),user.getSidoCode(),
+                newList.add(new Rank(0L, user, (old.getWorkoutId()|(1<<N)),user.getSidoCode(),
                         user.getGugunCode(), old.getCalorie()+calorie, regDate));
             }
             rankRepo.saveAll(newList);

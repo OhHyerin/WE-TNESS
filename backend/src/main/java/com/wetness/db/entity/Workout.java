@@ -14,7 +14,7 @@ import javax.persistence.Table;
 @Table(name="workout")
 public class Workout {
     @Id
-    private long id;
+    private int id;
     private String type;
     private Double met;
 }

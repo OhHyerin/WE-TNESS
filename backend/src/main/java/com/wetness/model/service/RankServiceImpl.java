@@ -9,11 +9,8 @@ import com.wetness.model.dto.request.RankDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,10 +23,9 @@ public class RankServiceImpl implements RankService{
     @Autowired
     UserRepository userRepository;
     @Override
-    public List<Rank> getRank(long userId) {
+    public List<Rank> getRank(RankDto rankDto, long userId) {
         //조회할 날짜
         LocalDate date = LocalDate.now();
-        Date cur = java.sql.Date.valueOf(date);
 
         //조회할 지역
         Optional<User> user = userRepository.findById(userId);
@@ -39,8 +35,16 @@ public class RankServiceImpl implements RankService{
 
         if(user.get().getGugunCode()==null){
             //로그인 한 유저가 주소 정보가 없으면
+            List<Rank> totalRanks = new ArrayList<>();
+            Optional<Rank> workoutRanks;
 
-
+            if(rankDto.getWorkoutId()!=0){
+                // workoutId가 선택 안됐을 때
+                totalRanks = rankRepository.findByUserIdAndDateGreaterThanEqual(userId, date);
+            }else{
+                //workoutId가 선택 됐을 때
+                workoutRanks = rankRepository.findByUserIdAndWorkoutIdAndDateGreaterThanEqual(userId, rankDto.getWorkoutId(), date);
+            }
         }else{
             //로그인 한 유저가 주소 정보가 있으면
 

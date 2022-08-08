@@ -38,7 +38,7 @@ public class RankController {
 
 //        System.out.println(rankService.getRank(rankDto));
         List<Rank> ranks = rankService.getRank(rankDto, userDetails.getId());
-        RankResDto rankResDto = new RankResDto(ranks);
+        RankResDto rankResDto = new RankResDto("message", ranks);
 
         //success 또는 주소정보가 없습니다.
         return ResponseEntity.ok().body(rankResDto);

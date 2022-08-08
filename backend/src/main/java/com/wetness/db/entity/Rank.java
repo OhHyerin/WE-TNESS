@@ -22,14 +22,7 @@ public class Rank {
     @ManyToOne
     @JoinColumn(name="user_id")
     private User user;
-    //private long userId;
-    @ManyToOne
-    @JoinColumn(name="workout_id")
-    private Workout workout;
-//    @Column(name="workout_id")
-//    private int workout; //여기
-
-    //private long workoutId;
+    private int workoutId; //여기
 
     @Column(name="sido_code")
     private String sidoCode;
@@ -44,7 +37,7 @@ public class Rank {
     private Rank(RankBuilder builder){
         this.id = builder.id;
         this.user = builder.user;
-        this.workout = builder.workout;
+        this.workoutId = builder.workoutId;
         this.sidoCode = builder.sidoCode;
         this.gugunCode = builder.gugunCode;
         this.calorie = builder.calorie;
@@ -55,7 +48,7 @@ public class Rank {
     public static class RankBuilder{
         private long id;
         private User user;
-        private Workout workout;
+        private int workoutId;
         private String sidoCode;
         private String gugunCode;
         private double calorie;
@@ -68,22 +61,32 @@ public class Rank {
             return this;
         }
 
-        public RankBuilder buildWorkout(Workout workout){
-            this.workout = workout;
+        public RankBuilder buildWorkoutId(int workoutId){
+            this.workoutId = workoutId;
             return this;
+        }
+
+        private RankBuilder buildSidoCode(String sidoCode){
+            this.sidoCode = sidoCode;
+            return this;
+        }
+
+        private RankBuilder buildGugunCode(String gugunCode) {
+            this.gugunCode = gugunCode;
+            return this;
+        }
+
+        private RankBuilder buildCalorie(double calorie){
+            this.calorie = calorie;
+            return this;
+        }
+
+        public Rank getRank(){
+            return new Rank(this);
         }
 
 
     }
 
-//    public Rank(long userId, long workoutId, String sidoCode, String gugunCode, long calorie){
-//        this.userId = userId;
-//        this.workoutId = workoutId;
-//        this.gugunCode = gugunCode;
-//        this.sidoCode = sidoCode;
-//        this.calorie = calorie;
-//
-//        this.date = LocalDateTime.now();
-//    }
 
 }
