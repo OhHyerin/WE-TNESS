@@ -34,7 +34,6 @@ function App() {
   useEffect(() => {
     dispatch(setIsSearch(false));
     dispatch(setKeyword(''));
-    document.getElementById('searchBar').value = '';
   }, [location]);
 
   if (isLoding) {

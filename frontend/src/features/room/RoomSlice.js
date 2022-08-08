@@ -110,6 +110,15 @@ export const RoomSlice = createSlice({
 
 export { getAllRooms, getWorksouts, searchRooms };
 
-export const { testWorkout, testShowPrivate, workoutChange, testRoomList, setKeyword, setIsSearch, fetchTitle, fetchPassword } = RoomSlice.actions;
+export const {
+  testWorkout,
+  testShowPrivate,
+  workoutChange,
+  testRoomList,
+  setKeyword,
+  setIsSearch,
+  fetchTitle,
+  fetchPassword,
+} = RoomSlice.actions;
 
 export default RoomSlice.reducer;
