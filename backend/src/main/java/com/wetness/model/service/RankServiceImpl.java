@@ -9,19 +9,21 @@ import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.RankDto;
 import com.wetness.model.dto.response.RankResDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.*;
 
 @Service
-public class RankServiceImpl implements RankService{
+public class RankServiceImpl implements RankService {
 
     @Autowired
     RankRepository rankRepository;
 
     @Autowired
     UserRepository userRepository;
+
     @Override
     public RankResDto getRank(RankDto rankDto, long userId) {
         //조회할 날짜
@@ -30,61 +32,67 @@ public class RankServiceImpl implements RankService{
         //조회할 지역
 //        Optional<User> user = userRepository.findById(userId);
 
-        //반환할 list
-        List<Rank> list = new ArrayList<>();
 
         //운동 workoutId로 변경
         int[] workoutIds = rankDto.getWorkoutId();
         int workout = 0;
-        for(int i=0;i<workoutIds.length;i++){
-            workout += Math.pow(2,workoutIds[i]-1);
+        if (workoutIds != null) {
+
+            for (int i = 0; i < workoutIds.length; i++) {
+                workout += Math.pow(2, workoutIds[i] - 1);
+            }
         }
 
 
-        System.out.println(workout);
-            List<Rank> ranks = new ArrayList<>();
+        System.out.println("workout은??? : "+workout);
+        List<Rank> ranks = new ArrayList<>();
 
-            ranks = rankRepository.findByDate(date);
-            if(workout==0){
-                // workoutId가 선택 안됐을 때
+        ranks = rankRepository.findByDate(date);
+        System.out.println("findByDate로 땡겨온 rank list : "+ranks);
+        if (workout == 0) {
+            // workoutId가 선택 안됐을 때
 
-                //list calorie 기준으로 내림차순 정렬
-                Collections.sort(ranks, new Comparator<Rank>() {
-                    @Override
-                    public int compare(Rank o1, Rank o2) {
-                        return descOrder(o1, o2);
-                    }
-                });
-
-                //0~20까지 리스트 자르기
-                List<Rank> newList = Lists.newArrayList(ranks.subList(0, 20));
-
-                return new RankResDto("TOTAL_RANK_SUCCESS", newList);
-
-            }else{
-                //workoutId가 선택 됐을 때
-
-                List<Rank> newList = new ArrayList<>();
-                for(int i=0;i<ranks.size();i++){
-                    if(((1<<ranks.get(i).getWorkoutId()) & (1<<workout)) == (1<<workout)){
-                        System.out.println("getWorkoutId랑 workout 비트마스크 일치");
-                        Rank get = ranks.get(i);
-                        newList.add(get);
-                    }
+            //list calorie 기준으로 내림차순 정렬
+            Collections.sort(ranks, new Comparator<Rank>() {
+                @Override
+                public int compare(Rank o1, Rank o2) {
+                    return descOrder(o1, o2);
                 }
+            });
 
-                Collections.sort(newList, new Comparator<Rank>() {
-                    @Override
-                    public int compare(Rank o1, Rank o2) {
-                        return descOrder(o1, o2);
-                    }
-                });
+            //0~20까지 리스트 자르기
+            int min = Math.min(ranks.size(), 20);
 
-                ranks = Lists.newArrayList(newList.subList(0, 20));
+            List<Rank> newList = Lists.newArrayList(ranks.subList(0, min));
+            System.out.println("정렬하고 20개 짤라온 list : "+newList);
 
-                return new RankResDto("WORKOUT_RANK_SUCCESS", ranks);
+            return new RankResDto("TOTAL_RANK_SUCCESS", newList);
 
+        } else {
+            //workoutId가 선택 됐을 때
+
+            List<Rank> newList = new ArrayList<>();
+            for (int i = 0; i < ranks.size(); i++) {
+                if ((ranks.get(i).getWorkoutId() | workout) <= workout) {
+                    System.out.println("getWorkoutId랑 workout 비트마스크 일치");
+                    Rank get = ranks.get(i);
+                    newList.add(get);
+                }
             }
+
+            Collections.sort(newList, new Comparator<Rank>() {
+                @Override
+                public int compare(Rank o1, Rank o2) {
+                    return descOrder(o1, o2);
+                }
+            });
+            int min = Math.min(newList.size(), 20);
+            ranks = Lists.newArrayList(newList.subList(0, min));
+
+
+            return new RankResDto("WORKOUT_RANK_SUCCESS", ranks);
+
+        }
 
     }
 
@@ -100,19 +108,19 @@ public class RankServiceImpl implements RankService{
         //운동 workoutId로 변경
         int[] workoutIds = rankDto.getWorkoutId();
         int workout = 0;
-        for(int i=0;i<workoutIds.length;i++){
-            workout += Math.pow(2,workoutIds[i]-1);
+        for (int i = 0; i < workoutIds.length; i++) {
+            workout += Math.pow(2, workoutIds[i] - 1);
         }
 
 
         System.out.println(workout);
 
-        if(gugunCode!=null){
+        if (gugunCode != null) {
             //로그인 한 유저가 주소 정보가 있으면
             List<Rank> ranks = new ArrayList<>();
 
             ranks = rankRepository.findByGugunCodeAndDate(gugunCode, date);
-            if(workout==0){
+            if (workout == 0) {
                 // workoutId가 선택 안됐을 때
 
                 //list calorie 기준으로 내림차순 정렬
@@ -124,16 +132,17 @@ public class RankServiceImpl implements RankService{
                 });
 
                 //0~20까지 리스트 자르기
-                List<Rank> newList = Lists.newArrayList(ranks.subList(0, 20));
+                int min = Math.min(ranks.size(), 20);
+                List<Rank> newList = Lists.newArrayList(ranks.subList(0, min));
 
                 return new RankResDto("GUGUN_TOTAL_RANK_SUCCESS", newList);
 
-            }else{
+            } else {
                 //workoutId가 선택 됐을 때
 
                 List<Rank> newList = new ArrayList<>();
-                for(int i=0;i<ranks.size();i++){
-                    if(((1<<ranks.get(i).getWorkoutId()) & (1<<workout)) == (1<<workout)){
+                for (int i = 0; i < ranks.size(); i++) {
+                    if ((ranks.get(i).getWorkoutId() | workout) <= workout) {
                         System.out.println("getWorkoutId랑 workout 비트마스크 일치");
                         Rank get = ranks.get(i);
                         newList.add(get);
@@ -146,13 +155,13 @@ public class RankServiceImpl implements RankService{
                         return descOrder(o1, o2);
                     }
                 });
-
-                ranks = Lists.newArrayList(newList.subList(0, 20));
+                int min = Math.min(newList.size(), 20);
+                ranks = Lists.newArrayList(newList.subList(0, min));
 
                 return new RankResDto("GUGUN_WORKOUT_RANK_SUCCESS", ranks);
 
             }
-        }else{
+        } else {
             //로그인 한 유저가 주소 정보가 없으면
             RankResDto rankResDto = new RankResDto("NO_GUGUN_INFO", null);
             return rankResDto;
@@ -160,14 +169,12 @@ public class RankServiceImpl implements RankService{
         }
     }
 
-    private static int descOrder(Rank o1, Rank o2){
-        if(o1.getCalorie()>o2.getCalorie()){
+    private static int descOrder(Rank o1, Rank o2) {
+        if (o1.getCalorie() > o2.getCalorie()) {
             return -1;
-        }
-        else if(o1.getCalorie()<o2.getCalorie()){
+        } else if (o1.getCalorie() < o2.getCalorie()) {
             return 1;
-        }
-        else{
+        } else {
             return 0;
         }
     }
