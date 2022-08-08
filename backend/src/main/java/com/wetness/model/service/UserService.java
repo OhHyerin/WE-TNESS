@@ -50,7 +50,7 @@ public interface UserService {
 
     void logoutUser(String nickname);
 
-    void deleteUser(String nickname);
+    boolean deleteUser(String nickname);
 
     void setLoginData(Long userId);
 
