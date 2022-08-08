@@ -29,12 +29,20 @@ public class Diary {
     @JoinColumn(name="user_game_id")
     private GameRecord gameRecord;
 
+    @Column(name="is_valid")
+    private boolean isValid;
+
+    public void setValid(Boolean isValid){
+        this.isValid = isValid;
+    }
+
     private Diary(DiaryBuilder builder){
         this.id = builder.id;
         this.user = builder.user;
         this.fileName = builder.fileName;
         this.date = builder.date;
         this.gameRecord = builder.gameRecord;
+        this.isValid = builder.isValid;
     }
 
     public static class DiaryBuilder{
@@ -43,6 +51,7 @@ public class Diary {
         private String fileName;
         private LocalDateTime date;
         private GameRecord gameRecord;
+        private Boolean isValid;
 
         public DiaryBuilder(){}
 
@@ -60,6 +69,11 @@ public class Diary {
         }
         public DiaryBuilder buildRecord(GameRecord record){
             this.gameRecord = record;
+            return this;
+        }
+
+        public DiaryBuilder buildValidation(Boolean isValid){
+            this.isValid = isValid;
             return this;
         }
         public Diary getDiary(){
