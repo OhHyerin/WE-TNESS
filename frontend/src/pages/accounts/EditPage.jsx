@@ -75,8 +75,11 @@ export default function EditPage() {
   function onSubmitHandler(e) {
     e.preventDefault();
     const payload = {
+      nickname: userInfo.nickname,
+      gender: userInfo.gender,
+      weight: userInfo.weight,
+      height: userInfo.height,
       addressCode,
-      ...userInfo,
     };
     console.log(payload);
     dispatch(edit(payload))

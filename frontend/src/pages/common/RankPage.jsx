@@ -45,7 +45,7 @@ export default function RankPage() {
       };
       dispatch(fetchRankList(payload));
     }
-  }, []);
+  }, [dispatch]);
 
   function handleChange(e) {
     setIsRegion(!isRegion);
