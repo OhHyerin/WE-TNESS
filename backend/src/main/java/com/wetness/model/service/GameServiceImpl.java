@@ -125,7 +125,7 @@ public class GameServiceImpl implements GameService{
 
         int N = gameRecord.getWorkout().getId()-1;
 
-        if(rankRepo.findByUserIdAndWorkoutIdAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isPresent()){
+        if(rankRepo.findByUserIdAndWorkoutIdAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isEmpty()){
             List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);

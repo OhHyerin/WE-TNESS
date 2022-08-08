@@ -2,10 +2,7 @@ package com.wetness.db.entity;
 
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.sql.Timestamp;
 
 
@@ -22,7 +19,11 @@ public class Room {
     private long id;
     private String title;
     private String password;
-    private int workoutId;
+
+    @ManyToOne
+    @JoinColumn(name="workout_id")
+    private Workout workout;
+
     private boolean isLocked;
     private Timestamp createDate;
     private Timestamp terminateDate;

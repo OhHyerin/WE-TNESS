@@ -7,6 +7,7 @@ import com.wetness.db.entity.User;
 import com.wetness.db.repository.RoomRepository;
 import com.wetness.db.repository.RoomUserRepository;
 import com.wetness.db.repository.UserRepository;
+import com.wetness.db.repository.WorkoutRepository;
 import com.wetness.model.dto.request.DisconnectionReq;
 import com.wetness.model.dto.request.EnterRoomReq;
 import com.wetness.model.dto.request.MakeRoomReq;
@@ -34,6 +35,8 @@ public class RoomService {
     private final RoomRepository roomRepository;
     private final RoomUserRepository roomUserRepository;
 
+    private final WorkoutRepository workoutRepository;
+
     @Value("${wetness.openvidu.url}")
     private String OPENVIDU_URL;
     @Value("${wetness.openvidu.secret}")
@@ -51,7 +54,7 @@ public class RoomService {
         Room room = Room.builder()
                 .title(req.getTitle())
                 .password(req.getPassword())
-                .workoutId(req.getWorkoutId())
+                .workout(workoutRepository.findById(req.getWorkout()).get())
                 .isLocked(!req.getPassword().equals(""))
                 .createDate(new Timestamp(System.currentTimeMillis()))
                 .managerId(userDetails.getId())
@@ -64,6 +67,7 @@ public class RoomService {
         String roomTitle = room.getTitle();
         // 방을 만들고
         Session session = this.openVidu.createSession();
+
         mapSessions.put(roomTitle,new MapSessionRoom(room,session));
 
     }
@@ -192,7 +196,7 @@ public class RoomService {
         int headcount = mapSessionNamesConnections.get(title).size();
 
         return RoomListRes.builder()
-                .workout(room.getWorkoutId())
+                .workout(room.getWorkout().getId())
                 .title(room.getTitle())
                 .headcount(headcount)
                 .isLocked(room.isLocked())
