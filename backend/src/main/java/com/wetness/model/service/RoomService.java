@@ -54,7 +54,7 @@ public class RoomService {
         Room room = Room.builder()
                 .title(req.getTitle())
                 .password(req.getPassword())
-                .workout(workoutRepository.findById(req.getWorkout()).get())
+                .workout(workoutRepository.findById(req.getWorkoutId()).get())
                 .isLocked(!req.getPassword().equals(""))
                 .createDate(new Timestamp(System.currentTimeMillis()))
                 .managerId(userDetails.getId())
