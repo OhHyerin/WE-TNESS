@@ -98,7 +98,11 @@ export const SignupSlice = createSlice({
       state.isLoading = false;
     },
     [fetchUserInfo.fulfilled]: (state, action) => {
-      state.userInfo = action.payload;
+      state.userInfo.nickname = action.payload.nickname ? action.payload.nickname : '';
+      state.userInfo.gender = action.payload.gender ? action.payload.gender : '';
+      state.userInfo.address = action.payload.address ? action.payload.address : '';
+      state.userInfo.weight = action.payload.weight ? action.payload.weight : '';
+      state.userInfo.height = action.payload.height ? action.payload.height : '';
     },
   },
 });

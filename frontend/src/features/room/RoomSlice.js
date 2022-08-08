@@ -20,6 +20,10 @@ const initialState = {
     workoutId: '',
     password: '',
   },
+  sessionInfo: {
+    sessionId: '',
+    myNickname: '',
+  },
   keyword: '',
 };
 
@@ -56,6 +60,17 @@ const searchRooms = createAsyncThunk('searchRooms', async (payload, { rejectWith
   }
 });
 
+const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithValue }) => {
+  console.log(payload);
+  try {
+    const res = await axios.post(api.createRoom(), payload, setConfig());
+    console.log('response : ' + res);
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response);
+  }
+});
+
 export const RoomSlice = createSlice({
   name: 'room',
   initialState,
@@ -75,6 +90,9 @@ export const RoomSlice = createSlice({
         { name: 'test1', scope: 'public', workout: '운동1', started: true, numOfPeople: 1 },
         { name: 'test2', scope: 'private', workout: '운동2', started: true, numOfPeople: 2 },
       ];
+    },
+    fetchWorkoutId: (state, action) => {
+      state.roomInfo.workoutId = action.payload;
     },
     fetchTitle: (state, action) => {
       state.roomInfo.title = action.payload;
@@ -109,10 +127,13 @@ export const RoomSlice = createSlice({
     [getWorksouts.rejected]: state => {
       state.isWorkoutsLoaded = false;
     },
+    [createRoom.fulfilled]: (state, action) => {
+      state.sessionInfo = action.payload;
+    },
   },
 });
 
-export { fetchRoomList, getWorksouts, searchRooms };
+export { fetchRoomList, getWorksouts, searchRooms, createRoom };
 
 export const {
   testWorkout,
@@ -121,6 +142,7 @@ export const {
   testRoomList,
   setKeyword,
   setIsSearch,
+  fetchWorkoutId,
   fetchTitle,
   fetchPassword,
 } = RoomSlice.actions;

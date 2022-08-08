@@ -21,6 +21,8 @@ const FIND_PASSWORD = '/findpassword';
 
 const HISTORY_URL = '';
 
+const MAKE_URL = '/make';
+
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
   checkEmail: email => API_BASE_URL + USER_URL + CHECK_EMAIL_URL + `/${email}`,
@@ -38,4 +40,5 @@ export default {
   fetchHistory: nickname => API_BASE_URL + USER_URL + HISTORY_URL + `/${nickname}`,
   fetchRankList: () => API_BASE_URL + RANK_URL,
   fetchRoomList: () => API_BASE_URL + ROOM_URL,
+  createRoom: () => API_BASE_URL + ROOM_URL + MAKE_URL,
 };
