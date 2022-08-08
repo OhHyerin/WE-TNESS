@@ -122,7 +122,6 @@ public class UserController {
     @GetMapping("/send-pw")
     @ApiOperation(value = "비밀번호 찾기를 위한 이메일 인증")
     public ResponseEntity<String> sendPwd(@RequestParam("email") @Valid @Pattern(regexp = EMAIL_REGEX, message = "이메일 형식이 올바르지 않습니다") String email) {
-
         try {
             mailService.sendMail(email);
             return ResponseEntity.status(200).body(SUCCESS);
@@ -170,11 +169,11 @@ public class UserController {
         Optional<User> userOpt = userService.socialLogin(data);
 
         // 유저가 db에 있다면
-        if(userOpt.isPresent()){
+        if (userOpt.isPresent()) {
             User user = userOpt.get();
             // access-token 및 refresh 토큰 발급하고 응답
             return ResponseEntity.ok().body(userService.loginSocialUser(user));
-        }else{
+        } else {
             // 만약 유저가 db에 없다면
             // 발급받은 사용자 정보 기반으로 유저 저장하고 임시 access 토큰 및 refresh 발급
             return ResponseEntity.ok().body(userService.registerSocialUser(data));
@@ -188,7 +187,7 @@ public class UserController {
 
         // 이전에 발급한 토큰으로 닉네임 추출 - 새로 전달받은 닉네임으로 DB 수정 후 토큰 다시 발급
 
-        return ResponseEntity.ok(userService.setSocialAccount(userDetails,changeNickname));
+        return ResponseEntity.ok(userService.setSocialAccount(userDetails, changeNickname));
     }
 
     @PostMapping("/logout")
@@ -227,13 +226,13 @@ public class UserController {
     }
 
     @GetMapping("/login/log")
-    public ResponseEntity<?> getLoginLog(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<?> getLoginLog(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         ArrayList<LoginLogResDto> loginLog = userService.getLoginLog(userDetails.getId());
         return ResponseEntity.ok().body(loginLog);
     }
 
     @GetMapping("/login/date-log")
-    public ResponseEntity<?> getDateLoginLog(@AuthenticationPrincipal UserDetailsImpl userDetails){
+    public ResponseEntity<?> getDateLoginLog(@AuthenticationPrincipal UserDetailsImpl userDetails) {
         ArrayList<String> loginDateLog = userService.getLoginDateLog(userDetails.getId());
         return ResponseEntity.ok().body(loginDateLog);
     }
