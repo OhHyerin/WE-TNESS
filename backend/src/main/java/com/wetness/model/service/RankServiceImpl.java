@@ -8,6 +8,7 @@ import com.wetness.db.repository.RankRepository;
 import com.wetness.db.repository.UserRepository;
 import com.wetness.model.dto.request.RankDto;
 import com.wetness.model.dto.response.RankResDto;
+import com.wetness.model.dto.response.RankResultResDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
@@ -24,14 +25,12 @@ public class RankServiceImpl implements RankService {
     @Autowired
     UserRepository userRepository;
 
+    public static UserService userService;
+
+    static LocalDate date = LocalDate.now();  //조회할 날짜
+
     @Override
     public RankResDto getRank(RankDto rankDto, long userId) {
-        //조회할 날짜
-        LocalDate date = LocalDate.now();
-
-        //조회할 지역
-//        Optional<User> user = userRepository.findById(userId);
-
 
         //운동 workoutId로 변경
         int[] workoutIds = rankDto.getWorkoutId();
@@ -42,13 +41,9 @@ public class RankServiceImpl implements RankService {
                 workout += Math.pow(2, workoutIds[i] - 1);
             }
         }
-
-
-        System.out.println("workout은??? : "+workout);
         List<Rank> ranks = new ArrayList<>();
 
         ranks = rankRepository.findByDate(date);
-        System.out.println("findByDate로 땡겨온 rank list : "+ranks);
         if (workout == 0) {
             // workoutId가 선택 안됐을 때
 
@@ -63,8 +58,14 @@ public class RankServiceImpl implements RankService {
             //0~20까지 리스트 자르기
             int min = Math.min(ranks.size(), 20);
 
-            List<Rank> newList = Lists.newArrayList(ranks.subList(0, min));
-            System.out.println("정렬하고 20개 짤라온 list : "+newList);
+//            List<Rank> newList = Lists.newArrayList(ranks.subList(0, min));
+//            System.out.println("정렬하고 20개 짤라온 list : "+newList);
+
+            List<RankResultResDto> newList = new ArrayList<>();
+            for(int i=0;i<min;i++){
+//                String address = userService.getAddress(ranks.get(i).getUser().getSidoCode(), ranks.get(i).getUser().getGugunCode());
+                newList.add(new RankResultResDto(ranks.get(i)));
+            }
 
             return new RankResDto("TOTAL_RANK_SUCCESS", newList);
 
@@ -74,7 +75,7 @@ public class RankServiceImpl implements RankService {
             List<Rank> newList = new ArrayList<>();
             for (int i = 0; i < ranks.size(); i++) {
                 if ((ranks.get(i).getWorkoutId() | workout) <= workout) {
-                    System.out.println("getWorkoutId랑 workout 비트마스크 일치");
+//                    System.out.println("getWorkoutId랑 workout 비트마스크 일치");
                     Rank get = ranks.get(i);
                     newList.add(get);
                 }
@@ -87,10 +88,14 @@ public class RankServiceImpl implements RankService {
                 }
             });
             int min = Math.min(newList.size(), 20);
-            ranks = Lists.newArrayList(newList.subList(0, min));
+
+            List<RankResultResDto> resultList = new ArrayList<>();
+            for(int i=0;i<min;i++){
+                resultList.add(new RankResultResDto(newList.get(i)));
+            }
 
 
-            return new RankResDto("WORKOUT_RANK_SUCCESS", ranks);
+            return new RankResDto("WORKOUT_RANK_SUCCESS", resultList);
 
         }
 
@@ -133,7 +138,12 @@ public class RankServiceImpl implements RankService {
 
                 //0~20까지 리스트 자르기
                 int min = Math.min(ranks.size(), 20);
-                List<Rank> newList = Lists.newArrayList(ranks.subList(0, min));
+
+                List<RankResultResDto> newList = new ArrayList<>();
+                for(int i=0;i<min;i++){
+                    String address = userService.getAddress(ranks.get(i).getUser().getSidoCode(), ranks.get(i).getUser().getGugunCode());
+                    newList.add(new RankResultResDto(ranks.get(i), address));
+                }
 
                 return new RankResDto("GUGUN_TOTAL_RANK_SUCCESS", newList);
 
@@ -156,14 +166,20 @@ public class RankServiceImpl implements RankService {
                     }
                 });
                 int min = Math.min(newList.size(), 20);
-                ranks = Lists.newArrayList(newList.subList(0, min));
 
-                return new RankResDto("GUGUN_WORKOUT_RANK_SUCCESS", ranks);
+                List<RankResultResDto> resultList = new ArrayList<>();
+                for(int i=0;i<min;i++){
+                    String address = userService.getAddress(newList.get(i).getUser().getSidoCode(), newList.get(i).getUser().getGugunCode());
+                    resultList.add(new RankResultResDto(newList.get(i), address));
+                }
+
+                return new RankResDto("GUGUN_WORKOUT_RANK_SUCCESS", resultList);
 
             }
         } else {
             //로그인 한 유저가 주소 정보가 없으면
-            RankResDto rankResDto = new RankResDto("NO_GUGUN_INFO", null);
+            List<RankResultResDto> ranks = new ArrayList<>();
+            RankResDto rankResDto = new RankResDto("NO_GUGUN_INFO", ranks);
             return rankResDto;
 
         }
