@@ -1,5 +1,6 @@
 package com.wetness.model.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
@@ -9,7 +10,9 @@ import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
 import com.wetness.model.dto.response.LoginDto;
+import com.wetness.model.dto.response.LoginSocialDto;
 import lombok.RequiredArgsConstructor;
+import net.bytebuddy.utility.RandomString;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -29,6 +32,7 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -58,6 +62,35 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    @Transactional
+    public LoginSocialDto registerSocialUser(Map<String, Object> data){
+
+        RandomString randomString = new RandomString(20);
+        User user = new User();
+
+        user.setSocial("kakao");
+        user.setSocialToken((String) data.get("id"));
+        // 임시 닉네임 발급
+        user.setNickname(randomString.make());
+        // email, gender 정보 유무에 따라 유저 세팅
+        if (data.containsKey("email")) {
+            user.setEmail((String) data.get("email"));
+        } else {
+            user.setEmail(randomString.make());
+        }
+        if (data.containsKey("gender")) {
+            user.setGender((String) data.get("gender"));
+        } else { // 성별 미정
+            user.setGender("3");
+        }
+
+        userRepository.save(user);
+
+        return loginSocialUser(user);
+
     }
 
     @Override
@@ -125,13 +158,6 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @Override
-    @Transactional
-    public User loginUser(String email, String password) {
-        User findUser = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
-        return findUser;
-    }
 
     @Override
     @Transactional
@@ -160,15 +186,15 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public User findByNickname(String nickname) {
-        User user = userRepository.findByNickname(nickname);
-        return user;
+
+        return userRepository.findByNickname(nickname);
+
     }
 
     @Override
     public User findByEmail(String email) {
-        User findUser = userRepository.findByEmail(email)
+        return userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException(email + "의 이메일을 가진유저가 없습니다"));
-        return findUser;
     }
 
     @Override
@@ -190,7 +216,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String getSocialToken(int social, String code) throws IOException {
+    public String getSocialAccessToken(int social, String code) throws IOException {
         URL url = new URL(hostKakao);
         switch (social) {
             case 2:
@@ -277,13 +303,11 @@ public class UserServiceImpl implements UserService {
             JSONObject obj = (JSONObject) parser.parse(res);
             JSONObject kakaoAccount = (JSONObject) obj.get("kakao_account");
 
-
+            // id를 포함해 kakao account 관련 정보 빼오기
             String id = obj.get("id").toString();
-            if (kakaoAccount.containsKey("email")) {
-                result.put("email", kakaoAccount.get("email").toString());
-            }
-            if (kakaoAccount.containsKey("gender")) {
-                result.put("gender", kakaoAccount.get("gender").toString());
+            result.put("id", id);
+            for(Object key : kakaoAccount.keySet()){
+                result.put((String) key,kakaoAccount.get(key));
             }
 
 
@@ -296,6 +320,16 @@ public class UserServiceImpl implements UserService {
 
         return result;
     }
+
+    @Override
+    public Optional<User> socialLogin(Map<String, Object> data) {
+
+        String id = data.get("id").toString();
+
+        return userRepository.findBySocialAndSocialToken("kakao", id);
+
+    }
+
 
     @Override
     @Transactional
@@ -358,6 +392,20 @@ public class UserServiceImpl implements UserService {
 
         return new LoginDto("200", null, accessToken, refreshToken);
     }
+    @Override
+    @Transactional
+    public LoginSocialDto loginSocialUser(User user) {
+
+        UserDetailsImpl userDetails = UserDetailsImpl.build(user);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null);
+        String accessToken = jwtUtil.createAccessToken(authentication);
+        String refreshToken = jwtUtil.createRefreshToken();
+
+        saveRefreshToken(userDetails.getNickname(), refreshToken);
+        setLoginData(userDetails.getId());
+
+        return new LoginSocialDto("true","200", null, accessToken, refreshToken);
+    }
 
 
     @Override
@@ -378,4 +426,6 @@ public class UserServiceImpl implements UserService {
         String refreshToken = getRefreshToken(nickname);
         return new LoginDto("200", null, accessToken, refreshToken);
     }
+
+
 }

@@ -6,10 +6,12 @@ import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
 import com.wetness.model.dto.response.LoginDto;
+import com.wetness.model.dto.response.LoginSocialDto;
 import org.springframework.security.core.Authentication;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -18,6 +20,8 @@ public interface UserService {
     boolean checkNicknameDuplicate(String nickname);
 
     boolean registerUser(JoinUserDto user);
+
+    LoginSocialDto registerSocialUser(Map<String,Object> data);
 
     boolean registerUserBySocial(User user);
 
@@ -33,13 +37,12 @@ public interface UserService {
 
     User findById(Long id);
 
-    User loginUser(String nickname, String password);
 
     void saveRefreshToken(String nickname, String refreshToken);
 
     String getRefreshToken(String nickname);
 
-    String getSocialToken(int social, String code) throws IOException;
+    String getSocialAccessToken(int social, String code) throws IOException;
 
     Map<String, Object> getUserInfo(String accessToken) throws IOException;
 
@@ -51,9 +54,13 @@ public interface UserService {
 
     LoggedContinue getLoginData(Long userId);
 
-    public LoginDto loginUser(User user);
+    LoginDto loginUser(User user);
 
-    public Authentication getAuthentication(User user);
+    LoginSocialDto loginSocialUser(User user);
 
-    public LoginDto getCurrentUserLoginDto(String headerAuth, String nickname);
+    Authentication getAuthentication(User user);
+
+    LoginDto getCurrentUserLoginDto(String headerAuth, String nickname);
+
+    Optional<User> socialLogin(Map<String, Object> data);
 }

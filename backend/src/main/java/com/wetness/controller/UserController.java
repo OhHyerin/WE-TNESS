@@ -1,5 +1,6 @@
 package com.wetness.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
@@ -14,7 +15,10 @@ import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
+import net.bytebuddy.utility.RandomString;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +26,15 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static com.wetness.util.InputUtil.EMAIL_REGEX;
 
@@ -155,59 +159,40 @@ public class UserController {
         return ResponseEntity.ok().body(SUCCESS);
     }
 
-//    @GetMapping("/login/{auth}")
-//    @ApiOperation(value = "소셜 로그인")
-//    public ResponseEntity<Map<String, Object>> loginSocial(@PathVariable("auth") String auth, @RequestParam(value = "code") String code) throws IOException {
-//        // social 종류 : 카카오(2), 구글(3), 페이스북(4) 등
-//        int social = 2;
-//        // 리턴할 json
-//        Map<String, Object> result = new HashMap<>();
-//
-//        switch (auth) {
-//            case "kakao":
-//                social = 2;
-//                break;
-//        }
-//
-//        String token = userService.getSocialToken(social, code);
-//
-//        // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
-//        User user = userService.getUserBySocialToken(2, token);
-//        if (user != null) {
-//            String accessToken = jwtUtil.createAccessToken(user);
-//            result.put("exist_user", true);
-//            result.put("accessToken", accessToken);
-//            return ResponseEntity.ok().body(result);
-//        }
-//
-//        // 토큰으로 유저정보 조회
-//        Map<String, Object> userInfo = userService.getUserInfo(token);
-//        user = new User();
-//        // email, gender 정보 유무에 따라 유저 세팅, 추후 수정
-//        if (userInfo.containsKey("email")) {
-//            user.setEmail((String) userInfo.get("email"));
-//        } else {
-//            user.setEmail(RandomString.make(15));
-//        }
-//        if (userInfo.containsKey("gender")) {
-//            user.setGender((String) userInfo.get("gender"));
-//        } else {
-//            user.setGender("3");
-//        }
-//
-//        user.setSocial(auth);
-//        user.setSocialToken(token);
-//        user.setRole("user");
-//        user.setNickname(RandomString.make(15));
-//
-//        userService.registerUserBySocial(user);
-//        String accessToken = jwtUtil.createAccessToken(user);
-//
-//        result.put("existUser", false);
-//        result.put("accessToken", accessToken);
-//
-//        return ResponseEntity.ok().body(result);
-//    }
+    @GetMapping("/login/{auth}")
+    @ApiOperation(value = "소셜 로그인")
+    public ResponseEntity<?> loginSocial(@PathVariable("auth") String auth, @RequestParam(value = "code") String code) throws IOException {
+        // social 종류 : 카카오(2), 구글(3), 페이스북(4) 등
+        int social = 2;
+        // 리턴할 json
+        Map<String, Object> result = new HashMap<>();
+
+        switch (auth) {
+            case "kakao":
+                social = 2;
+                break;
+        }
+
+        String token = userService.getSocialAccessToken(social, code);
+
+        // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
+        Map<String, Object> data = userService.getUserInfo(token);
+
+        Optional<User> userOpt = userService.socialLogin(data);
+
+        // 유저가 db에 있다면
+        if(userOpt.isPresent()){
+            User user = userOpt.get();
+            // access-token 및 refresh 토큰 발급하고 응답
+            return ResponseEntity.ok().body(userService.loginSocialUser(user));
+        }else{
+            // 만약 유저가 db에 없다면
+            // 발급받은 사용자 정보 기반으로 유저 저장하고 임시 access 토큰 및 refresh 발급
+            return ResponseEntity.ok().body(userService.registerSocialUser(data));
+        }
+
+
+    }
 
     @PostMapping("/login/create-account")
     public ResponseEntity<Map<String, Object>> createAccount(@RequestParam(value = "changeNickname") String changeNickname) {
