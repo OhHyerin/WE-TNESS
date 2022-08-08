@@ -1,9 +1,6 @@
 package com.wetness.controller;
 
-import com.wetness.model.dto.request.DiaryReqDto;
-import com.wetness.model.dto.request.GameReqDto;
-import com.wetness.model.dto.request.GameResultReqDto;
-import com.wetness.model.dto.request.TerminateGameDto;
+import com.wetness.model.dto.request.*;
 import com.wetness.model.dto.response.DiaryRespDto;
 import com.wetness.model.service.GameService;
 import com.wetness.model.service.UserDetailsImpl;
@@ -69,13 +66,14 @@ public class GameController {
         return new ResponseEntity<>(SUCCESS,HttpStatus.OK);
     }
 
-    @PostMapping("/diary/delete/{filename}")
-    public ResponseEntity<String> deleteDiary(@PathVariable("filename") String filename){
-        gameService.invalidateDiary(filename);
+    @PostMapping("/diary/delete")
+    public ResponseEntity<String> deleteDiary(@RequestBody DeleteDiaryReqDto DeleteThis,
+                                              @AuthenticationPrincipal UserDetailsImpl user ){
+        gameService.invalidateDiary(DeleteThis.filename, user);
         return new ResponseEntity<>(SUCCESS,HttpStatus.OK);
     }
 
-    @GetMapping("/diary/{nicknname}")
+    @GetMapping("/diary/{nickname}")
     public ResponseEntity<List<DiaryRespDto>> readDiary(@PathVariable("nickname") String nickname){
         List<DiaryRespDto> results = gameService.readDiary(nickname);
 

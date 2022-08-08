@@ -74,10 +74,13 @@ public class GameServiceImpl implements GameService{
     }
 
     @Override
-    public void invalidateDiary(String filename) {
-        List<Diary> diary = diaryRepo.findByFileName(filename); //unique
-        diary.get(0).setValid(false);
-        diaryRepo.save(diary.get(0));
+    public void invalidateDiary(String filename, UserDetailsImpl user) {
+        Diary diary = diaryRepo.findByFileName(filename).get(0); //UUID 추가하므로 unique
+
+        if(diary.getUser().getId()!= user.id()) return;
+
+        diary.setValid(false);
+        diaryRepo.save(diary);
     }
 
     @Override
