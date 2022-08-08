@@ -51,7 +51,7 @@ export default function NavBar() {
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   return (
-    <>
+    <div id="nav">
       <Header>
         <Logo>
           <Link to="/">
@@ -87,6 +87,6 @@ export default function NavBar() {
         </NavBtns>
         <div></div>
       </Nav>
-    </>
+    </div>
   );
 }

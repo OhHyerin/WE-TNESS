@@ -11,6 +11,13 @@ const initialState = {
   isRoomsLoaded: false,
   isWorkoutsLoaded: false,
   isSearched: false,
+
+  // 방 생성 관련
+  roomInfo: {
+    title: '',
+    workoutId: '',
+    password: '',
+  },
   keyword: '',
 };
 
@@ -66,6 +73,12 @@ export const RoomSlice = createSlice({
         { name: 'test2', scope: 'private', workout: '운동2', started: true, numOfPeople: 2 },
       ];
     },
+    fetchTitle: (state, action) => {
+      state.roomInfo.title = action.payload;
+    },
+    fetchPassword: (state, action) => {
+      state.roomInfo.password = action.payload;
+    },
     setKeyword: (state, action) => {
       state.keyword = action.payload;
     },
@@ -96,6 +109,7 @@ export const RoomSlice = createSlice({
 });
 
 export { getAllRooms, getWorksouts, searchRooms };
-export const { testWorkout, testShowPrivate, workoutChange, testRoomList, setKeyword, setIsSearch } = RoomSlice.actions;
+
+export const { testWorkout, testShowPrivate, workoutChange, testRoomList, setKeyword, setIsSearch, fetchTitle, fetchPassword } = RoomSlice.actions;
 
 export default RoomSlice.reducer;
