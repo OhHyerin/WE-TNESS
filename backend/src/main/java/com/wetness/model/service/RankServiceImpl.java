@@ -178,7 +178,8 @@ public class RankServiceImpl implements RankService {
             }
         } else {
             //로그인 한 유저가 주소 정보가 없으면
-            RankResDto rankResDto = new RankResDto("NO_GUGUN_INFO", null);
+            List<RankResultResDto> ranks = new ArrayList<>();
+            RankResDto rankResDto = new RankResDto("NO_GUGUN_INFO", ranks);
             return rankResDto;
 
         }
