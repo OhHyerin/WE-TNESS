@@ -193,11 +193,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void deleteUser(String nickname) {
+    public boolean deleteUser(String nickname) {
         User user = userRepository.findByNickname(nickname);
         if (user != null) {
             user.setRole("drop");
+            return true;
         }
+        return false;
     }
 
     @Override
