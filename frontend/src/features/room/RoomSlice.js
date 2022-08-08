@@ -17,7 +17,7 @@ const initialState = {
   // 방 생성 관련
   roomInfo: {
     title: '',
-    workoutId: '',
+    workoutId: 1,
     password: '',
   },
   sessionInfo: {
