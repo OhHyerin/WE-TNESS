@@ -97,6 +97,7 @@ public class UserServiceImpl implements UserService {
         } else { // 성별 미정
             user.setGender("3");
         }
+        user.setRole("user");
 
         userRepository.save(user);
 
