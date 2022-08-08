@@ -1,10 +1,15 @@
-import { useReducer, useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Box, Modal, TextField, Fab } from '@mui/material';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ClearIcon from '@mui/icons-material/Clear';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 import Banner from '../../components/home/Banner';
 import RankingPreview from '../../components/home/RankingPreview';
 import RoomList from '../../components/home/RoomList';
@@ -14,7 +19,7 @@ import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
-import { fetchTitle, fetchPassword } from '../../features/room/RoomSlice';
+import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId } from '../../features/room/RoomSlice';
 
 const style = {
   position: 'absolute',
@@ -82,6 +87,19 @@ export default function Home() {
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const isSearched = useSelector(state => state.room.isSearched);
 
+  // 방 입장 관련
+  const sessionId = useSelector(state => state.room.sessionInfo.sessionId);
+
+  function onCreate(e) {
+    e.preventDefault();
+    const payload = {
+      workoutId: roomInfo.workoutId,
+      title: roomInfo.title,
+      password: roomInfo.password,
+    };
+    dispatch(createRoom(payload)).then(navigate(sessionId));
+  }
+
   // 방 생성 관련
   const [isAddRoom, setIsAddRoom] = useState(false);
   const roomInfo = useSelector(state => state.room.roomInfo);
@@ -97,6 +115,7 @@ export default function Home() {
   }
   function onWorkoutHandler(e) {
     e.preventDefault();
+    dispatch(fetchWorkoutId(e.target.value));
   }
   function onPasswordHandler(e) {
     e.preventDefault();
@@ -142,38 +161,6 @@ export default function Home() {
   return (
     <div>
       <div>
-        <Modal open={isModal} onClose={handleClose}>
-          <Box sx={style}>
-            <FormBox>
-              <SubmitForm onSubmit={onSubmitHandler}>
-                <h1>추가 정보 입력</h1>
-                <InputBox>
-                  <TextField
-                    error={isCheckNN && !isPossibleNickname}
-                    label="*닉네임"
-                    value={nickname}
-                    onChange={onNicknameHandler}
-                    helperText={
-                      isCheckNN ? (isPossibleNickname ? '사용 가능한 닉네임입니다.' : '사용중인 닉네임입니다.') : null
-                    }
-                  />
-                </InputBox>
-                {nickname ? (
-                  <SubmitBtn onClick={onCheckNicknameHandler}>닉네임 확인</SubmitBtn>
-                ) : (
-                  <SubmitBtn disabled deactive={!nickname}>
-                    닉네임확인
-                  </SubmitBtn>
-                )}
-                <SubmitBtn disabled={!isPossibleNickname} deactive={!isPossibleNickname}>
-                  제출
-                </SubmitBtn>
-              </SubmitForm>
-            </FormBox>
-            <button onClick={handleClose}>닫기</button>
-          </Box>
-        </Modal>
-
         <Banner />
         <RankingPreview />
         <>
@@ -183,9 +170,16 @@ export default function Home() {
           <RoomFilter2 />
         </>
         <RoomList />
+
+        {/* 방 입장 테스트 버튼 */}
         <button
           onClick={() => {
-            navigate('room/3');
+            const payload = {
+              workoutId: 1,
+              title: '스쿼트 짱',
+              password: '',
+            };
+            dispatch(createRoom(payload)).then(navigate(sessionId));
           }}>
           방 입장
         </button>
@@ -230,14 +224,28 @@ export default function Home() {
           <ClearIcon sx={closeStyle} onClick={onClose}></ClearIcon>
           <FormBox>
             <SubmitForm onSubmit={onSubmitRoom}>
-              <p>운동종류</p>
+              <FormControl
+                value={roomInfo.workoutId}
+                onChange={onWorkoutHandler}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  justifyContent: 'end',
+                }}>
+                <FormLabel>운동종류</FormLabel>
+                <RadioGroup defaultValue="1">
+                  <FormControlLabel value="1" control={<Radio />} label="1번 운동" />
+                  <FormControlLabel value="2" control={<Radio />} label="2번 운동" />
+                  <FormControlLabel value="3" control={<Radio />} label="3번 운동" />
+                </RadioGroup>
+              </FormControl>
               <InputBox>
                 <TextField label="방 제목" value={roomInfo.title} onChange={onTitleHandler} />
               </InputBox>
               <InputBox>
                 <TextField label="방 비밀번호" value={roomInfo.password} onChange={onPasswordHandler} />
               </InputBox>
-              <SubmitBtn disabled={false} deactive={false}>
+              <SubmitBtn disabled={false} deactive={false} onClick={onCreate}>
                 방 생성하기
               </SubmitBtn>
             </SubmitForm>
