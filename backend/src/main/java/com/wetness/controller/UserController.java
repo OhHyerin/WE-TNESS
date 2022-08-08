@@ -29,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Optional;
