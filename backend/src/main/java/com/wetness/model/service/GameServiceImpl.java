@@ -88,6 +88,7 @@ public class GameServiceImpl implements GameService{
         List<DiaryRespDto> diaryRespList = new ArrayList<>();
         for(int i=0; i<diaryList.size(); i++){
             Diary diary = diaryList.get(i);
+            if(!diary.isValid()) continue;
             String regDate = diary.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
             diaryRespList.add(new DiaryRespDto( diary.getFileName(), regDate ) );
         }
