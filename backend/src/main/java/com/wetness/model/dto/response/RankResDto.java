@@ -9,10 +9,10 @@ import java.util.List;
 public class RankResDto {
 
      String message;
-     List<Rank> ranks;
+     List<RankResultResDto> ranks;
 
 
-     public RankResDto(String message, List<Rank> ranks) {
+     public RankResDto(String message, List<RankResultResDto> ranks) {
           this.message = message;
           this.ranks = ranks;
      }

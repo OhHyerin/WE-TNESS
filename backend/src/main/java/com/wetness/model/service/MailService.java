@@ -50,8 +50,8 @@ public class MailService {
         simpleMessage.setTo(emailAddr);
 
         String tempPwd = excuteGenerate();
-        tempUser.setPassword(tempPwd);
-        userService.updateUser(tempUser.getId(), tempUser);
+//        tempUser.setPassword(tempPwd);
+//        userService.updateUser(tempUser.getId(), tempUser);
 
         //메일 제목
         simpleMessage.setSubject("WE-tness에서 임시 비밀번호를 발급해드립니다.");
