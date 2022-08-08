@@ -12,7 +12,7 @@ public class WorkoutServiceImpl implements WorkoutService{
     WorkoutRepository workRepo;
 
     @Override
-    public Workout getWorkoutInfo(long id) {
+    public Workout getWorkoutInfo(int id) {
         return workRepo.findById(id).get();
     }
 }
