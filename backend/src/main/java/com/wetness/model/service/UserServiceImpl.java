@@ -391,6 +391,11 @@ public class UserServiceImpl implements UserService {
         return loggedInRepository.getLoginLog(userId);
     }
 
+    @Override
+    public ArrayList<String> getLoginDateLog(long userId) {
+        return loggedInRepository.getLoginDateLog(userId);
+    }
+
 
     @Override
     public Authentication getAuthentication(User user) {

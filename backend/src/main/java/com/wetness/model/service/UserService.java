@@ -69,4 +69,6 @@ public interface UserService {
     void setLoggedInData(long userId);
 
     ArrayList<LoginLogResDto> getLoginLog(long userId);
+
+    ArrayList<String> getLoginDateLog(long userId);
 }

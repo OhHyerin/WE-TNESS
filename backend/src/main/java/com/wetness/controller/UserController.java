@@ -264,4 +264,10 @@ public class UserController {
         ArrayList<LoginLogResDto> loginLog = userService.getLoginLog(userDetails.getId());
         return ResponseEntity.ok().body(loginLog);
     }
+
+    @GetMapping("/login/date-log")
+    public ResponseEntity<?> getDateLoginLog(@AuthenticationPrincipal UserDetailsImpl userDetails){
+        ArrayList<String> loginDateLog = userService.getLoginDateLog(userDetails.getId());
+        return ResponseEntity.ok().body(loginDateLog);
+    }
 }
