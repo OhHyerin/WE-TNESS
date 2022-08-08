@@ -63,8 +63,8 @@ public class Diary {
             this.fileName = file;
             return this;
         }
-        public DiaryBuilder buildDate(int[] date){
-            this.date = LocalDateTime.of(date[0],date[1],date[2],date[3],date[4],date[5]);
+        public DiaryBuilder buildDate(LocalDateTime date){
+            this.date = date;
             return this;
         }
         public DiaryBuilder buildRecord(GameRecord record){

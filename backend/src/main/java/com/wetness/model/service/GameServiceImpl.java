@@ -59,16 +59,15 @@ public class GameServiceImpl implements GameService{
 
 
     @Override
-    public void insertDiary(long gameRecordId, String fileName,UserDetailsImpl user) {
+    public void insertDiary(Long gameRecordId, String fileName,UserDetailsImpl user) {
 
-//
-//        User writer = userRepo.findById(user.id()).get();
-//        GameRecord gameRecord = gameRecordRepo.findById(diaryReq.getUserGameId()).get();
-//
-//        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(diaryReq.getFileName()).
-//                buildDate(diaryReq.getDate()).buildRecord(gameRecord).buildValidation(true).getDiary();
-//
-//        diaryRepo.save(diary);
+        User writer = userRepo.findById(user.id()).get();
+        GameRecord gameRecord = gameRecordRepo.findById(gameRecordId).get();
+
+        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(fileName).
+                buildDate(LocalDateTime.now()).buildRecord(gameRecord).buildValidation(true).getDiary();
+
+        diaryRepo.save(diary);
         return;
     }
 
