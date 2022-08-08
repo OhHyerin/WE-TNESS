@@ -4,6 +4,9 @@ import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
 import com.wetness.model.dto.request.TerminateGameDto;
+import com.wetness.model.dto.response.DiaryRespDto;
+
+import java.util.List;
 
 public interface GameService {
     Long startGame(GameReqDto gameReqDto, Long userId);
@@ -11,4 +14,7 @@ public interface GameService {
 
     Long insertResult(GameResultReqDto result, UserDetailsImpl user);
     void insertDiary(Long gameRecordId,String fileName,UserDetailsImpl user);
+
+    void invalidateDiary(String filename);
+    List<DiaryRespDto> readDiary(String nickname);
 }

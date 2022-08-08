@@ -4,6 +4,7 @@ import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
 import com.wetness.model.dto.request.TerminateGameDto;
+import com.wetness.model.dto.response.DiaryRespDto;
 import com.wetness.model.service.GameService;
 import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -54,7 +56,7 @@ public class GameController {
         Long userGameId = gameService.insertResult(gameResult,user);
 
         Map<String,Long> result = new HashMap<>();
-        result.put("userGameId",userGameId);
+        result.put("game_record_id",userGameId);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
@@ -65,6 +67,19 @@ public class GameController {
         String fileName = awsS3Util.upload(multipartFile,"diary");
         gameService.insertDiary(userGameId, fileName, user);
         return new ResponseEntity<>(SUCCESS,HttpStatus.OK);
+    }
+
+    @PostMapping("/diary/delete/{filename}")
+    public ResponseEntity<String> deleteDiary(@PathVariable("filename") String filename){
+        gameService.invalidateDiary(filename);
+        return new ResponseEntity<>(SUCCESS,HttpStatus.OK);
+    }
+
+    @GetMapping("/diary/{nicknname}")
+    public ResponseEntity<List<DiaryRespDto>> readDiary(@PathVariable("nickname") String nickname){
+        List<DiaryRespDto> results = gameService.readDiary(nickname);
+
+        return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
 }

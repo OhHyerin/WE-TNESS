@@ -5,11 +5,13 @@ import com.wetness.db.repository.*;
 import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
+import com.wetness.model.dto.response.DiaryRespDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,6 +37,7 @@ public class GameServiceImpl implements GameService{
 
     @Autowired
     RoomRepository roomRepo;
+
 
 
     @Override
@@ -70,7 +73,26 @@ public class GameServiceImpl implements GameService{
         return;
     }
 
+    @Override
+    public void invalidateDiary(String filename) {
+        List<Diary> diary = diaryRepo.findByFileName(filename); //unique
+        diary.get(0).setValid(false);
+        diaryRepo.save(diary.get(0));
+    }
 
+    @Override
+    public List<DiaryRespDto> readDiary(String nickname) {
+
+        User user = userRepo.findByNickname(nickname);
+        List<Diary> diaryList = diaryRepo.findByUser(user);
+        List<DiaryRespDto> diaryRespList = new ArrayList<>();
+        for(int i=0; i<diaryList.size(); i++){
+            Diary diary = diaryList.get(i);
+            String regDate = diary.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            diaryRespList.add(new DiaryRespDto( diary.getFileName(), regDate ) );
+        }
+        return diaryRespList;
+    }
 
 
     @Override
