@@ -16,36 +16,31 @@ const fetchRankList = createAsyncThunk('fetchRankList', async (payload, { reject
 });
 
 const initialState = {
-  workoutIds: [],
   ranks: [
     {
-      rank: '1',
-      nickname: 'gg',
-      calories: '100',
+      userNickname: '',
+      address: '',
+      calorie: 0,
+      date: '',
     },
   ],
-  msg: '',
-  isRegion: false,
+  message: '',
 };
 
 export const RankSlice = createSlice({
   name: 'rank',
   initialState,
-  reducers: {
-    toggleIsRegion: state => {
-      state.isRegion = !state.isRegion;
-    },
-  },
+  reducers: {},
   extraReducers: {
     [fetchRankList.fulfilled]: (state, action) => {
       state.ranks = action.payload?.ranks;
-      state.msg = action.payload?.msg;
+      state.message = action.payload?.message;
     },
   },
 });
 
 export { fetchRankList };
 
-export const { toggleIsRegion } = RankSlice.actions;
+export const {} = RankSlice.actions;
 
 export default RankSlice.reducer;

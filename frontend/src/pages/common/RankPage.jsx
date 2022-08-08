@@ -25,43 +25,36 @@ const RankBox = styled.div`
 export default function RankPage() {
   const dispatch = useDispatch();
 
-  const region = useSelector(state => state.rank.region);
-
-  const [pushup, setPushup] = useState(true);
+  const [squat, setSquat] = useState(true);
+  const [pushup, setPushup] = useState(false);
   const [burpee, setBurpee] = useState(false);
-  const [squat, setSquat] = useState(false);
   const [plank, setPlank] = useState(false);
   const [isRegion, setIsRegion] = useState(false);
 
   useEffect(() => {
     const token = getAccessToken();
     if (token) {
+      const workoutId = [];
+      if (squat) {
+        workoutId.push(1);
+      }
+      if (pushup) {
+        workoutId.push(2);
+      }
+      if (burpee) {
+        workoutId.push(3);
+      }
+      if (plank) {
+        workoutId.push(4);
+      }
       const payload = {
-        pushup: true,
-        burpee: false,
-        squat: false,
-        plank: false,
-        isRegion: false,
+        workoutId,
+        selectGugun: isRegion,
       };
       dispatch(fetchRankList(payload));
     }
-  }, [dispatch]);
+  }, [dispatch, squat, pushup, burpee, plank, isRegion]);
 
-  function handleChange(e) {
-    setIsRegion(!isRegion);
-    onClickBtn(e);
-  }
-
-  function onClickBtn(e) {
-    const payload = {
-      pushup,
-      burpee,
-      squat,
-      plank,
-      isRegion,
-    };
-    dispatch(fetchRankList(payload));
-  }
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   if (isAuthenticated) {
     return (
@@ -70,10 +63,16 @@ export default function RankPage() {
           <h1>랭킹</h1>
           <BtnBox>
             <Button
+              variant={squat ? 'contained' : 'outlined'}
+              onClick={() => {
+                setSquat(!squat);
+              }}>
+              스쿼트
+            </Button>
+            <Button
               variant={pushup ? 'contained' : 'outlined'}
               onClick={() => {
                 setPushup(!pushup);
-                onClickBtn();
               }}>
               팔굽혀펴기
             </Button>
@@ -81,31 +80,27 @@ export default function RankPage() {
               variant={burpee ? 'contained' : 'outlined'}
               onClick={() => {
                 setBurpee(!burpee);
-                onClickBtn();
               }}>
               버핏
-            </Button>
-            <Button
-              variant={squat ? 'contained' : 'outlined'}
-              onClick={() => {
-                setSquat(!squat);
-                onClickBtn();
-              }}>
-              스쿼트
             </Button>
             <Button
               variant={plank ? 'contained' : 'outlined'}
               onClick={() => {
                 setPlank(!plank);
-                onClickBtn();
               }}>
               플랭크
             </Button>
           </BtnBox>
           <FormGroup>
-            <FormControlLabel control={<Switch />} onChange={handleChange} label="우리 지역" labelPlacement="start" />
+            <FormControlLabel
+              control={<Switch />}
+              onChange={() => {
+                setIsRegion(!isRegion);
+              }}
+              label="우리 지역"
+              labelPlacement="start"
+            />
           </FormGroup>
-          {region ? <p>{region} ^~^</p> : <p>하이여</p>}
           <RankList />
         </RankBox>
       </BigBox>
