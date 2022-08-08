@@ -9,5 +9,7 @@ public class MakeRoomRes {
 
     //session id 및 유저 토큰 들어가있음
     private String token;
+    private String title;
+    private String managerNickname;
 
 }

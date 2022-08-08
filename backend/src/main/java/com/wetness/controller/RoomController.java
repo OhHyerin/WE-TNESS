@@ -39,9 +39,10 @@ public class RoomController {
 
         try {
             roomService.generateRoom(userDetails, makeRoomReq);
-            String token = roomService.makeToken(userDetails, new EnterRoomReq(makeRoomReq.getTitle(),makeRoomReq.getPassword()));
+            logger.info("세션생성 성공");
+
             logger.info("/room/make 토큰 생성 성공, token successfully generated");
-            return ResponseEntity.ok().body(new MakeRoomRes(token));
+            return ResponseEntity.ok().body(roomService.makeToken(userDetails, new EnterRoomReq(makeRoomReq.getTitle(),makeRoomReq.getPassword())));
         }catch (Exception e){
             return ResponseEntity.internalServerError().body(e.getMessage());
         }
@@ -55,14 +56,12 @@ public class RoomController {
     public ResponseEntity<?> enterRoom(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody EnterRoomReq enterRoomReq){
 
         try {
-            String token = roomService.makeToken(userDetails, enterRoomReq);
-            if (token==null){
-                throw new Exception("token generation error\n null in token value");
-            } else if (token.equals("Unauthorized")) {
+            EnterRoomRes enterRoomRes = roomService.makeToken(userDetails, enterRoomReq);
+            if (enterRoomRes.getToken().equals("Unauthorized")) {
                 return ResponseEntity.badRequest().body("비밀번호가 틀립니다");
             }
             logger.info("/room/enter 토큰 생성 성공, token successfully generated");
-            return ResponseEntity.ok().body(new EnterRoomRes(token));
+            return ResponseEntity.ok().body(enterRoomRes);
         }catch (Exception e){
             e.printStackTrace();
             return ResponseEntity.badRequest().body(e.getMessage());
