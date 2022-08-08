@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useReducer, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import TextField from '@mui/material/TextField';
+import { Box, Modal, TextField, Fab } from '@mui/material';
+import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
+import ClearIcon from '@mui/icons-material/Clear';
 import Banner from '../../components/home/Banner';
 import RankingPreview from '../../components/home/RankingPreview';
 import RoomList from '../../components/home/RoomList';
@@ -14,6 +14,7 @@ import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
+import { fetchTitle, fetchPassword } from '../../features/room/RoomSlice';
 
 const style = {
   position: 'absolute',
@@ -22,7 +23,22 @@ const style = {
   transform: 'translate(-50%, -50%)',
   width: 800,
   bgcolor: 'background.paper',
-  border: '2px solid #000',
+  border: '1px solid var(--primary-color)',
+  borderRadius: '10px',
+  boxShadow: 24,
+  p: 4,
+};
+
+const addStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 800,
+  bgcolor: 'background.paper',
+  border: '1px solid var(--primary-color)',
+
+  borderRadius: '10px',
   boxShadow: 24,
   p: 4,
 };
@@ -30,9 +46,33 @@ const style = {
 const SubmitForm = styled.form`
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   padding: 10px;
   gap: 10px;
 `;
+
+const fabStyle = {
+  position: 'fixed',
+  bottom: 16,
+  right: 16,
+  color: 'white',
+  backgroundColor: 'var(--primary-color)',
+  '&:hover': {
+    bgcolor: 'var(--primary-color)',
+    color: '#d5d8d8',
+  },
+};
+
+const closeStyle = {
+  position: 'absolute',
+  top: '10px',
+  right: '10px',
+  '&:hover': {
+    cursor: 'pointer',
+    opacity: '80%',
+  },
+};
 
 export default function Home() {
   const navigate = useNavigate();
@@ -42,6 +82,31 @@ export default function Home() {
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const isSearched = useSelector(state => state.room.isSearched);
 
+  // 방 생성 관련
+  const [isAddRoom, setIsAddRoom] = useState(false);
+  const roomInfo = useSelector(state => state.room.roomInfo);
+  function onOpen(e) {
+    setIsAddRoom(true);
+  }
+  function onClose(e) {
+    setIsAddRoom(false);
+  }
+  function onTitleHandler(e) {
+    e.preventDefault();
+    dispatch(fetchTitle(e.target.value));
+  }
+  function onWorkoutHandler(e) {
+    e.preventDefault();
+  }
+  function onPasswordHandler(e) {
+    e.preventDefault();
+    dispatch(fetchPassword(e.target.value));
+  }
+  function onSubmitRoom(e) {
+    e.preventDefault();
+  }
+
+  // 추가정보 모달 관련
   const isModal = useSelector(state => state.signup.isModal);
   const isPossibleNickname = useSelector(state => state.user.isPossibleNickname);
   const [nickname, setNickname] = useState('');
@@ -76,8 +141,6 @@ export default function Home() {
 
   return (
     <div>
-      <div>{isAuthenticated ? <p> 닉네임 : {currentUser.nickname} </p> : null}</div>
-
       <div>
         <Modal open={isModal} onClose={handleClose}>
           <Box sx={style}>
@@ -127,6 +190,68 @@ export default function Home() {
           방 입장
         </button>
       </div>
+
+      {/* 카카오 로그인 추가정보 입력 모달 */}
+      <Modal open={isModal} onClose={handleClose}>
+        <Box sx={style}>
+          <ClearIcon sx={closeStyle} onClick={handleClose}></ClearIcon>
+          <FormBox>
+            <SubmitForm onSubmit={onSubmitHandler}>
+              <h1>추가 정보 입력</h1>
+              <InputBox>
+                <TextField
+                  error={isCheckNN && !isPossibleNickname}
+                  label="*닉네임"
+                  value={nickname}
+                  onChange={onNicknameHandler}
+                  helperText={
+                    isCheckNN ? (isPossibleNickname ? '사용 가능한 닉네임입니다.' : '사용중인 닉네임입니다.') : null
+                  }
+                />
+              </InputBox>
+              {nickname ? (
+                <SubmitBtn onClick={onCheckNicknameHandler}>닉네임 확인</SubmitBtn>
+              ) : (
+                <SubmitBtn disabled deactive={!nickname}>
+                  닉네임확인
+                </SubmitBtn>
+              )}
+              <SubmitBtn disabled={!isCheckNN || !isPossibleNickname} deactive={!isCheckNN || !isPossibleNickname}>
+                제출
+              </SubmitBtn>
+            </SubmitForm>
+          </FormBox>
+        </Box>
+      </Modal>
+
+      {/* 방 생성 모달 */}
+      <Modal open={isAddRoom} onClose={onClose}>
+        <Box sx={addStyle}>
+          <ClearIcon sx={closeStyle} onClick={onClose}></ClearIcon>
+          <FormBox>
+            <SubmitForm onSubmit={onSubmitRoom}>
+              <p>운동종류</p>
+              <InputBox>
+                <TextField label="방 제목" value={roomInfo.title} onChange={onTitleHandler} />
+              </InputBox>
+              <InputBox>
+                <TextField label="방 비밀번호" value={roomInfo.password} onChange={onPasswordHandler} />
+              </InputBox>
+              <SubmitBtn disabled={false} deactive={false}>
+                방 생성하기
+              </SubmitBtn>
+            </SubmitForm>
+          </FormBox>
+        </Box>
+      </Modal>
+
+      {/* 방 생성 버튼 */}
+      {isAuthenticated ? (
+        <Fab variant="extended" sx={fabStyle} onClick={onOpen}>
+          <SportsEsportsIcon style={{ marginRight: '5px' }} />
+          <p>방 만들기</p>
+        </Fab>
+      ) : null}
     </div>
   );
 }

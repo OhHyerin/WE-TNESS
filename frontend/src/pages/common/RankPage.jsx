@@ -3,7 +3,7 @@ import { Navigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FormGroup, FormControlLabel, Switch, Button } from '@mui/material';
-
+import { getAccessToken } from '../../features/Token';
 import { fetchRankList } from '../../features/rank/RankSlice';
 import RankList from '../../components/rank/RankList';
 
@@ -25,8 +25,6 @@ const RankBox = styled.div`
 export default function RankPage() {
   const dispatch = useDispatch();
 
-  // const workoutIds = useSelector(state => state.rank.workoutIds)
-
   const region = useSelector(state => state.rank.region);
 
   const [pushup, setPushup] = useState(true);
@@ -36,15 +34,17 @@ export default function RankPage() {
   const [isRegion, setIsRegion] = useState(false);
 
   useEffect(() => {
-    const payload = {
-      // workoutIds,
-      pushup,
-      burpee,
-      squat,
-      plank,
-      isRegion,
-    };
-    dispatch(fetchRankList(payload));
+    const token = getAccessToken();
+    if (token) {
+      const payload = {
+        pushup: true,
+        burpee: false,
+        squat: false,
+        plank: false,
+        isRegion: false,
+      };
+      dispatch(fetchRankList(payload));
+    }
   }, []);
 
   function handleChange(e) {
