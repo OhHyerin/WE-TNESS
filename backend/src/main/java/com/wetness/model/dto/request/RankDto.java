@@ -13,12 +13,13 @@ import java.util.Date;
 @AllArgsConstructor
 public class RankDto {
 
-    Long userId;
-    int workoutId;
-    String sidoCode;
-    String gugunCode;
-    double calorie;
-    LocalDate date;
+//    Long userId;
+    int[] workoutId;
+    boolean isSelectGugun;
+//    String sidoCode;
+//    String gugunCode;
+//    double calorie;
+//    LocalDate date;
 
 //    RankDto(RankDto rankDto, Long userId){
 //

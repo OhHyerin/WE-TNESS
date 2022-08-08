@@ -37,8 +37,15 @@ public class RankController {
     public ResponseEntity<RankResDto> getRank(@RequestBody RankDto rankDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
 
 //        System.out.println(rankService.getRank(rankDto));
-        List<Rank> ranks = rankService.getRank(rankDto, userDetails.getId());
-        RankResDto rankResDto = new RankResDto("message", ranks);
+//        List<Rank> ranks = rankService.getRank(rankDto, userDetails.getId());
+//        RankResDto rankResDto = new RankResDto("message", ranks);
+
+        RankResDto rankResDto;
+        if(rankDto.isSelectGugun()){
+            rankResDto = rankService.getGugunRank(rankDto, userDetails.getId());
+        }else{
+            rankResDto = rankService.getRank(rankDto, userDetails.getId());
+        }
 
         //success 또는 주소정보가 없습니다.
         return ResponseEntity.ok().body(rankResDto);

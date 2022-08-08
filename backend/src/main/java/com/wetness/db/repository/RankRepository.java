@@ -21,10 +21,16 @@ public interface RankRepository extends JpaRepository<Rank, Long> {
 //
 
 
-    Optional<Rank> findByUserIdAndWorkoutIdAndDateGreaterThanEqual(long userId, int workoutId, LocalDate start);
+    //UserId, WorkoutId, Date
+    List<Rank> findByUserIdAndWorkoutIdAndDateGreaterThanEqual(long userId, int workoutId, LocalDate start);
 
+    //UserId, Date
     List<Rank> findByUserIdAndDateGreaterThanEqual(long userId, LocalDate regDate);
 
+    //Date
+    List<Rank> findByDate(LocalDate regDate);
+
+    List<Rank> findByGugunCodeAndDate(String gugunCode, LocalDate regDate);
 
 
 

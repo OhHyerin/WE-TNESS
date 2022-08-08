@@ -22,7 +22,7 @@ public class Room {
     private long id;
     private String title;
     private String password;
-    private int workoutId;
+    private Integer workoutId;
     private boolean isLocked;
     private Timestamp createDate;
     private Timestamp terminateDate;
