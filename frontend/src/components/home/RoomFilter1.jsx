@@ -1,37 +1,31 @@
-import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Stack, Button } from '@mui/material';
-import { workoutChange, testWorkout } from '../../features/room/RoomSlice';
+import { workoutChange } from '../../features/room/RoomSlice';
+import workoutItems from '../../assets/data/workoutItems';
 
 export default function RoomFilter1() {
-  const workouts = useSelector(state => state.room.workouts);
+  const workouts = workoutItems;
   const workout = useSelector(state => state.room.workout);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(testWorkout());
-  }, []);
-
   const handleBtnChange = e => {
-    console.log(e);
     dispatch(workoutChange(e));
   };
 
   return (
     <>
       <Stack spacing={2} direction="row">
-        {workouts.map((nowWorkout, i) => (
+        {workouts.map(nowWorkout => (
           <Button
-            key={i}
-            variant={nowWorkout === workout ? 'contained' : 'outlined'}
+            key={nowWorkout.id}
+            variant={nowWorkout.name === workout ? 'contained' : 'outlined'}
             onClick={() => {
-              handleBtnChange(nowWorkout);
+              handleBtnChange(nowWorkout.name);
             }}>
-            {nowWorkout}
+            {nowWorkout.name}
           </Button>
         ))}
       </Stack>
-      {workout}
     </>
   );
 }

@@ -85,7 +85,6 @@ export default function Home() {
 
   const currentUser = useSelector(state => state.user.currentUser);
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const isSearched = useSelector(state => state.room.isSearched);
 
   // 방 입장 관련
   const sessionId = useSelector(state => state.room.sessionInfo.sessionId);
