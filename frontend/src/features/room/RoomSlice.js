@@ -5,7 +5,6 @@ import setConfig from '../authHeader';
 
 const initialState = {
   rooms: [],
-  workouts: [],
   searchRoomResult: [],
   searchUserResult: [],
   workout: '전체',
@@ -17,12 +16,16 @@ const initialState = {
   // 방 생성 관련
   roomInfo: {
     title: '',
-    workoutId: '',
+    workoutId: 1,
     password: '',
   },
+
+  // 방 생성 입장 관련
   sessionInfo: {
+    title: '',
+    token: '',
     sessionId: '',
-    myNickname: '',
+    managerNickname: '',
   },
   keyword: '',
 };
@@ -41,7 +44,7 @@ const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWith
 const getWorksouts = createAsyncThunk('getWorkouts', async (state, { rejectWithValue }) => {
   try {
     const response = await axios.get(`/workouts`);
-    console.log('workouts : ' + response);
+    console.log(response);
     return response;
   } catch (error) {
     return rejectWithValue(error);
@@ -64,7 +67,7 @@ const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithVa
   console.log(payload);
   try {
     const res = await axios.post(api.createRoom(), payload, setConfig());
-    console.log('response : ' + res);
+    console.log(res.data);
     return res.data;
   } catch (error) {
     return rejectWithValue(error.response);
@@ -75,9 +78,6 @@ export const RoomSlice = createSlice({
   name: 'room',
   initialState,
   reducers: {
-    testWorkout: state => {
-      state.workouts = ['전체', '운동1', '운동2', '운동3'];
-    },
     testShowPrivate: state => {
       state.showPrivate = !state.showPrivate;
     },

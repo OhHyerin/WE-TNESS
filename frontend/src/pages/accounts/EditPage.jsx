@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Box, Button, Modal } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import { checkNickname } from '../../features/user/SignupSlice';
+import { signout } from '../../features/user/UserSlice';
 import { fetchUserInfo, edit, changePassword, fetchNickname } from '../../features/user/EditSlice';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import IconTextField from '../../components/common/IconTextField';
@@ -42,6 +43,7 @@ const style = {
 
 export default function EditPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchUserInfo());
@@ -75,8 +77,11 @@ export default function EditPage() {
   function onSubmitHandler(e) {
     e.preventDefault();
     const payload = {
+      nickname: userInfo.nickname,
+      gender: userInfo.gender,
+      weight: userInfo.weight,
+      height: userInfo.height,
       addressCode,
-      ...userInfo,
     };
     console.log(payload);
     dispatch(edit(payload))
@@ -102,6 +107,11 @@ export default function EditPage() {
       .catch(err => {
         console.log(err);
       });
+  }
+
+  // 회원 탈퇴
+  function onSignoutHandler(e) {
+    dispatch(signout()).then(navigate('/'));
   }
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
@@ -160,6 +170,7 @@ export default function EditPage() {
           </SignupForm>
           <LabelBox>
             <Button onClick={handleOpen}>비밀번호 변경</Button>
+            <Button onClick={onSignoutHandler}>회원 탈퇴</Button>
           </LabelBox>
         </FormBox>
       </div>
