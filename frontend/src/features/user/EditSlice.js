@@ -50,7 +50,6 @@ const changePassword = createAsyncThunk('changePassword', async (payload, { reje
 const initialState = {
   userInfo: {
     nickname: '',
-    email: '',
     gender: '',
     address: '',
     weight: '',
@@ -65,9 +64,6 @@ export const SignupSlice = createSlice({
   reducers: {
     fetchNickname: (state, action) => {
       state.userInfo.nickname = action.payload;
-    },
-    fetchEmail: (state, action) => {
-      state.userInfo.email = action.payload;
     },
     fetchPassword: (state, action) => {
       state.userInfo.password = action.payload;
@@ -111,7 +107,6 @@ export { fetchUserInfo, edit, changePassword };
 
 export const {
   fetchNickname,
-  fetchEmail,
   fetchPassword,
   fetchPwdVerify,
   fetchGender,

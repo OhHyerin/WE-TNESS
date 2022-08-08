@@ -80,6 +80,7 @@ export default function Home() {
 
   const currentUser = useSelector(state => state.user.currentUser);
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  const isSearched = useSelector(state => state.room.isSearched);
 
   // 방 생성 관련
   const [isAddRoom, setIsAddRoom] = useState(false);
@@ -141,13 +142,43 @@ export default function Home() {
   return (
     <div>
       <div>
+        <Modal open={isModal} onClose={handleClose}>
+          <Box sx={style}>
+            <FormBox>
+              <SubmitForm onSubmit={onSubmitHandler}>
+                <h1>추가 정보 입력</h1>
+                <InputBox>
+                  <TextField
+                    error={isCheckNN && !isPossibleNickname}
+                    label="*닉네임"
+                    value={nickname}
+                    onChange={onNicknameHandler}
+                    helperText={
+                      isCheckNN ? (isPossibleNickname ? '사용 가능한 닉네임입니다.' : '사용중인 닉네임입니다.') : null
+                    }
+                  />
+                </InputBox>
+                {nickname ? (
+                  <SubmitBtn onClick={onCheckNicknameHandler}>닉네임 확인</SubmitBtn>
+                ) : (
+                  <SubmitBtn disabled deactive={!nickname}>
+                    닉네임확인
+                  </SubmitBtn>
+                )}
+                <SubmitBtn disabled={!isPossibleNickname} deactive={!isPossibleNickname}>
+                  제출
+                </SubmitBtn>
+              </SubmitForm>
+            </FormBox>
+            <button onClick={handleClose}>닫기</button>
+          </Box>
+        </Modal>
+
         <Banner />
         <RankingPreview />
         <>
           {/* 운동 목록 */}
           <RoomFilter1 />
-        </>
-        <>
           {/* 비밀방 여부 */}
           <RoomFilter2 />
         </>
