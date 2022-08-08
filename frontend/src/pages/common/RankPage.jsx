@@ -48,7 +48,6 @@ export default function RankPage() {
   }, []);
 
   function handleChange(e) {
-    e.preventDefault();
     setIsRegion(!isRegion);
     onClickBtn(e);
   }
@@ -104,12 +103,7 @@ export default function RankPage() {
             </Button>
           </BtnBox>
           <FormGroup>
-            <FormControlLabel
-              control={<Switch defaultChecked />}
-              onChange={handleChange}
-              label="우리 지역"
-              labelPlacement="start"
-            />
+            <FormControlLabel control={<Switch />} onChange={handleChange} label="우리 지역" labelPlacement="start" />
           </FormGroup>
           {region ? <p>{region} ^~^</p> : <p>하이여</p>}
           <RankList />
