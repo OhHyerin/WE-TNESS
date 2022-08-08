@@ -27,6 +27,8 @@ out/
 !**/src/test/**/out/
 *.xml
 
+application-aws.yml
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/

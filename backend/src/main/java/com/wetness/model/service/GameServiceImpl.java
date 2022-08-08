@@ -40,6 +40,9 @@ public class GameServiceImpl implements GameService{
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
 
+        if(!roomRepo.findById(gameReqDto.getRoomId()).isPresent()){
+            System.out.println("room 없음");
+        }
         Room room = roomRepo.findById(gameReqDto.getRoomId()).get();
 
         //userId validation 체크 추가하기 -> Room 생성할 때 생성한 user 정보가 없어서 애매함
@@ -52,6 +55,23 @@ public class GameServiceImpl implements GameService{
         Long gameId = gameRepo.save(game).getId();
         return gameId;
     }
+
+
+    @Override
+    public void insertDiary(Long gameRecordId, String fileName,UserDetailsImpl user) {
+
+        User writer = userRepo.findById(user.id()).get();
+        GameRecord gameRecord = gameRecordRepo.findById(gameRecordId).get();
+
+        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(fileName).
+                buildDate(LocalDateTime.now()).buildRecord(gameRecord).buildValidation(true).getDiary();
+
+        diaryRepo.save(diary);
+        return;
+    }
+
+
+
 
     @Override
     public void terminateGame(GameResultReqDto result, Long userId) {
@@ -115,6 +135,7 @@ public class GameServiceImpl implements GameService{
 
     void insertRank(GameRecord gameRecord){
 
+        //칼로리 계산식 리팩토링 필요
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore();
 
@@ -151,18 +172,6 @@ public class GameServiceImpl implements GameService{
     }
 
 
-
-    @Override
-    public void insertDiary(DiaryReqDto diaryReq, UserDetailsImpl user) {
-        User writer = userRepo.findById(user.id()).get();
-        GameRecord gameRecord = gameRecordRepo.findById(diaryReq.getUserGameId()).get();
-
-        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(diaryReq.getFileName()).
-                buildDate(diaryReq.getDate()).buildRecord(gameRecord).getDiary();
-
-        diaryRepo.save(diary);
-        return;
-    }
 
 }
 

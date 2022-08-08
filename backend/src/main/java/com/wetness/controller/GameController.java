@@ -7,12 +7,15 @@ import com.wetness.model.dto.request.TerminateGameDto;
 import com.wetness.model.service.GameService;
 import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
+import com.wetness.util.AwsS3Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +30,9 @@ public class GameController {
     @Autowired
     UserService userService;
 
+    @Autowired
+    private AwsS3Util awsS3Util;
+
     @PostMapping("/start")
     public ResponseEntity<Map<String,Long>> startGame(@RequestBody GameReqDto gameReqDto,
                                                       @AuthenticationPrincipal UserDetailsImpl user){
@@ -38,16 +44,6 @@ public class GameController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
-
-//    @PostMapping("/end")
-//    public ResponseEntity<String> terminateGame(@RequestBody TerminateGameReqDto terminateDto,
-//                                                          @AuthenticationPrincipal UserDetailsImpl user){
-//
-//        gameService.terminateGame(terminateDto,user.id()); //exception 처리 필요
-//
-//        return new ResponseEntity<>(SUCCESS, HttpStatus.OK);
-//    }
-
 
     @PostMapping("/end")
     public ResponseEntity<Map<String,Long>> terminateGame(@RequestBody GameResultReqDto gameResult,
@@ -62,9 +58,12 @@ public class GameController {
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @PostMapping("/diary")
-    public ResponseEntity<String> writeDiary(@RequestBody DiaryReqDto diary, @AuthenticationPrincipal UserDetailsImpl user){
-        gameService.insertDiary(diary,user);
+    @PostMapping("/diary/{gameRecordId}")
+    public ResponseEntity<String> writeDiary( @RequestParam("data") MultipartFile multipartFile,@PathVariable long userGameId,
+                                             @AuthenticationPrincipal UserDetailsImpl user) throws IOException {
+
+        String fileName = awsS3Util.upload(multipartFile,"diary");
+        gameService.insertDiary(userGameId, fileName, user);
         return new ResponseEntity<>(SUCCESS,HttpStatus.OK);
     }
 
