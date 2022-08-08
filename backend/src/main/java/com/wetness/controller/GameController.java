@@ -59,7 +59,7 @@ public class GameController {
     }
 
     @PostMapping("/diary/{gameRecordId}")
-    public ResponseEntity<String> writeDiary( @RequestParam("data") MultipartFile multipartFile,@PathVariable long userGameId,
+    public ResponseEntity<String> writeDiary( @RequestParam("data") MultipartFile multipartFile,@PathVariable("gameRecordId") long userGameId,
                                              @AuthenticationPrincipal UserDetailsImpl user) throws IOException {
 
         String fileName = awsS3Util.upload(multipartFile,"diary");

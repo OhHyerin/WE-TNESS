@@ -134,6 +134,9 @@ public class GameServiceImpl implements GameService{
 
 
     void insertRank(GameRecord gameRecord){
+        if(gameRecord.getUser().getWeight()==null){
+            return;
+        }
 
         //칼로리 계산식 리팩토링 필요
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
