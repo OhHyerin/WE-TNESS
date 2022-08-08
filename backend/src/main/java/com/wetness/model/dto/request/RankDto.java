@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -12,17 +13,16 @@ import java.util.Date;
 @AllArgsConstructor
 public class RankDto {
 
-    private boolean divideWorkout;
-    private boolean divideGugun;
+    Long userId;
+    int workoutId;
+    String sidoCode;
+    String gugunCode;
+    double calorie;
+    LocalDate date;
 
-//    private Date date;
+//    RankDto(RankDto rankDto, Long userId){
+//
+//    }
 
-    private long workoutId;
-//    private String address;
-
-    RankDto(boolean divideWorkout, boolean divideGugun){
-        this.divideWorkout = divideWorkout;
-        this.divideGugun = divideGugun;
-    }
 
 }
