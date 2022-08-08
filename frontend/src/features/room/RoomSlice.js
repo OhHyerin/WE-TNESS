@@ -30,13 +30,14 @@ const initialState = {
   keyword: '',
 };
 
-const getAllRooms = createAsyncThunk('getAllRooms', async (state, { rejectWithValue }) => {
+const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWithValue }) => {
   try {
-    const response = await axios.get(``);
-    console.log('getAllRooms : ' + response);
-    return response;
-  } catch (error) {
-    return rejectWithValue(error);
+    const res = await axios.get(api.fetchRoomList(), setConfig());
+    console.log(res);
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response);
   }
 });
 
@@ -107,13 +108,14 @@ export const RoomSlice = createSlice({
     },
   },
   extraReducers: {
-    [getAllRooms.pending]: state => {
+    [fetchRoomList.pending]: state => {
       state.isRoomsLoaded = false;
     },
-    [getAllRooms.fulfilled]: state => {
+    [fetchRoomList.fulfilled]: (state, action) => {
       state.isRoomsLoaded = true;
+      state.rooms = [...action.payload];
     },
-    [getAllRooms.rejected]: state => {
+    [fetchRoomList.rejected]: state => {
       state.isRoomsLoaded = false;
     },
     [getWorksouts.pending]: state => {
@@ -131,7 +133,7 @@ export const RoomSlice = createSlice({
   },
 });
 
-export { getAllRooms, getWorksouts, searchRooms, createRoom };
+export { fetchRoomList, getWorksouts, searchRooms, createRoom };
 
 export const {
   testWorkout,

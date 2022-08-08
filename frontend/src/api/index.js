@@ -40,6 +40,6 @@ export default {
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
   fetchHistory: nickname => API_BASE_URL + USER_URL + HISTORY_URL + `/${nickname}`,
   fetchRankList: () => API_BASE_URL + RANK_URL,
-
+  fetchRoomList: () => API_BASE_URL + ROOM_URL,
   createRoom: () => API_BASE_URL + ROOM_URL + MAKE_URL,
 };
