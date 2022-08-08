@@ -24,7 +24,7 @@ const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (arg, { rejectWith
 
 const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
   try {
-    const res = await axios.put(api.edit(), payload, setConfig());
+    const res = await axios.patch(api.edit(), payload, setConfig());
     console.log(res.data);
     removeAccessToken();
     removeRefreshToken();
@@ -41,7 +41,7 @@ const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
 const changePassword = createAsyncThunk('changePassword', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.patch(api.changePassword(), payload, setConfig());
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }

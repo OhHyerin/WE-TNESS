@@ -4,6 +4,8 @@ import { Navigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Box, Button, Modal } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { checkNickname } from '../../features/user/SignupSlice';
 import { fetchUserInfo, edit, changePassword, fetchNickname } from '../../features/user/EditSlice';
 import SubmitBtn from '../../components/common/SubmitBtn';
@@ -15,6 +17,8 @@ import AddressForm from '../../components/common/auth/AddressForm';
 import GenderForm from '../../components/common/auth/GenderForm';
 import BodyForm from '../../components/common/auth/BodyForm';
 import CheckBtn from '../../components/common/CheckBtn';
+
+const MySwal = withReactContent(Swal);
 
 const SignupForm = styled.form`
   display: flex;
@@ -80,7 +84,13 @@ export default function EditPage() {
     };
     console.log(payload);
     dispatch(edit(payload))
-      .then(() => {})
+      .then(() => {
+        MySwal.fire({
+          title: <p>회원정보 변경</p>,
+          titleText: <p>변경되었습니다.</p>,
+          icon: 'success',
+        });
+      })
       .catch(err => {
         console.log(err);
       });
@@ -94,6 +104,11 @@ export default function EditPage() {
     dispatch(changePassword(payload))
       .then(res => {
         if (res.type === 'changePassword/fulfilled') {
+          MySwal.fire({
+            title: <p>비밀번호 변경</p>,
+            titleText: <p>변경되었습니다.</p>,
+            icon: 'success',
+          });
           dispatch(handleClose());
         } else {
           setIsEditError(true);
