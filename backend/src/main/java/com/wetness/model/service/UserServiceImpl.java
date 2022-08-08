@@ -12,6 +12,7 @@ import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
 import com.wetness.model.dto.response.LoginDto;
+import com.wetness.model.dto.response.LoginLogResDto;
 import com.wetness.model.dto.response.UserInfoResDto;
 import lombok.RequiredArgsConstructor;
 import org.json.simple.JSONObject;
@@ -383,6 +384,11 @@ public class UserServiceImpl implements UserService {
             loggedIn.setDate(LocalDateTime.now());
             loggedInRepository.save(loggedIn);
         }
+    }
+
+    @Override
+    public ArrayList<LoginLogResDto> getLoginLog(long userId) {
+        return loggedInRepository.getLoginLog(userId);
     }
 
 
