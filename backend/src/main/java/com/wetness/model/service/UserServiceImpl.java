@@ -89,8 +89,10 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        return loginSocialUser(user);
+        LoginSocialDto loginSocialDto =  loginSocialUser(user);
+        loginSocialDto.setExistUser("false");
 
+        return  loginSocialDto;
     }
 
     @Override
