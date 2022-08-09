@@ -96,7 +96,7 @@ export default function Home() {
       title: roomInfo.title,
       password: roomInfo.password,
     };
-    dispatch(createRoom(payload)).then(navigate(sessionId));
+    dispatch(createRoom(payload)).then(navigate('/room'));
   }
 
   // 방 생성 관련
