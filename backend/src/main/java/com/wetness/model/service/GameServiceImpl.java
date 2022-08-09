@@ -91,7 +91,7 @@ public class GameServiceImpl implements GameService{
         User user = gameRecord.getUser();
         Double weight = (user.getWeight()!=null)? user.getWeight():0;
         Double calorie = weight * gameRecord.getWorkout().getMet() * gameRecord.getScore();
-        System.out.println(calorie+" ========================"+ user.getWeight());
+
         if(!fitRepo.findByUserAndRegDate(user, regDate).isPresent()){
             FitnessRecord fitness = new FitnessRecord(0, user, 1, calorie, regDate);
             fitRepo.save(fitness);
