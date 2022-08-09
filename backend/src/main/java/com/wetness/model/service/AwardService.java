@@ -6,10 +6,12 @@ import java.util.ArrayList;
 
 public interface AwardService {
 
-    void loginAwardCheck(Long userId);
+    void awardCheckLogin(Long userId);
 
-    void followAwardCheck(Long userId);
+    void awardCheckFollow(Long userId);
 
-    ArrayList<AwardDto> getAwards(Long userId) ;
+    void awardCheckMedal(Long userId);
+
+    ArrayList<AwardDto> getAwards(Long userId);
 
 }
