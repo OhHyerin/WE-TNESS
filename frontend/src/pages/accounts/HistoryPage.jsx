@@ -6,6 +6,7 @@ import MatchList from '../../components/history/Match/MatchList';
 import RecordList from '../../components/history/Record/RecordList';
 import DiaryList from '../../components/history/Diary/DiaryList';
 import { fetchHistory } from '../../features/user/HistorySlice';
+import UserProfile from '../../components/myPage/UserProfile';
 
 export default function HistoryPage() {
   const params = useParams();
@@ -22,6 +23,7 @@ export default function HistoryPage() {
     return (
       <div>
         <h1>{nickname}님의 운동 현황 페이지</h1>
+        <UserProfile userNickname={nickname}></UserProfile>
         <AwardList></AwardList>
         <MatchList></MatchList>
         <RecordList></RecordList>
