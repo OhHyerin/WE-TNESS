@@ -2,6 +2,7 @@ package com.wetness.controller;
 
 import com.wetness.db.entity.FitnessRecord;
 import com.wetness.db.entity.Medal;
+import com.wetness.model.dto.response.HeatMapRespDto;
 import com.wetness.model.dto.response.WeeklyRecordRespDto;
 import com.wetness.model.service.FitnessRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,7 @@ public class FitnessController {
 
         Map<String, Object> results = new HashMap<>();
         Medal medal = fitnessRecordService.getMedalRecord(nickname);
-        List<FitnessRecord> records = fitnessRecordService.getFitnessRecord(nickname);
+        List<HeatMapRespDto> records = fitnessRecordService.getHeatMap(nickname);
         List<WeeklyRecordRespDto> weeklyRecords = fitnessRecordService.getWeeklyRecord(nickname);
 
         results.put("medal", medal);

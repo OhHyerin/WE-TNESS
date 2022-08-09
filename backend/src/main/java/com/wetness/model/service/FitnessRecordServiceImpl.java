@@ -6,6 +6,7 @@ import com.wetness.db.entity.User;
 import com.wetness.db.repository.FitnessRecordRepository;
 import com.wetness.db.repository.MedalRepository;
 import com.wetness.db.repository.UserRepository;
+import com.wetness.model.dto.response.HeatMapRespDto;
 import com.wetness.model.dto.response.WeeklyRecordRespDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,12 +43,19 @@ public class FitnessRecordServiceImpl implements FitnessRecordService{
     }
 
     @Override
-    public List<FitnessRecord> getFitnessRecord(String nickname) {
+    public List<HeatMapRespDto> getHeatMap(String nickname) {
         User user = userRepo.findByNickname(nickname);
 
         List<FitnessRecord> records = fitRepo.findByUser(user);
 
-        return records;
+        List<HeatMapRespDto> heatMap = new ArrayList<>();
+        for(int i=0; i<records.size(); i++){
+            FitnessRecord record = records.get(i);
+            int n = (int)Math.round(record.getCalorie());
+            heatMap.add(new HeatMapRespDto(n,record.getRegDate()));
+        }
+
+        return heatMap;
     }
 
     @Override
