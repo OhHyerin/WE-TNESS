@@ -5,9 +5,13 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { logout } from '../../features/user/UserSlice';
+
+const MySwal = withReactContent(Swal);
 
 export default function AccountMenu() {
   const userNickname = useSelector(state => state.user.currentUser.nickname);
@@ -81,7 +85,12 @@ export default function AccountMenu() {
         </Link>
         <MenuItem
           onClick={() => {
-            dispatch(logout());
+            dispatch(logout()).then(() => {
+              MySwal.fire({
+                title: <p>로그아웃</p>,
+                icon: 'success',
+              });
+            });
           }}>
           로그아웃
         </MenuItem>

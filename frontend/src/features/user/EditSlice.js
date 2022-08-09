@@ -40,7 +40,7 @@ const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
 const changePassword = createAsyncThunk('changePassword', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.patch(api.changePassword(), payload, setConfig());
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
