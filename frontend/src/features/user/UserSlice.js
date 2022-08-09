@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
 import {
   setAccessToken,
   removeAccessToken,
@@ -10,7 +9,6 @@ import {
   setCurrentUser,
   removeCurrentUser,
   getCurrentUser,
-  getRefreshToken,
 } from '../Token';
 import api from '../../api/index';
 import setConfig from '../authHeader';
