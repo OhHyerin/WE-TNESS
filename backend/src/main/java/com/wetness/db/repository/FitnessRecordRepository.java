@@ -14,4 +14,5 @@ public interface FitnessRecordRepository extends JpaRepository<FitnessRecord,Lon
 
     List<FitnessRecord> findByUser(User user);
 
+    List<FitnessRecord> findByUserAndRegDateGreaterThan(User user, LocalDate regDate);
 }

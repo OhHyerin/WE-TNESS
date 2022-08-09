@@ -2,6 +2,7 @@ package com.wetness.controller;
 
 import com.wetness.db.entity.FitnessRecord;
 import com.wetness.db.entity.Medal;
+import com.wetness.model.dto.response.WeeklyRecordRespDto;
 import com.wetness.model.service.FitnessRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,9 +34,12 @@ public class FitnessController {
         Map<String, Object> results = new HashMap<>();
         Medal medal = fitnessRecordService.getMedalRecord(nickname);
         List<FitnessRecord> records = fitnessRecordService.getFitnessRecord(nickname);
+        List<WeeklyRecordRespDto> weeklyRecords = fitnessRecordService.getWeeklyRecord(nickname);
 
         results.put("medal", medal);
         results.put("heatMapList", records);
+        results.put("weeklyRecords",weeklyRecords);
+
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
 }
