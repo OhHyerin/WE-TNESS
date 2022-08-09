@@ -36,6 +36,8 @@ public class GameServiceImpl implements GameService{
     @Autowired
     RoomRepository roomRepo;
 
+    @Autowired
+    FitnessRecordRepository fitRepo;
 
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
@@ -77,14 +79,31 @@ public class GameServiceImpl implements GameService{
 //ranking 저장
         this.insertRank(gameResult);
 //medal 저장
-        if(gameResult.getRank()<=3){
-            this.insertMedal(gameResult);
-        }
-
+        this.insertMedal(gameResult);
+//fitness record 저장
+        this.insertFitnessRecord(gameResult);
 
         return userGameId;
     }
 
+    void insertFitnessRecord(GameRecord gameRecord){
+        LocalDate regDate = LocalDate.now();
+        User user = gameRecord.getUser();
+        Double weight = (user.getWeight()!=null)? user.getWeight():0;
+        Double calorie = weight * gameRecord.getWorkout().getMet() * gameRecord.getScore();
+        System.out.println(calorie+" ========================"+ user.getWeight());
+        if(!fitRepo.findByUserAndRegDate(user, regDate).isPresent()){
+            FitnessRecord fitness = new FitnessRecord(0, user, 1, calorie, regDate);
+            fitRepo.save(fitness);
+        }else{
+            FitnessRecord fitness = fitRepo.findByUserAndRegDate(user, regDate).get();
+            fitness.setGameCnt(fitness.getGameCnt()+1);
+            fitness.setCalorie(fitness.getCalorie()+calorie);
+            fitRepo.save(fitness);
+        }
+
+        return;
+    }
 
 
     void insertMedal(GameRecord gameRecord){
@@ -97,6 +116,8 @@ public class GameServiceImpl implements GameService{
         }else{
             medal.setUserId(user.getId());
         }
+
+        medal.setTotalCnt(medal.getTotalCnt()+1);
 
         if(gameRecord.getRank()==1){
             medal.setGold(medal.getGold()+1);
@@ -114,6 +135,8 @@ public class GameServiceImpl implements GameService{
 
 
     void insertRank(GameRecord gameRecord){
+
+        if(gameRecord.getUser().getWeight()==null) return; //weight 정보 없음
 
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore();

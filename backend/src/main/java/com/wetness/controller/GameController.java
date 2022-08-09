@@ -39,16 +39,6 @@ public class GameController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-//    @PostMapping("/end")
-//    public ResponseEntity<String> terminateGame(@RequestBody TerminateGameReqDto terminateDto,
-//                                                          @AuthenticationPrincipal UserDetailsImpl user){
-//
-//        gameService.terminateGame(terminateDto,user.id()); //exception 처리 필요
-//
-//        return new ResponseEntity<>(SUCCESS, HttpStatus.OK);
-//    }
-
-
     @PostMapping("/end")
     public ResponseEntity<Map<String,Long>> terminateGame(@RequestBody GameResultReqDto gameResult,
                                                        @AuthenticationPrincipal UserDetailsImpl user){
