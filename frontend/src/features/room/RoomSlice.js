@@ -24,7 +24,6 @@ const initialState = {
   sessionInfo: {
     title: '',
     token: '',
-    sessionId: '',
     managerNickname: '',
   },
   keyword: '',
