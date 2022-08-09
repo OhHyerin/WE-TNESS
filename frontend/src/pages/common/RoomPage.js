@@ -2,21 +2,21 @@ import React, { Component, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
-import { entranceRoom } from '../../features/room/RoomSlice';
 
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 function RoomPage() {
   const sessionInfo = getSessionInfo();
+  const nickname = useSelector(state => state.user.currentUser.nickname);
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   if (isAuthenticated) {
     if (sessionInfo) {
-      return <RoomClass sessionInfo={sessionInfo}></RoomClass>;
+      return <RoomClass sessionInfo={sessionInfo} nickname={nickname}></RoomClass>;
     }
     return <div>세션정보없음</div>;
   }
@@ -48,15 +48,19 @@ class RoomClass extends Component {
     this.onbeforeunload = this.onbeforeunload.bind(this);
   }
 
+  // state 업데이트 & 세션 입장 (sessionId랑 token 따로 빼서? )
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
-    const { sessionInfo } = this.props;
+    const { sessionInfo, nickname } = this.props;
     console.log(sessionInfo);
     this.setState({
       token: sessionInfo.token,
+      mySessionId: sessionInfo.sessionId,
       title: sessionInfo.title,
+      myUserName: nickname,
       managerNickname: sessionInfo.managerNickname,
     });
+    this.joinSession();
   }
 
   componentWillUnmount() {
@@ -143,45 +147,47 @@ class RoomClass extends Component {
 
         // 'getToken' method is simulating what your server-side should do.
         // 'token' parameter should be retrieved and returned by your own backend
-        this.getToken().then(token => {
-          // First param is the token got from OpenVidu Server. Second param can be retrieved by every user on event
-          // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
-          mySession
-            .connect(token, { clientData: this.state.myUserName })
-            .then(async () => {
-              const devices = await this.OV.getDevices();
-              const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-              // --- 5) Get your own camera stream ---
+        // this.getToken().then(token => {
 
-              // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
-              // element: we will manage it on our own) and with the desired properties
-              const publisher = this.OV.initPublisher(undefined, {
-                audioSource: undefined, // The source of audio. If undefined default microphone
-                videoSource: videoDevices[0].deviceId, // The source of video. If undefined default webcam
-                publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
-                publishVideo: true, // Whether you want to start publishing with your video enabled or not
-                resolution: '640x480', // The resolution of your video
-                frameRate: 30, // The frame rate of your video
-                insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
-                mirror: false, // Whether to mirror your local video or not
-              });
+        // First param is the token got from OpenVidu Server. Second param can be retrieved by every user on event
+        // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
+        mySession
+          .connect(this.token, { clientData: this.state.myUserName })
+          .then(async () => {
+            const devices = await this.OV.getDevices();
+            const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-              // --- 6) Publish your stream ---
+            // --- 5) Get your own camera stream ---
 
-              mySession.publish(publisher);
-
-              // Set the main video in the page to display our webcam and store our Publisher
-              this.setState({
-                currentVideoDevice: videoDevices[0],
-                mainStreamManager: publisher,
-                publisher,
-              });
-            })
-            .catch(error => {
-              console.log('There was an error connecting to the session:', error.code, error.message);
+            // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
+            // element: we will manage it on our own) and with the desired properties
+            const publisher = this.OV.initPublisher(undefined, {
+              audioSource: undefined, // The source of audio. If undefined default microphone
+              videoSource: videoDevices[0].deviceId, // The source of video. If undefined default webcam
+              publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
+              publishVideo: true, // Whether you want to start publishing with your video enabled or not
+              resolution: '640x480', // The resolution of your video
+              frameRate: 30, // The frame rate of your video
+              insertMode: 'APPEND', // How the video is inserted in the target element 'video-container'
+              mirror: false, // Whether to mirror your local video or not
             });
-        });
+
+            // --- 6) Publish your stream ---
+
+            mySession.publish(publisher);
+
+            // Set the main video in the page to display our webcam and store our Publisher
+            this.setState({
+              currentVideoDevice: videoDevices[0],
+              mainStreamManager: publisher,
+              publisher,
+            });
+          })
+          .catch(error => {
+            console.log('There was an error connecting to the session:', error.code, error.message);
+          });
+        // });
       }
     );
   }
@@ -250,44 +256,8 @@ class RoomClass extends Component {
     return (
       <div className="container">
         {this.state.session === undefined ? (
-          <div id="join">
-            <div id="img-div">
-              <img src="resources/images/openvidu_grey_bg_transp_cropped.png" alt="OpenVidu logo" />
-            </div>
-            <div id="join-dialog" className="jumbotron vertical-center">
-              <h1> Join a video session </h1>
-              <form className="form-group" onSubmit={this.joinSession}>
-                <p>
-                  <label>Participant: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="userName"
-                    value={myUserName}
-                    onChange={this.handleChangeUserName}
-                    required
-                  />
-                </p>
-                <p>
-                  <label> Session: </label>
-                  <input
-                    className="form-control"
-                    type="text"
-                    id="sessionId"
-                    value={mySessionId}
-                    onChange={this.handleChangeSessionId}
-                    required
-                  />
-                </p>
-                <p className="text-center">
-                  <input className="btn btn-lg btn-success" name="commit" type="submit" value="JOIN" />
-                </p>
-              </form>
-            </div>
-          </div>
-        ) : null}
-
-        {this.state.session !== undefined ? (
+          <div>세션정보없어용</div>
+        ) : (
           <div id="session">
             <div id="session-header">
               <h1 id="session-title">{mySessionId}</h1>
@@ -330,7 +300,7 @@ class RoomClass extends Component {
               ))}
             </div>
           </div>
-        ) : null}
+        )}
       </div>
     );
   }
@@ -347,67 +317,67 @@ class RoomClass extends Component {
    *   3) The Connection.token must be consumed in Session.connect() method
    */
 
-  getToken() {
-    return this.createSession(this.state.mySessionId).then(sessionId => this.createToken(sessionId));
-  }
+  // getToken() {
+  //   return this.createSession(this.state.mySessionId).then(sessionId => this.createToken(sessionId));
+  // }
 
-  // eslint-disable-next-line class-methods-use-this
-  createSession(sessionId) {
-    return new Promise((resolve, reject) => {
-      const data = JSON.stringify({ customSessionId: sessionId });
-      axios
-        .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions', data, {
-          headers: {
-            Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-            'Content-Type': 'application/json',
-          },
-        })
-        .then(response => {
-          console.log('CREATE SESION', response);
-          resolve(response.data.id);
-        })
-        .catch(response => {
-          const error = { ...response };
-          if (error?.response?.status === 409) {
-            resolve(sessionId);
-          } else {
-            console.log(error);
-            console.warn('No connection to OpenVidu Server. This may be a certificate error at ' + OPENVIDU_SERVER_URL);
-            if (
-              window.confirm(
-                'No connection to OpenVidu Server. This may be a certificate error at "' +
-                  OPENVIDU_SERVER_URL +
-                  '"\n\nClick OK to navigate and accept it. ' +
-                  'If no certificate warning is shown, then check that your OpenVidu Server is up and running at "' +
-                  OPENVIDU_SERVER_URL +
-                  '"'
-              )
-            ) {
-              window.location.assign(OPENVIDU_SERVER_URL + '/accept-certificate');
-            }
-          }
-        });
-    });
-  }
+  // // eslint-disable-next-line class-methods-use-this
+  // createSession(sessionId) {
+  //   return new Promise((resolve, reject) => {
+  //     const data = JSON.stringify({ customSessionId: sessionId });
+  //     axios
+  //       .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions', data, {
+  //         headers: {
+  //           Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
+  //           'Content-Type': 'application/json',
+  //         },
+  //       })
+  //       .then(response => {
+  //         console.log('CREATE SESION', response);
+  //         resolve(response.data.id);
+  //       })
+  //       .catch(response => {
+  //         const error = { ...response };
+  //         if (error?.response?.status === 409) {
+  //           resolve(sessionId);
+  //         } else {
+  //           console.log(error);
+  //           console.warn('No connection to OpenVidu Server. This may be a certificate error at ' + OPENVIDU_SERVER_URL);
+  //           if (
+  //             window.confirm(
+  //               'No connection to OpenVidu Server. This may be a certificate error at "' +
+  //                 OPENVIDU_SERVER_URL +
+  //                 '"\n\nClick OK to navigate and accept it. ' +
+  //                 'If no certificate warning is shown, then check that your OpenVidu Server is up and running at "' +
+  //                 OPENVIDU_SERVER_URL +
+  //                 '"'
+  //             )
+  //           ) {
+  //             window.location.assign(OPENVIDU_SERVER_URL + '/accept-certificate');
+  //           }
+  //         }
+  //       });
+  //   });
+  // }
 
-  // eslint-disable-next-line class-methods-use-this
-  createToken(sessionId) {
-    return new Promise((resolve, reject) => {
-      const data = {};
-      axios
-        .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions/' + sessionId + '/connection', data, {
-          headers: {
-            Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-            'Content-Type': 'application/json',
-          },
-        })
-        .then(response => {
-          console.log('TOKEN', response);
-          resolve(response.data.token);
-        })
-        .catch(error => reject(error));
-    });
-  }
+  // // eslint-disable-next-line class-methods-use-this
+  // createToken(sessionId) {
+  //   return new Promise((resolve, reject) => {
+  //     const data = {};
+  //     axios
+  //       .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions/' + sessionId + '/connection', data, {
+  //         headers: {
+  //           Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
+  //           'Content-Type': 'application/json',
+  //         },
+  //       })
+  //       .then(response => {
+  //         console.log('TOKEN', response);
+  //         resolve(response.data.token);
+  //       })
+  //       .catch(error => reject(error));
+  //   });
+  // }
 }
 
 export default RoomPage;

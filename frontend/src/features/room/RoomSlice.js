@@ -104,9 +104,6 @@ export const RoomSlice = createSlice({
     setIsSearch: (state, action) => {
       state.isSearched = action.payload;
     },
-    entranceRoom: state => {
-      state.sessionInfo = getSessionInfo();
-    },
   },
   extraReducers: {
     [fetchRoomList.pending]: state => {
@@ -146,7 +143,6 @@ export const {
   fetchWorkoutId,
   fetchTitle,
   fetchPassword,
-  entranceRoom,
 } = RoomSlice.actions;
 
 export default RoomSlice.reducer;
