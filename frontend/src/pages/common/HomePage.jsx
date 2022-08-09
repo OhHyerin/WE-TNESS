@@ -83,11 +83,7 @@ export default function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUser = useSelector(state => state.user.currentUser);
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-
-  // 방 입장 관련
-  const sessionId = useSelector(state => state.room.sessionInfo.sessionId);
 
   function onCreate(e) {
     e.preventDefault();
@@ -96,7 +92,7 @@ export default function Home() {
       title: roomInfo.title,
       password: roomInfo.password,
     };
-    dispatch(createRoom(payload)).then(navigate('/room'));
+    dispatch(createRoom(payload)).then(res => navigate('/room'));
   }
 
   // 방 생성 관련
@@ -178,7 +174,7 @@ export default function Home() {
               title: '스쿼트 짱',
               password: '',
             };
-            dispatch(createRoom(payload)).then(navigate(sessionId));
+            dispatch(createRoom(payload)).then(navigate('room'));
           }}>
           방 입장
         </button>

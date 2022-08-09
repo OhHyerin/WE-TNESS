@@ -1,19 +1,26 @@
-import axios from 'axios';
-import { OpenVidu } from 'openvidu-browser';
 import React, { Component, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
+import { OpenVidu } from 'openvidu-browser';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
 import UserVideoComponent from './UserVideoComponent';
+import { getSessionInfo } from '../../features/Token';
+import { entranceRoom } from '../../features/room/RoomSlice';
 
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 function RoomPage() {
-  const sessionInfo = useSelector(state => state.room.sessionInfo);
-  useEffect(() => {
-    console.log(sessionInfo);
-  }, []);
+  const sessionInfo = getSessionInfo();
 
-  return <RoomClass sessionInfo={sessionInfo}></RoomClass>;
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  if (isAuthenticated) {
+    if (sessionInfo) {
+      return <RoomClass sessionInfo={sessionInfo}></RoomClass>;
+    }
+    return <div>세션정보없음</div>;
+  }
+  return <Navigate to="/login" />;
 }
 
 class RoomClass extends Component {
@@ -21,8 +28,11 @@ class RoomClass extends Component {
     super(props);
 
     this.state = {
-      mySessionId: 'SessionA',
-      myUserName: 'Participant' + Math.floor(Math.random() * 100),
+      token: undefined,
+      title: undefined,
+      managerNickname: undefined,
+      mySessionId: undefined,
+      myUserName: undefined,
       session: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
@@ -42,6 +52,11 @@ class RoomClass extends Component {
     window.addEventListener('beforeunload', this.onbeforeunload);
     const { sessionInfo } = this.props;
     console.log(sessionInfo);
+    this.setState({
+      token: sessionInfo.token,
+      title: sessionInfo.title,
+      managerNickname: sessionInfo.managerNickname,
+    });
   }
 
   componentWillUnmount() {

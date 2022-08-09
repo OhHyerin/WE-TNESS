@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../../api';
 import setConfig from '../authHeader';
+import { getSessionInfo, setSessionInfo } from '../Token';
 
 const initialState = {
   rooms: [],
@@ -12,6 +13,7 @@ const initialState = {
   isRoomsLoaded: false,
   isWorkoutsLoaded: false,
   isSearched: false,
+  isLoading: false,
 
   // 방 생성 관련
   roomInfo: {
@@ -21,11 +23,7 @@ const initialState = {
   },
 
   // 방 생성 입장 관련
-  sessionInfo: {
-    title: '',
-    token: '',
-    managerNickname: '',
-  },
+  sessionInfo: {},
   keyword: '',
 };
 
@@ -67,6 +65,7 @@ const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithVa
   try {
     const res = await axios.post(api.createRoom(), payload, setConfig());
     console.log(res.data);
+    setSessionInfo(res.data);
     return res.data;
   } catch (error) {
     return rejectWithValue(error.response);
@@ -105,6 +104,9 @@ export const RoomSlice = createSlice({
     setIsSearch: (state, action) => {
       state.isSearched = action.payload;
     },
+    entranceRoom: state => {
+      state.sessionInfo = getSessionInfo();
+    },
   },
   extraReducers: {
     [fetchRoomList.pending]: state => {
@@ -126,8 +128,8 @@ export const RoomSlice = createSlice({
     [getWorksouts.rejected]: state => {
       state.isWorkoutsLoaded = false;
     },
-    [createRoom.fulfilled]: (state, action) => {
-      state.sessionInfo = action.payload;
+    [createRoom.fulfilled]: state => {
+      state.sessionInfo = getSessionInfo();
     },
   },
 });
@@ -144,6 +146,7 @@ export const {
   fetchWorkoutId,
   fetchTitle,
   fetchPassword,
+  entranceRoom,
 } = RoomSlice.actions;
 
 export default RoomSlice.reducer;
