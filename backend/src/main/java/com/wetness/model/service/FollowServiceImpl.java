@@ -17,6 +17,8 @@ import java.util.ArrayList;
 @RequiredArgsConstructor
 public class FollowServiceImpl implements FollowService {
 
+    private final AwardService awardService;
+
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
 
@@ -38,13 +40,13 @@ public class FollowServiceImpl implements FollowService {
     public boolean registerFollow(String followerNickname, String followingNickname) {
         User follower = userRepository.findByNickname(followerNickname);
         User following = userRepository.findByNickname(followingNickname);
-        if (follower == null || following == null || followerNickname.equals(followingNickname)) {
-            return false;
-        }
-        Follow follow = followRepository.findByFollowerIdAndFollowingId(follower.getId(), following.getId());
-        if (follow == null) {
-            followRepository.save(new Follow(follower, following, LocalDateTime.now()));
-            return true;
+        if (follower != null && following != null && !followerNickname.equals(followingNickname)) {
+            Follow follow = followRepository.findByFollowerIdAndFollowingId(follower.getId(), following.getId());
+            if (follow == null) {
+                followRepository.saveAndFlush(new Follow(follower, following, LocalDateTime.now()));
+                awardService.awardCheckFollow(following.getId());
+                return true;
+            }
         }
         return false;
     }
@@ -57,8 +59,9 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
+    @Transactional
     public FollowUserResDto getFollowings(Long followingId) {
-        ArrayList<FollowDto> byFollowerId = followRepository.findFollowerDataByFollowerId(followingId);
+        ArrayList<FollowDto> byFollowerId = followRepository.findFollowerDataByFollowingId(followingId);
         return new FollowUserResDto(byFollowerId);
     }
 }

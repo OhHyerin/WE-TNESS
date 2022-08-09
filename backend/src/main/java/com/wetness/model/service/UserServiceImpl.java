@@ -407,7 +407,7 @@ public class UserServiceImpl implements UserService {
         setLoginData(userDetails.getId());
         setLoggedInData(userDetails.getId());
 
-        awardService.loginAwardCheck(userDetails.getId());
+        awardService.awardCheckLogin(userDetails.getId());
 
         return new LoginDto("200", null, accessToken, refreshToken);
     }
