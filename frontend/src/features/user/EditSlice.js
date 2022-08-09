@@ -25,7 +25,6 @@ const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (arg, { rejectWith
 const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.patch(api.edit(), payload, setConfig());
-    console.log(res.data);
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();

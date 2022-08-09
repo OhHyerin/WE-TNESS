@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-
 import {
   setAccessToken,
   removeAccessToken,
@@ -76,6 +75,20 @@ const findPassword = createAsyncThunk('findPassword', async (payload, { rejectWi
   }
 });
 
+const signout = createAsyncThunk('signout', async (arg, { rejectWithValue }) => {
+  try {
+    const res = await axios.delete(api.signout(), {}, setConfig());
+    removeAccessToken();
+    removeRefreshToken();
+    removeCurrentUser();
+    console.log(res);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    return rejectWithValue(err.response);
+  }
+});
+
 const initialState = {
   currentUser: {
     nickname: '',
@@ -139,10 +152,13 @@ export const UserSlice = createSlice({
     [kakaoLogin.fulfilled]: (state, action) => {
       state.kakaoInfo = action.payload;
     },
+    [signout.fulfilled]: state => {
+      state.isAuthenticated = false;
+    },
   },
 });
 
-export { login, logout, fetchFollowingList, fetchFollowerList, kakaoLogin, findPassword };
+export { login, logout, fetchFollowingList, fetchFollowerList, kakaoLogin, findPassword, signout };
 export const { fetchCurrentUser, checkLogin, toggleIsLoding } = UserSlice.actions;
 
 export default UserSlice.reducer;

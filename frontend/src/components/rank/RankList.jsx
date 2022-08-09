@@ -2,7 +2,7 @@ import { useSelector } from 'react-redux';
 
 export default function RankList() {
   const ranks = useSelector(state => state.rank.ranks);
-  const ranksLength = ranks.length;
+  const ranksLength = ranks?.length;
 
   return <div>{ranksLength ? ranks.map((user, i) => <RankItem key={i} user={user} />) : <p>하이룽</p>}</div>;
 }
