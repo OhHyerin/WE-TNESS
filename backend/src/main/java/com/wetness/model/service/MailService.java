@@ -18,7 +18,9 @@ public class MailService {
 
     private final char[] pwdTable = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
             'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X',
-            'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+            'Y', 'Z'};
+    private final char[] pwdNumTable = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
+    private final char[] pwdSpecialTable = {'!', '*', '@', '~'};
 
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
@@ -28,37 +30,30 @@ public class MailService {
 
     private final UserService userService;
 
-    public String excuteGenerate() {
+    public String executeGenerate() {
         Random random = new Random(System.currentTimeMillis());
-        int tablelength = pwdTable.length;
-        StringBuffer buf = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < 8; i++) {
-            buf.append(pwdTable[random.nextInt(tablelength)]);
+        for (int i = 0; i < 3; i++) {
+            sb.append(pwdTable[random.nextInt(pwdTable.length)]);
+            sb.append(pwdNumTable[random.nextInt(pwdNumTable.length)]);
+            sb.append(pwdSpecialTable[random.nextInt(pwdSpecialTable.length)]);
         }
-
-        return buf.toString();
+        return sb.toString();
     }
 
     @Transactional
     public void sendMail(String emailAddr) throws Exception {
-
         SimpleMailMessage simpleMessage = new SimpleMailMessage();
         User tempUser = userService.findByEmail(emailAddr);
 
-        //발신자 설정
-//        simpleMessage.setFrom("WE-tness관리자 <ohyeah0506@gmail.com>");
         simpleMessage.setFrom(from);
-
-        //수신자 설정
         simpleMessage.setTo(emailAddr);
 
-        String tempPwd = excuteGenerate();
+        String tempPwd = executeGenerate();
         String encodedPwd = passwordEncoder.encode(tempPwd);
 
         tempUser.setPassword(encodedPwd);
-//        userService.updateUser(tempUser.getId(), tempUser);
-
         //메일 제목
         simpleMessage.setSubject("WE-tness에서 임시 비밀번호를 발급해드립니다.");
         //메일 내용
