@@ -1,5 +1,6 @@
 package com.wetness.model.service;
 
+import com.wetness.db.entity.Award;
 import com.wetness.db.entity.Notification;
 import com.wetness.db.entity.User;
 import com.wetness.db.repository.NotificationRepository;
@@ -56,14 +57,13 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public boolean registerAwardMessage(Long receiverId, Long awardId) {
+    public boolean registerAwardNotification(User user, Award award) {
         Notification notification = new Notification();
-        User target = userRepository.findById(receiverId).orElse(null);
-        if (target != null) {
-            notification.setReceiver(target);
+        if (user != null) {
+            notification.setReceiver(user);
             notification.setNotifyDate(LocalDateTime.now());
             notification.setNotifyType("award");
-            notification.setBadgeId(awardId);
+            notification.setBadgeId(award.getId());
             notificationRepository.save(notification);
             return true;
         }
