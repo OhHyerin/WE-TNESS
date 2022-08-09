@@ -13,4 +13,6 @@ public interface FitnessRecordService {
     List<HeatMapRespDto> getHeatMap(String nickname);
 
     List<WeeklyRecordRespDto> getWeeklyRecord(String nickname);
+
+    int getTodayCalorie(String nickname);
 }
