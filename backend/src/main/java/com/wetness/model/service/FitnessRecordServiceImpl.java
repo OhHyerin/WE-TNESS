@@ -88,14 +88,4 @@ public class FitnessRecordServiceImpl implements FitnessRecordService{
 
         return weeklyRecords;
     }
-
-    @Override
-    public int getTodayCalorie(String nickname) {
-        User user = userRepo.findByNickname(nickname);
-
-        if(fitRepo.findByUserAndRegDate(user, LocalDate.now()).isPresent()){
-            return (int)Math.round(fitRepo.findByUserAndRegDate(user,LocalDate.now()).get().getCalorie());
-        }else return 0;
-
-    }
 }
