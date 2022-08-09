@@ -119,7 +119,7 @@ public class UserController {
 //        return ResponseEntity.status(200).body(resDto);
 //    }
 
-    @GetMapping("/send-pw")
+    @PostMapping("/send-pw")
     @ApiOperation(value = "비밀번호 찾기를 위한 이메일 인증")
     public ResponseEntity<?> sendPwd(@RequestParam("email") @Valid @Pattern(regexp = EMAIL_REGEX, message = "이메일 형식이 올바르지 않습니다") String email) {
         try {
