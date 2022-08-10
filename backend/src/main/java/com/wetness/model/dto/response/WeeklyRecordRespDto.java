@@ -9,4 +9,5 @@ import lombok.NoArgsConstructor;
 public class WeeklyRecordRespDto {
     String day;
     double calorie;
+    boolean login;
 }
