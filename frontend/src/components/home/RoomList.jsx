@@ -35,9 +35,9 @@ export default function RoomList() {
           <div>"룸 리스트가 비었어요."</div>
         ) : (
           <List>
-            {rooms.map(room =>
+            {rooms.map((room, i) =>
               (room.scope === 'public' || showPrivate) && (workout === '전체' ? true : workout === room.workout) ? (
-                <RoomCard room={room} />
+                <RoomCard key={i} room={room} />
               ) : null
             )}
           </List>
