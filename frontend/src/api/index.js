@@ -23,6 +23,7 @@ const HISTORY_URL = '';
 
 const MAKE_URL = '/make';
 const ENTER_URL = '/enter';
+const SEARCH_URL = '/search?keyword=';
 
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
@@ -44,4 +45,5 @@ export default {
   fetchRoomList: () => API_BASE_URL + ROOM_URL,
   createRoom: () => API_BASE_URL + ROOM_URL + MAKE_URL,
   joinRoom: () => API_BASE_URL + ROOM_URL + ENTER_URL,
+  searchRooms: keyword => API_BASE_URL + ROOM_URL + SEARCH_URL + `${keyword}`,
 };
