@@ -130,7 +130,7 @@ export const UserSlice = createSlice({
     },
   },
   extraReducers: {
-    [login.fulfilled]: (state, action) => {
+    [login.fulfilled]: state => {
       state.isAuthenticated = true;
       state.currentUser = getCurrentUser();
     },
