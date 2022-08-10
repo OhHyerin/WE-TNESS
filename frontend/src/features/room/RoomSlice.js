@@ -72,6 +72,18 @@ const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithVa
   }
 });
 
+const joinRoom = createAsyncThunk('joinRoom', async (payload, { rejectWithValue }) => {
+  console.log(payload);
+  try {
+    const res = await axios.post(api.joinRoom(), payload, setConfig());
+    console.log(res.data);
+    setSessionInfo(res.data);
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response);
+  }
+});
+
 export const RoomSlice = createSlice({
   name: 'room',
   initialState,
@@ -128,10 +140,13 @@ export const RoomSlice = createSlice({
     [createRoom.fulfilled]: state => {
       state.sessionInfo = getSessionInfo();
     },
+    [joinRoom.fulfilled]: state => {
+      state.sessionInfo = getSessionInfo();
+    },
   },
 });
 
-export { fetchRoomList, getWorksouts, searchRooms, createRoom };
+export { fetchRoomList, getWorksouts, searchRooms, createRoom, joinRoom };
 
 export const {
   testWorkout,
