@@ -48,13 +48,12 @@ const getWorksouts = createAsyncThunk('getWorkouts', async (state, { rejectWithV
   }
 });
 
-const searchRooms = createAsyncThunk('searchRooms', async (payload, { rejectWithValue }) => {
-  console.log('searchRooms : ' + payload);
+const searchRooms = createAsyncThunk('searchRooms', async (arg, { rejectWithValue }) => {
+  console.log(arg);
   try {
-    const { scope, workout } = payload;
-    const response = await axios.get(`/search?scope=${scope}&workout=${workout}`);
-    console.log('response : ' + response);
-    return response;
+    const res = await axios.get(api.searchRooms(arg.keyword), setConfig());
+    console.log(res.data);
+    return res.data;
   } catch (error) {
     return rejectWithValue(error.response);
   }
@@ -127,6 +126,9 @@ export const RoomSlice = createSlice({
     },
     [createRoom.fulfilled]: state => {
       state.sessionInfo = getSessionInfo();
+    },
+    [searchRooms.fulfilled]: (state, action) => {
+      state.searchRoomResult = action.payload;
     },
   },
 });
