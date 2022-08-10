@@ -5,8 +5,10 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
+import './UserVideo.css';
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
+// url :
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
@@ -187,7 +189,7 @@ class RoomClass extends Component {
             });
           })
           .catch(error => {
-            console.log('There was an error connecting to the session:', error, error.message);
+            console.log('There was an error connecting to the session:', error.code, error.message);
           });
         // });
       }
@@ -208,8 +210,8 @@ class RoomClass extends Component {
     this.setState({
       session: undefined,
       subscribers: [],
-      mySessionId: 'SessionA',
-      myUserName: 'Participant' + Math.floor(Math.random() * 100),
+      mySessionId: undefined,
+      myUserName: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
     });

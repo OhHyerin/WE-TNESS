@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import OpenViduVideoComponent from './OvVideo';
+import './UserVideo.css';
 
 export default class UserVideoComponent extends Component {
   getNicknameTag() {

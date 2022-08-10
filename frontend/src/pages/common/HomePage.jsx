@@ -165,19 +165,6 @@ export default function Home() {
           <RoomFilter2 />
         </>
         <RoomList />
-
-        {/* 방 입장 테스트 버튼 */}
-        <button
-          onClick={() => {
-            const payload = {
-              workoutId: 1,
-              title: '스쿼트 짱',
-              password: '',
-            };
-            dispatch(createRoom(payload)).then(navigate('room'));
-          }}>
-          방 입장
-        </button>
       </div>
 
       {/* 카카오 로그인 추가정보 입력 모달 */}
