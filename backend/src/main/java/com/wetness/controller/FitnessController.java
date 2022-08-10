@@ -36,10 +36,12 @@ public class FitnessController {
         Medal medal = fitnessRecordService.getMedalRecord(nickname);
         List<HeatMapRespDto> records = fitnessRecordService.getHeatMap(nickname);
         List<WeeklyRecordRespDto> weeklyRecords = fitnessRecordService.getWeeklyRecord(nickname);
+        int todayCal = fitnessRecordService.getTodayCalorie(nickname);
 
         results.put("medal", medal);
         results.put("heatMapList", records);
         results.put("weeklyRecords",weeklyRecords);
+        results.put("todayCalorie", todayCal);
 
         return new ResponseEntity<>(results, HttpStatus.OK);
     }
