@@ -3,10 +3,8 @@ package com.wetness.model.service;
 import com.wetness.db.entity.FitnessRecord;
 import com.wetness.db.entity.Medal;
 import com.wetness.db.entity.User;
-import com.wetness.db.repository.FitnessRecordRepository;
-import com.wetness.db.repository.LoggedInRepository;
-import com.wetness.db.repository.MedalRepository;
-import com.wetness.db.repository.UserRepository;
+import com.wetness.db.repository.*;
+import com.wetness.model.dto.response.AwardDto;
 import com.wetness.model.dto.response.HeatMapRespDto;
 import com.wetness.model.dto.response.LocalDateResDto;
 import com.wetness.model.dto.response.WeeklyRecordRespDto;
@@ -27,6 +25,7 @@ public class FitnessRecordServiceImpl implements FitnessRecordService {
     private final UserRepository userRepo;
     private final FitnessRecordRepository fitRepo;
     private final LoggedInRepository loggedInRepo;
+    private final UserAwardRepository userAwardRepository;
 
     @Override
     public Medal getMedalRecord(String nickname) {
@@ -97,5 +96,14 @@ public class FitnessRecordServiceImpl implements FitnessRecordService {
             return (int) Math.round(fitRepo.findByUserAndRegDate(user, LocalDate.now()).get().getCalorie());
         } else return 0;
 
+    }
+
+    @Override
+    public ArrayList<AwardDto> getAward(String nickname) {
+        User user = userRepo.findByNickname(nickname);
+        if (user != null) {
+            return userAwardRepository.findUserAwards(user.getId());
+        }
+        return null;
     }
 }

@@ -2,9 +2,11 @@ package com.wetness.controller;
 
 import com.wetness.db.entity.FitnessRecord;
 import com.wetness.db.entity.Medal;
+import com.wetness.model.dto.response.AwardDto;
 import com.wetness.model.dto.response.HeatMapRespDto;
 import com.wetness.model.dto.response.WeeklyRecordRespDto;
 import com.wetness.model.service.FitnessRecordService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,16 +23,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/fitness")
+@RequiredArgsConstructor
 public class FitnessController {
 
-    private static final String SUCCESS = "success";
-    private static final String FAIL = "fail";
-
-    @Autowired
-    FitnessRecordService fitnessRecordService;
+    private final FitnessRecordService fitnessRecordService;
 
     @GetMapping("/{nickname}")
-    public ResponseEntity<Map<String, Object>> getFitnessInfo(@PathVariable String nickname){
+    public ResponseEntity<Map<String, Object>> getFitnessInfo(@PathVariable String nickname) {
 
 
         Map<String, Object> results = new HashMap<>();
@@ -37,10 +37,12 @@ public class FitnessController {
         List<HeatMapRespDto> records = fitnessRecordService.getHeatMap(nickname);
         List<WeeklyRecordRespDto> weeklyRecords = fitnessRecordService.getWeeklyRecord(nickname);
         int todayCal = fitnessRecordService.getTodayCalorie(nickname);
+        List<AwardDto> award = fitnessRecordService.getAward(nickname);
 
+        results.put("award", award);
         results.put("medal", medal);
         results.put("heatMapList", records);
-        results.put("weeklyRecords",weeklyRecords);
+        results.put("weeklyRecords", weeklyRecords);
         results.put("todayCalorie", todayCal);
 
         return new ResponseEntity<>(results, HttpStatus.OK);
