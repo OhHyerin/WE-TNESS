@@ -12,7 +12,7 @@ public interface NotificationService {
 
     boolean registerInviteMessage(NotificationReqDto notificationReqDto, String nickname);
 
-    boolean registerFollowMessage(NotificationReqDto notificationReqDto, String nickname);
+    boolean registerFollowMessage(String followerNickname, String followingNickname);
 
     boolean registerAwardNotification(User user, Award award);
 
