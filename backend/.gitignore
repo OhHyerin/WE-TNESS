@@ -36,3 +36,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### mail password ###
+src/main/resources/application-mail.yml
