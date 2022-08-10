@@ -5,11 +5,13 @@ import com.wetness.db.repository.*;
 import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
+import com.wetness.model.dto.response.DiaryRespDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +56,46 @@ public class GameServiceImpl implements GameService{
         Long gameId = gameRepo.save(game).getId();
         return gameId;
     }
+
+
+    @Override
+    public void insertDiary(Long gameRecordId, String fileName,UserDetailsImpl user) {
+
+        User writer = userRepo.findById(user.id()).get();
+        GameRecord gameRecord = gameRecordRepo.findById(gameRecordId).get();
+
+        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(fileName).
+                buildDate(LocalDateTime.now()).buildRecord(gameRecord).buildValidation(true).getDiary();
+
+        diaryRepo.save(diary);
+        return;
+    }
+
+    @Override
+    public void invalidateDiary(String filename, UserDetailsImpl user) {
+        Diary diary = diaryRepo.findByFileName(filename).get(0); //UUID 추가하므로 unique
+
+        if(diary.getUser().getId()!= user.id()) return;
+
+        diary.setValid(false);
+        diaryRepo.save(diary);
+    }
+
+    @Override
+    public List<DiaryRespDto> readDiary(String nickname) {
+
+        User user = userRepo.findByNickname(nickname);
+        List<Diary> diaryList = diaryRepo.findByUser(user);
+        List<DiaryRespDto> diaryRespList = new ArrayList<>();
+        for(int i=0; i<diaryList.size(); i++){
+            Diary diary = diaryList.get(i);
+            if(!diary.isValid()) continue;
+            String regDate = diary.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            diaryRespList.add(new DiaryRespDto( diary.getFileName(), regDate ) );
+        }
+        return diaryRespList;
+    }
+
 
     @Override
     public void terminateGame(GameResultReqDto result, Long userId) {
@@ -138,6 +180,7 @@ public class GameServiceImpl implements GameService{
 
         if(gameRecord.getUser().getWeight()==null) return; //weight 정보 없음
 
+        //칼로리 계산식 리팩토링 필요
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore();
 
@@ -175,17 +218,7 @@ public class GameServiceImpl implements GameService{
 
 
 
-    @Override
-    public void insertDiary(DiaryReqDto diaryReq, UserDetailsImpl user) {
-        User writer = userRepo.findById(user.id()).get();
-        GameRecord gameRecord = gameRecordRepo.findById(diaryReq.getUserGameId()).get();
 
-        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(diaryReq.getFileName()).
-                buildDate(diaryReq.getDate()).buildRecord(gameRecord).getDiary();
-
-        diaryRepo.save(diary);
-        return;
-    }
 
 }
 
