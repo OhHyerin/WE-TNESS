@@ -274,18 +274,7 @@ class RoomClass extends Component {
               />
             </div>
 
-            {this.state.mainStreamManager !== undefined ? (
-              <div id="main-video" className="col-md-6">
-                <UserVideoComponent streamManager={this.state.mainStreamManager} />
-                <input
-                  className="btn btn-large btn-success"
-                  type="button"
-                  id="buttonSwitchCamera"
-                  onClick={this.switchCamera}
-                  value="Switch Camera"
-                />
-              </div>
-            ) : null}
+            {/* 내 화면 ? */}
             <div id="video-container" className="col-md-6">
               {this.state.publisher !== undefined ? (
                 <div
@@ -294,6 +283,8 @@ class RoomClass extends Component {
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
               ) : null}
+
+              {/* 친구들 화면? */}
               {this.state.subscribers.map((sub, i) => (
                 <div
                   key={i}
