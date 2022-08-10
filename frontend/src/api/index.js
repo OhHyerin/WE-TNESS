@@ -2,6 +2,7 @@ export const API_BASE_URL = 'http://localhost:8080';
 
 const USER_URL = '/user';
 const RANK_URL = '/rank';
+const ROOM_URL = '/room';
 
 const LOGIN_URL = '/login';
 const KAKAO_URL = '/kakao';
@@ -20,10 +21,13 @@ const FIND_PASSWORD = '/findpassword';
 
 const HISTORY_URL = '';
 
+const MAKE_URL = '/make';
+
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
   checkEmail: email => API_BASE_URL + USER_URL + CHECK_EMAIL_URL + `/${email}`,
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
+  signout: () => API_BASE_URL + USER_URL,
   login: () => API_BASE_URL + USER_URL + LOGIN_URL,
   logout: () => API_BASE_URL + USER_URL + LOGOUT_URL,
   findPassword: () => API_BASE_URL + USER_URL + FIND_PASSWORD,
@@ -36,4 +40,6 @@ export default {
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
   fetchHistory: nickname => API_BASE_URL + USER_URL + HISTORY_URL + `/${nickname}`,
   fetchRankList: () => API_BASE_URL + RANK_URL,
+  fetchRoomList: () => API_BASE_URL + ROOM_URL,
+  createRoom: () => API_BASE_URL + ROOM_URL + MAKE_URL,
 };

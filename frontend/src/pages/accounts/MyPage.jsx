@@ -41,22 +41,22 @@ export default function MyPage() {
   const followingList = useSelector(state => state.user.followList?.followingList);
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  // if (isAuthenticated) {
-  return (
-    <ContentBox>
-      <FormBox>
-        <TitleBox>
-          <Button>
-            <Link to={'/edit'}>개인정보 수정</Link>
-          </Button>
-        </TitleBox>
-        <FollowBox>
-          <FollowingList followingList={followingList} />
-          <FollowerList followerList={followerList} />
-        </FollowBox>
-      </FormBox>
-    </ContentBox>
-  );
-  // }
-  // return <Navigate to='/login'/>;
+  if (isAuthenticated) {
+    return (
+      <ContentBox>
+        <FormBox>
+          <TitleBox>
+            <Button>
+              <Link to={'/edit'}>개인정보 수정</Link>
+            </Button>
+          </TitleBox>
+          <FollowBox>
+            <FollowingList followingList={followingList} />
+            <FollowerList followerList={followerList} />
+          </FollowBox>
+        </FormBox>
+      </ContentBox>
+    );
+  }
+  return <Navigate to="/login" />;
 }

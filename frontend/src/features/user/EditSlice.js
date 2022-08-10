@@ -10,7 +10,6 @@ import {
   decodeAccessToken,
   setCurrentUser,
   removeCurrentUser,
-  getCurrentUser,
 } from '../Token';
 
 const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (arg, { rejectWithValue }) => {
@@ -25,8 +24,7 @@ const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (arg, { rejectWith
 
 const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
   try {
-    const res = await axios.put(api.edit(), payload, setConfig());
-    console.log(res.data);
+    const res = await axios.patch(api.edit(), payload, setConfig());
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();
@@ -42,7 +40,7 @@ const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
 const changePassword = createAsyncThunk('changePassword', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.patch(api.changePassword(), payload, setConfig());
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -51,7 +49,6 @@ const changePassword = createAsyncThunk('changePassword', async (payload, { reje
 const initialState = {
   userInfo: {
     nickname: '',
-    email: '',
     gender: '',
     address: '',
     weight: '',
@@ -66,9 +63,6 @@ export const SignupSlice = createSlice({
   reducers: {
     fetchNickname: (state, action) => {
       state.userInfo.nickname = action.payload;
-    },
-    fetchEmail: (state, action) => {
-      state.userInfo.email = action.payload;
     },
     fetchPassword: (state, action) => {
       state.userInfo.password = action.payload;
@@ -103,7 +97,11 @@ export const SignupSlice = createSlice({
       state.isLoading = false;
     },
     [fetchUserInfo.fulfilled]: (state, action) => {
-      state.userInfo = action.payload;
+      state.userInfo.nickname = action.payload.nickname ? action.payload.nickname : '';
+      state.userInfo.gender = action.payload.gender ? action.payload.gender : '';
+      state.userInfo.address = action.payload.address ? action.payload.address : '';
+      state.userInfo.weight = action.payload.weight ? action.payload.weight : '';
+      state.userInfo.height = action.payload.height ? action.payload.height : '';
     },
   },
 });
@@ -112,7 +110,6 @@ export { fetchUserInfo, edit, changePassword };
 
 export const {
   fetchNickname,
-  fetchEmail,
   fetchPassword,
   fetchPwdVerify,
   fetchGender,

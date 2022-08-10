@@ -73,6 +73,7 @@ export default function SearchForm() {
         placeholder="Search…"
         inputProps={{ 'aria-label': 'search' }}
         onChange={handelKeyword}
+        value={keyword}
       />
     </Search>
   );

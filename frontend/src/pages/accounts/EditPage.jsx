@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Box, Button, Modal } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import { checkNickname, checkEmail } from '../../features/user/SignupSlice';
-import { fetchUserInfo, edit, changePassword, fetchNickname, fetchEmail } from '../../features/user/EditSlice';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+import { checkNickname } from '../../features/user/SignupSlice';
+import { signout } from '../../features/user/UserSlice';
+import { fetchUserInfo, edit, changePassword, fetchNickname } from '../../features/user/EditSlice';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import IconTextField from '../../components/common/IconTextField';
 import FormBox from '../../components/common/auth/FormBox';
@@ -15,6 +18,8 @@ import AddressForm from '../../components/common/auth/AddressForm';
 import GenderForm from '../../components/common/auth/GenderForm';
 import BodyForm from '../../components/common/auth/BodyForm';
 import CheckBtn from '../../components/common/CheckBtn';
+
+const MySwal = withReactContent(Swal);
 
 const SignupForm = styled.form`
   display: flex;
@@ -42,20 +47,19 @@ const style = {
 
 export default function EditPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchUserInfo());
-  }, []);
+  }, [dispatch]);
 
   const userInfo = useSelector(state => state.edit.userInfo);
   const addressCode = useSelector(state => state.edit.addressCode);
   const password = useSelector(state => state.signup.userInfo.password);
   const pwdVerify = useSelector(state => state.signup.userInfo.pwdVerify);
   const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
-  const isPossibleEmail = useSelector(state => state.signup.isPossibleEmail);
 
   const [isCheckNN, setIsCheckNN] = useState(false);
-  const [isCheckEmail, setIsCheckEmail] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
 
   const [isEditError, setIsEditError] = useState(false);
@@ -66,9 +70,6 @@ export default function EditPage() {
   const onNicknameHandler = e => {
     dispatch(fetchNickname(e.target.value));
   };
-  const onEmailHandler = e => {
-    dispatch(fetchEmail(e.target.value));
-  };
 
   function onCheckNicknameHandler(e) {
     e.preventDefault();
@@ -77,22 +78,24 @@ export default function EditPage() {
     dispatch(checkNickname(payload));
   }
 
-  function onCheckEmailHandler(e) {
-    e.preventDefault();
-    const payload = userInfo.email;
-    setIsCheckEmail(true);
-    dispatch(checkEmail(payload));
-  }
-
   function onSubmitHandler(e) {
     e.preventDefault();
     const payload = {
+      nickname: userInfo.nickname,
+      gender: userInfo.gender,
+      weight: userInfo.weight,
+      height: userInfo.height,
       addressCode,
-      ...userInfo,
     };
     console.log(payload);
     dispatch(edit(payload))
-      .then(() => {})
+      .then(() => {
+        MySwal.fire({
+          title: <p>회원정보 변경</p>,
+          titleText: <p>변경되었습니다.</p>,
+          icon: 'success',
+        });
+      })
       .catch(err => {
         console.log(err);
       });
@@ -106,6 +109,11 @@ export default function EditPage() {
     dispatch(changePassword(payload))
       .then(res => {
         if (res.type === 'changePassword/fulfilled') {
+          MySwal.fire({
+            title: <p>비밀번호 변경</p>,
+            titleText: <p>변경되었습니다.</p>,
+            icon: 'success',
+          });
           dispatch(handleClose());
         } else {
           setIsEditError(true);
@@ -114,6 +122,11 @@ export default function EditPage() {
       .catch(err => {
         console.log(err);
       });
+  }
+
+  // 회원 탈퇴
+  function onSignoutHandler(e) {
+    dispatch(signout()).then(navigate('/'));
   }
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
@@ -159,27 +172,6 @@ export default function EditPage() {
               />
             </InputBox>
             <InputBox>
-              <IconTextField
-                error={isCheckEmail && !isPossibleEmail}
-                iconEnd={
-                  userInfo.email ? (
-                    <CheckBtn onClick={onCheckEmailHandler}>확인</CheckBtn>
-                  ) : (
-                    <CheckBtn disabled deactive={!userInfo.email}>
-                      확인
-                    </CheckBtn>
-                  )
-                }
-                type="email"
-                label="*이메일"
-                value={userInfo.email}
-                onChange={onEmailHandler}
-                helperText={
-                  isCheckEmail ? (isPossibleEmail ? '사용 가능한 이메일입니다.' : '사용중인 이메일입니다.') : null
-                }
-              />
-            </InputBox>
-            <InputBox>
               <GenderForm></GenderForm>
             </InputBox>
             <InputBox>
@@ -187,14 +179,13 @@ export default function EditPage() {
               <AddressForm />
             </InputBox>
             <BodyForm></BodyForm>
-            <SubmitBtn
-              disabled={!isCheckNN || !isPossibleNickname || !isCheckEmail || !isPossibleEmail}
-              deactive={!isCheckNN || !isPossibleNickname || !isCheckEmail || !isPossibleEmail}>
+            <SubmitBtn disabled={!isCheckNN || !isPossibleNickname} deactive={!isCheckNN || !isPossibleNickname}>
               수정하기
             </SubmitBtn>
           </SignupForm>
           <LabelBox>
             <Button onClick={handleOpen}>비밀번호 변경</Button>
+            <Button onClick={onSignoutHandler}>회원 탈퇴</Button>
           </LabelBox>
         </FormBox>
       </div>

@@ -17,6 +17,13 @@ const GlobalStyle = createGlobalStyle`
   color: inherit;
   /* flex-shrink: 0; */
 }
+
+#nav {
+  position: sticky;
+  top: 0px;
+  z-index: 10
+}
+
 `;
 
 export default GlobalStyle;

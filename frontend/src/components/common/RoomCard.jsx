@@ -12,7 +12,7 @@ export default function RoomCard(props) {
       <CardMedia component="img" height="140" image="" alt="" />
       <CardContent>
         <Typography gutterBottom variant="h5" component="div">
-          {props.room.name}
+          {props.room.title}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           <div>{props.room.scope}</div>

@@ -1,9 +1,11 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import api from '../../api';
+import setConfig from '../authHeader';
+import { getSessionInfo, setSessionInfo } from '../Token';
 
 const initialState = {
   rooms: [],
-  workouts: [],
   searchRoomResult: [],
   searchUserResult: [],
   workout: '전체',
@@ -11,23 +13,35 @@ const initialState = {
   isRoomsLoaded: false,
   isWorkoutsLoaded: false,
   isSearched: false,
+  isLoading: false,
+
+  // 방 생성 관련
+  roomInfo: {
+    title: '',
+    workoutId: 1,
+    password: '',
+  },
+
+  // 방 생성 입장 관련
+  sessionInfo: {},
   keyword: '',
 };
 
-const getAllRooms = createAsyncThunk('getAllRooms', async (state, { rejectWithValue }) => {
+const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWithValue }) => {
   try {
-    const response = await axios.get(``);
-    console.log('getAllRooms : ' + response);
-    return response;
-  } catch (error) {
-    return rejectWithValue(error);
+    const res = await axios.get(api.fetchRoomList(), setConfig());
+    console.log(res);
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response);
   }
 });
 
 const getWorksouts = createAsyncThunk('getWorkouts', async (state, { rejectWithValue }) => {
   try {
     const response = await axios.get(`/workouts`);
-    console.log('workouts : ' + response);
+    console.log(response);
     return response;
   } catch (error) {
     return rejectWithValue(error);
@@ -46,13 +60,22 @@ const searchRooms = createAsyncThunk('searchRooms', async (payload, { rejectWith
   }
 });
 
+const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithValue }) => {
+  console.log(payload);
+  try {
+    const res = await axios.post(api.createRoom(), payload, setConfig());
+    console.log(res.data);
+    setSessionInfo(res.data);
+    return res.data;
+  } catch (error) {
+    return rejectWithValue(error.response);
+  }
+});
+
 export const RoomSlice = createSlice({
   name: 'room',
   initialState,
   reducers: {
-    testWorkout: state => {
-      state.workouts = ['전체', '운동1', '운동2', '운동3'];
-    },
     testShowPrivate: state => {
       state.showPrivate = !state.showPrivate;
     },
@@ -66,6 +89,15 @@ export const RoomSlice = createSlice({
         { name: 'test2', scope: 'private', workout: '운동2', started: true, numOfPeople: 2 },
       ];
     },
+    fetchWorkoutId: (state, action) => {
+      state.roomInfo.workoutId = action.payload;
+    },
+    fetchTitle: (state, action) => {
+      state.roomInfo.title = action.payload;
+    },
+    fetchPassword: (state, action) => {
+      state.roomInfo.password = action.payload;
+    },
     setKeyword: (state, action) => {
       state.keyword = action.payload;
     },
@@ -74,13 +106,14 @@ export const RoomSlice = createSlice({
     },
   },
   extraReducers: {
-    [getAllRooms.pending]: state => {
+    [fetchRoomList.pending]: state => {
       state.isRoomsLoaded = false;
     },
-    [getAllRooms.fulfilled]: state => {
+    [fetchRoomList.fulfilled]: (state, action) => {
       state.isRoomsLoaded = true;
+      state.rooms = [...action.payload];
     },
-    [getAllRooms.rejected]: state => {
+    [fetchRoomList.rejected]: state => {
       state.isRoomsLoaded = false;
     },
     [getWorksouts.pending]: state => {
@@ -92,10 +125,24 @@ export const RoomSlice = createSlice({
     [getWorksouts.rejected]: state => {
       state.isWorkoutsLoaded = false;
     },
+    [createRoom.fulfilled]: state => {
+      state.sessionInfo = getSessionInfo();
+    },
   },
 });
 
-export { getAllRooms, getWorksouts, searchRooms };
-export const { testWorkout, testShowPrivate, workoutChange, testRoomList, setKeyword, setIsSearch } = RoomSlice.actions;
+export { fetchRoomList, getWorksouts, searchRooms, createRoom };
+
+export const {
+  testWorkout,
+  testShowPrivate,
+  workoutChange,
+  testRoomList,
+  setKeyword,
+  setIsSearch,
+  fetchWorkoutId,
+  fetchTitle,
+  fetchPassword,
+} = RoomSlice.actions;
 
 export default RoomSlice.reducer;
