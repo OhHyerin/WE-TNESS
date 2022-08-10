@@ -30,10 +30,6 @@ public class GameRecord {
     @Column(name="`rank`")
     private int rank;
 
-    @Column(name="reg_date")
-    private LocalDateTime regDate;
-
-    private double calorie;
 
 
 
