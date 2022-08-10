@@ -5,8 +5,10 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
+import './UserVideo.css';
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
+// url :
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
@@ -187,7 +189,7 @@ class RoomClass extends Component {
             });
           })
           .catch(error => {
-            console.log('There was an error connecting to the session:', error, error.message);
+            console.log('There was an error connecting to the session:', error.code, error.message);
           });
         // });
       }
@@ -208,8 +210,8 @@ class RoomClass extends Component {
     this.setState({
       session: undefined,
       subscribers: [],
-      mySessionId: 'SessionA',
-      myUserName: 'Participant' + Math.floor(Math.random() * 100),
+      mySessionId: undefined,
+      myUserName: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
     });
@@ -272,18 +274,7 @@ class RoomClass extends Component {
               />
             </div>
 
-            {this.state.mainStreamManager !== undefined ? (
-              <div id="main-video" className="col-md-6">
-                <UserVideoComponent streamManager={this.state.mainStreamManager} />
-                <input
-                  className="btn btn-large btn-success"
-                  type="button"
-                  id="buttonSwitchCamera"
-                  onClick={this.switchCamera}
-                  value="Switch Camera"
-                />
-              </div>
-            ) : null}
+            {/* 내 화면 ? */}
             <div id="video-container" className="col-md-6">
               {this.state.publisher !== undefined ? (
                 <div
@@ -292,6 +283,8 @@ class RoomClass extends Component {
                   <UserVideoComponent streamManager={this.state.publisher} />
                 </div>
               ) : null}
+
+              {/* 친구들 화면? */}
               {this.state.subscribers.map((sub, i) => (
                 <div
                   key={i}
