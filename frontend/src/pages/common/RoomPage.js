@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
 
+// docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
@@ -31,12 +32,12 @@ class RoomClass extends Component {
       token: undefined,
       title: undefined,
       managerNickname: undefined,
-      mySessionId: undefined,
       myUserName: undefined,
       session: undefined,
       mainStreamManager: undefined,
       publisher: undefined,
       subscribers: [],
+      currentVideoDevice: undefined,
     };
 
     this.joinSession = this.joinSession.bind(this);
@@ -48,19 +49,19 @@ class RoomClass extends Component {
     this.onbeforeunload = this.onbeforeunload.bind(this);
   }
 
-  // state 업데이트 & 세션 입장 (sessionId랑 token 따로 빼서? )
+  // state 업데이트 & 세션 입장 (sessionId랑 token 따로 빼서? => 백에서 준 토큰으로 입장 )
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
     const { sessionInfo, nickname } = this.props;
-    console.log(sessionInfo);
-    this.setState({
-      token: sessionInfo.token,
-      mySessionId: sessionInfo.sessionId,
-      title: sessionInfo.title,
-      myUserName: nickname,
-      managerNickname: sessionInfo.managerNickname,
-    });
-    this.joinSession();
+    setTimeout(() => {
+      this.setState({
+        token: sessionInfo.token,
+        title: sessionInfo.title,
+        myUserName: nickname,
+        managerNickname: sessionInfo.managerNickname,
+      });
+    }, 300);
+    this.joinSession(sessionInfo.token);
   }
 
   componentWillUnmount() {
@@ -102,13 +103,12 @@ class RoomClass extends Component {
     }
   }
 
-  joinSession() {
+  joinSession(token) {
     // --- 1) Get an OpenVidu object ---
 
     this.OV = new OpenVidu();
 
     // --- 2) Init a session ---
-
     this.setState(
       {
         session: this.OV.initSession(),
@@ -149,22 +149,24 @@ class RoomClass extends Component {
         // 'token' parameter should be retrieved and returned by your own backend
 
         // this.getToken().then(token => {
-
         // First param is the token got from OpenVidu Server. Second param can be retrieved by every user on event
         // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
         mySession
-          .connect(this.token, { clientData: this.state.myUserName })
+          .connect(token)
+          // , { clientData: this.state.myUserName }
           .then(async () => {
             const devices = await this.OV.getDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
+            console.log(this.state.session);
             // --- 5) Get your own camera stream ---
 
             // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
             // element: we will manage it on our own) and with the desired properties
             const publisher = this.OV.initPublisher(undefined, {
               audioSource: undefined, // The source of audio. If undefined default microphone
-              videoSource: videoDevices[0].deviceId, // The source of video. If undefined default webcam
+              videoSource: undefined, // The source of video. If undefined default webcam
+              // videoDevices[0].deviceId,
               publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
               publishVideo: true, // Whether you want to start publishing with your video enabled or not
               resolution: '640x480', // The resolution of your video
@@ -185,7 +187,7 @@ class RoomClass extends Component {
             });
           })
           .catch(error => {
-            console.log('There was an error connecting to the session:', error.code, error.message);
+            console.log('There was an error connecting to the session:', error, error.message);
           });
         // });
       }
@@ -318,7 +320,10 @@ class RoomClass extends Component {
    */
 
   // getToken() {
-  //   return this.createSession(this.state.mySessionId).then(sessionId => this.createToken(sessionId));
+  //   return this.createSession(this.state.mySessionId).then(sessionId => {
+  //     console.log(sessionId);
+  //     this.createToken(sessionId);
+  //   });
   // }
 
   // // eslint-disable-next-line class-methods-use-this

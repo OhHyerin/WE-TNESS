@@ -47,24 +47,23 @@ export const decodeAccessToken = accessToken => {
 
 // 세션토큰 (게임방 관련)
 
-function getParam(token, key) {
-  const param = token.substr(token.indexOf('?') + 1);
-  const params = param.split('&');
+// function getParam(token, key) {
+//   const param = token.substr(token.indexOf('?') + 1);
+//   const params = param.split('&');
 
-  for (let i = 0; i < params.length; i++) {
-    const tmp = params[i].split('=');
-    if ([tmp[0]] == key) {
-      return tmp[1];
-    }
-  }
-}
+//   for (let i = 0; i < params.length; i++) {
+//     const tmp = params[i].split('=');
+//     if ([tmp[0]] == key) {
+//       return tmp[1];
+//     }
+//   }
+// }
 
 export const setSessionInfo = info => {
-  const token = getParam(info.token, 'token');
-  const sessionId = getParam(info.token, 'sessionId');
+  // const token = getParam(info.token, 'token');
+  // const sessionId = getParam(info.token, 'sessionId');
   const sessionInfo = {
-    token,
-    sessionId,
+    token: info.token,
     title: info.title,
     managerNickname: info.managerNickname,
   };
