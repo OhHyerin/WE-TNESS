@@ -3,10 +3,11 @@ import axios from 'axios';
 import api from '../../api/index';
 import setConfig from '../authHeader';
 
-const fetchHistory = createAsyncThunk('fetchHistory', async (arg, { rejectWithValue }) => {
+const fetchHistory = createAsyncThunk('fetchHistory', async (payload, { rejectWithValue }) => {
   try {
-    const response = await axios.get(api.fetchHistory(), {}, setConfig());
-    return response;
+    const res = await axios.post(api.fetchHistory(), payload, setConfig());
+    console.log(res);
+    return res;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -56,11 +57,14 @@ export const HistorySlice = createSlice({
   reducers: {
     fetchInfo: (state, action) => {
       state.achieveAwards = action.payload.achieveAwards;
+      state.heatMapList = action.payload.heatMapList;
+      state.weeklyCalories = action.payload.weeklyCalories;
     },
   },
   extraReducers: {},
 });
 
 export { fetchHistory };
+export const { fetchInfo } = HistorySlice.actions;
 
 export default HistorySlice.reducer;

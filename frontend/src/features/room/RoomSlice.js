@@ -63,7 +63,7 @@ const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithVa
   console.log(payload);
   try {
     const res = await axios.post(api.createRoom(), payload, setConfig());
-    console.log('response : ' + res);
+    console.log(res);
     return res.data;
   } catch (error) {
     return rejectWithValue(error.response);

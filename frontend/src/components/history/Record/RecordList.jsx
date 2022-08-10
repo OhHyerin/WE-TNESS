@@ -82,7 +82,7 @@ function BarChart() {
       {
         label: '칼로리 소모량',
         data: labels.map(() => 100),
-        // data: weeklyCalories.map((day) => day.value)
+        // data: weeklyCalories.map((day) => day.calorie)
         borderColor: 'rgb(255, 99, 132)',
         backgroundColor: 'rgba(255, 99, 132, 0.5)',
       },

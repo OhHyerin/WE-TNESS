@@ -5,7 +5,7 @@ import AwardList from '../../components/history/Award/AwardList';
 import MatchList from '../../components/history/Match/MatchList';
 import RecordList from '../../components/history/Record/RecordList';
 import DiaryList from '../../components/history/Diary/DiaryList';
-import { fetchHistory } from '../../features/user/HistorySlice';
+import { fetchHistory, fetchInfo } from '../../features/user/HistorySlice';
 import UserProfile from '../../components/myPage/UserProfile';
 
 export default function HistoryPage() {
@@ -16,8 +16,10 @@ export default function HistoryPage() {
   const nickname = params.userNickname;
 
   // useEffect(() => {
-  //   dispatch(fetchHistory());
-  // });
+  //   const payload = { nickname };
+  //   dispatch(fetchHistory(payload));
+  //   dispatch(fetchInfo());
+  // }, []);
 
   if (isAuthenticated) {
     return (
