@@ -48,6 +48,7 @@
 * 김윤석 : 백엔드 개발 담당
 * 류현수 : 백엔드 개발, Swagger API 문서 관리
 * 이동근 : 프론트엔드 개발 담당
+* 한유연 : 백엔드 개발
 
 <!-- 자유 양식 -->
 
@@ -60,20 +61,20 @@
 서비스명 : 위트니스(WE-tness)  
   
 역할배분  
-Backend : 오혜린, 김윤석, 류현수  
+Backend : 오혜린, 김윤석, 류현수, 한유연  
 Frontend : 배준성, 이동근  
-Infra : 오혜린, 김윤석, 류현수  
+Infra : 오혜린, 김윤석, 류현수, 한유연  
   
 개발 스택  
-BE : Java, SpringBoot, Swagger, JPA  
+BE : Java, SpringBoot, Swagger, JPA, Spring Security 
 FE : HTML5, CSS3, Javascript, React, Redux  
-Infra : Mysql, aws ec2, docker, jenkins +추가
+Infra : Jenkins, Mysql, +추가  
   
 ## 협업 툴
 
 - Git
 - [Notion](https://cultured-paperback-2ca.notion.site/PJT-A205-WE-tness-7265acea434749f09da369df24d0ed16)
-- [JIRA](https://jira.ssafy.com/secure/RapidBoard.jspa?rapidView=12681&projectKey=S07P12A205&view=planning&issueLimit=100)
+- [JIRA](https://jira.ssafy.com/secure/RapidBoard.jspa?rapidView=12402&projectKey=S07P11A205&view=planning&issueLimit=100)
 - MatterMost
 - Webex
 
