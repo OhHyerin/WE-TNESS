@@ -112,12 +112,11 @@ public class RoomService {
     public void disconnect(DisconnectionReq req) {
 
         User user = userRepository.findByNickname(req.getNickname());
-        String sessionName = req.getSessionName();
+        String sessionName = req.getTitle();
         Session session = this.mapSessions.get(sessionName).getSession();
         long roomId = this.mapSessions.get(sessionName).getRoom().getId();
         Room room = roomRepository.findById(roomId).orElse(null);
         if(room==null) throw new Exception("해당하는 방이 디비에 없습니다");
-
         // disconnection 된 사람이 방장이라면 방 삭제
         int managerId = (int) this.mapSessions.get(sessionName).getRoom().getManagerId();
         if(managerId==user.getId()){
