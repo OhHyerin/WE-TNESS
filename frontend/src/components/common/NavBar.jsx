@@ -63,6 +63,7 @@ export default function NavBar() {
   }, [location]);
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  const userNickname = useSelector(state => state.user.currentUser.nickname);
 
   return (
     <div id="nav">
