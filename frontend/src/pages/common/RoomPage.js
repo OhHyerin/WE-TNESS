@@ -16,6 +16,7 @@ const OPENVIDU_SERVER_SECRET = 'WETNESS';
 function RoomPage() {
   const sessionInfo = getSessionInfo();
   const nickname = useSelector(state => state.user.currentUser.nickname);
+  const isRoom = useSelector(state => state.room.isRoom);
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   if (isAuthenticated) {
@@ -68,6 +69,8 @@ class RoomClass extends Component {
   }
 
   componentWillUnmount() {
+    this.leaveSession();
+    console.log('leave Session');
     window.removeEventListener('beforeunload', this.onbeforeunload);
   }
 

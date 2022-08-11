@@ -25,6 +25,7 @@ const initialState = {
   // 방 생성 입장 관련
   sessionInfo: {},
   keyword: '',
+  isRoom: false,
 };
 
 const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWithValue }) => {
@@ -115,6 +116,10 @@ export const RoomSlice = createSlice({
     setIsSearch: (state, action) => {
       state.isSearched = action.payload;
     },
+    setIsRoom: (state, action) => {
+      console.log(action.payload);
+      state.isRoom = action.payload;
+    },
   },
   extraReducers: {
     [fetchRoomList.pending]: state => {
@@ -157,6 +162,7 @@ export const {
   testRoomList,
   setKeyword,
   setIsSearch,
+  setIsRoom,
   fetchWorkoutId,
   fetchTitle,
   fetchPassword,

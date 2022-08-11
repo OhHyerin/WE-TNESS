@@ -1,5 +1,5 @@
-import { useSelector } from 'react-redux';
-import { Link, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
@@ -9,6 +9,7 @@ import { Button } from '@mui/material';
 import SearchForm from '../search/SearchForm';
 import AccountMenu from './Dropdown';
 import logo from '../../assets/images/logo.jpg';
+import { setIsRoom } from '../../features/room/RoomSlice';
 
 const Header = styled.div`
   display: flex;
@@ -46,45 +47,56 @@ const LoginMenu = styled.div`
 `;
 
 const Logo = styled.div`
-  a {
-    padding: 0px 15px;
+  > * {
+    margin: 0px 15px;
   }
 `;
 
 export default function NavBar() {
   const location = useLocation();
-  const [isRoom, setIsRoom] = useState(false);
+  const navigate = useNavigate();
+  const isRoom = useSelector(state => state.room.isRoom);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (location.pathname == '/room') {
-      setIsRoom(true);
+    if (!isRoom && location.pathname == '/room') {
+      dispatch(setIsRoom(true));
     } else {
-      setIsRoom(false);
+      dispatch(setIsRoom(false));
     }
   }, [location]);
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
   const userNickname = useSelector(state => state.user.currentUser.nickname);
 
+  const handleGoOut = () => {
+    // 방나가는 로직 (게임방 삭제)
+    // dispatch(setIsRoom(false));
+    navigate('/');
+  };
+
   return (
     <div id="nav">
       <Header>
-        <Logo>
-          <Link to="/">
-            <img src={logo} alt="Logo" width={'40px'} height={'auto'} />
-          </Link>
-        </Logo>
-
         {/* null 자리에 방정보, 나가는 버튼 넣기 */}
         {isRoom ? (
           <>
+            <Logo>
+              <img src={logo} alt="Logo" width={'40px'} height={'auto'} />
+            </Logo>
             <div>방정보</div>
-            <Button variant="contained" color="error">
+            <Button id="goOutBtn" variant="contained" color="error" onClick={handleGoOut}>
               나가기
             </Button>
           </>
         ) : (
           <>
+            <Logo>
+              <Link to="/">
+                <img src={logo} alt="Logo" width={'40px'} height={'auto'} />
+              </Link>
+            </Logo>
+
             <SearchForm />
 
             <div>
