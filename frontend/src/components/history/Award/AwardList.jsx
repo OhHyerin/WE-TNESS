@@ -4,13 +4,22 @@ import styled from 'styled-components';
 import awards from '../../../assets/data/awardItems';
 
 const AwardBox = styled.div`
-  display: flex;
-  gap: 30px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-gap: 10px;
+  grid-auto-rows: minmax(100px, auto);
 `;
 
 const ImgBox = styled.div`
+  grid-row: 1/5;
   width: 150px;
   height: 150px;
+`;
+
+const ImgTag = styled.img`
+  width: 300px;
+  height: 150px;
+  object-fit: contain;
 `;
 
 export default function AwardList() {
@@ -21,16 +30,16 @@ export default function AwardList() {
       <AwardBox>
         {awards.map((award, idx) =>
           achieveAwards.includes(award.id) ? (
-            <AwardImg key={idx} award={award} isAchieve={true} />
+            <AwardImg key={idx} awardImg={award.acheiveImg} description={award.description} />
           ) : (
-            <AwardImg key={idx} award={award} isAchieve={false} />
+            <AwardImg key={idx} awardImg={award.notAcheiveImg} />
           )
         )}
       </AwardBox>
     </div>
   );
 }
-function AwardImg({ award, isAchieve }) {
+function AwardImg({ awardImg, description }) {
   const [isMoreInfo, setIsMoreInfo] = useState(false);
   return (
     <div>
@@ -38,13 +47,9 @@ function AwardImg({ award, isAchieve }) {
         onClick={() => {
           setIsMoreInfo(!isMoreInfo);
         }}>
-        {isAchieve ? (
-          <img src={award.img} alt="" />
-        ) : (
-          <img src={award.img} style={{ filter: 'grayscale(200%)' }} alt="" />
-        )}
+        <ImgTag src={awardImg} alt="" />
       </ImgBox>
-      {isMoreInfo ? <p>{award.description}</p> : null}
+      {isMoreInfo ? <p>{description}</p> : null}
     </div>
   );
 }
