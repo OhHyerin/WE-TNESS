@@ -53,3 +53,7 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+//main class 지정
+apply plugin: 'application'
+mainClassName = 'src.main.java.com.wetness.BackendApplication'
