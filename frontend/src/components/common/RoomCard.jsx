@@ -71,7 +71,11 @@ export default function RoomCard(props) {
       title: props.room.title,
       password,
     };
-    dispatch(joinRoom(payload)).then(res => navigate('/room'));
+    dispatch(joinRoom(payload)).then(res => {
+      if (res.type === 'joinRoom/fulfilled') {
+        navigate('/room');
+      }
+    });
   }
   return (
     <>
