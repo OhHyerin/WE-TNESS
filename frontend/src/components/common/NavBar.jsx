@@ -5,6 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useEffect, useState } from 'react';
+import { Button } from '@mui/material';
 import SearchForm from '../search/SearchForm';
 import AccountMenu from './Dropdown';
 import logo from '../../assets/images/logo.jpg';
@@ -74,31 +75,39 @@ export default function NavBar() {
           </Link>
         </Logo>
 
-        {/* null 자리에 방정보 넣기 */}
-        {isRoom ? null : <SearchForm />}
+        {/* null 자리에 방정보, 나가는 버튼 넣기 */}
+        {isRoom ? (
+          <>
+            <div>방정보</div>
+            <Button variant="contained" color="error">
+              나가기
+            </Button>
+          </>
+        ) : (
+          <>
+            <SearchForm />
 
-        <div>
-          {/* null 자리에 나가는 버튼 추가 */}
-          {isAuthenticated ? (
-            isRoom ? null : (
-              <LoginMenu>
-                {/* 알림 - 임시 & 수정 필요 */}
-                <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-                  <Badge badgeContent={17} color="error">
-                    <NotificationsIcon />
-                  </Badge>
-                </IconButton>
-                {/* 계정 버튼 - 드롭다운 */}
-                <AccountMenu />
-              </LoginMenu>
-            )
-          ) : (
-            <LoginMenu>
-              <Link to="/signup">회원가입</Link>
-              <Link to="/login">로그인</Link>
-            </LoginMenu>
-          )}
-        </div>
+            <div>
+              {isAuthenticated ? (
+                <LoginMenu>
+                  {/* 알림 - 임시 & 수정 필요 */}
+                  <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
+                    <Badge badgeContent={17} color="error">
+                      <NotificationsIcon />
+                    </Badge>
+                  </IconButton>
+                  {/* 계정 버튼 - 드롭다운 */}
+                  <AccountMenu />
+                </LoginMenu>
+              ) : (
+                <LoginMenu>
+                  <Link to="/signup">회원가입</Link>
+                  <Link to="/login">로그인</Link>
+                </LoginMenu>
+              )}
+            </div>
+          </>
+        )}
       </Header>
 
       {isRoom ? null : (
