@@ -79,7 +79,7 @@ const joinRoom = createAsyncThunk('joinRoom', async (payload, { rejectWithValue 
     setSessionInfo(res.data);
     return res.data;
   } catch (error) {
-    return rejectWithValue(error.response);
+    return rejectWithValue(error.response.data);
   }
 });
 

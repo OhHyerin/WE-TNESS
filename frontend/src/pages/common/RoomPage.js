@@ -1,19 +1,30 @@
 import React, { Component, useState, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { styled } from '@mui/material/styles';
+import { styled as styledC } from '@mui/material';
+import styled from 'styled-components';
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { TurnedIn } from '@mui/icons-material';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
-import './RoomPage.css';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { createRoom } from '../../features/room/RoomSlice';
 import setConfig from '../../features/authHeader';
 import api from '../../api';
+
+const Container = styled.div`
+  padding: 0;
+`;
+
+const VideoContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 50px;
+`;
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
 // url :
@@ -22,6 +33,7 @@ const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 function RoomPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const sessionInfo = getSessionInfo();
   const nickname = useSelector(state => state.user.currentUser.nickname);
@@ -39,7 +51,7 @@ function RoomPage() {
 
   if (isAuthenticated) {
     if (sessionInfo) {
-      return <RoomClass sessionInfo={sessionInfo} nickname={nickname}></RoomClass>;
+      return <RoomClass sessionInfo={sessionInfo} nickname={nickname} navigate={navigate}></RoomClass>;
     }
     return <div>세션정보없음</div>;
   }
@@ -61,6 +73,7 @@ class RoomClass extends Component {
       subscribers: [],
       currentVideoDevice: undefined,
 
+      isFinish: undefined,
       rank: [],
     };
 
@@ -275,6 +288,8 @@ class RoomClass extends Component {
       mainStreamManager: undefined,
       publisher: undefined,
     });
+
+    this.props.navigate('/');
   }
 
   async switchCamera() {
@@ -317,7 +332,7 @@ class RoomClass extends Component {
     const { title, myUserName, isGaming, managerNickname } = this.state;
 
     return (
-      <div className="container">
+      <Container>
         {this.state.session === undefined ? (
           <div>세션정보없어용</div>
         ) : (
@@ -346,7 +361,7 @@ class RoomClass extends Component {
             <div></div>
 
             {/* 내 화면 */}
-            <div id="video-container">
+            <VideoContainer>
               {this.state.publisher !== undefined ? (
                 <div>
                   <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
@@ -362,10 +377,10 @@ class RoomClass extends Component {
                   <UserVideoComponent streamManager={sub} />
                 </div>
               ))}
-            </div>
+            </VideoContainer>
           </div>
         )}
-      </div>
+      </Container>
     );
   }
 }
@@ -396,7 +411,7 @@ const Timer = () => {
   );
 };
 
-const HurryLinearProgress = styled(LinearProgress)(({ theme }) => ({
+const HurryLinearProgress = styledC(LinearProgress)(({ theme }) => ({
   height: 10,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
@@ -408,7 +423,7 @@ const HurryLinearProgress = styled(LinearProgress)(({ theme }) => ({
   },
 }));
 
-const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
   height: 20,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {

@@ -68,7 +68,7 @@ export default function RoomCard(props) {
   function onJoinRoom(e) {
     e.preventDefault();
     const payload = {
-      sessionName: props.room.title,
+      title: props.room.title,
       password,
     };
     dispatch(joinRoom(payload)).then(res => navigate('/room'));
