@@ -1,4 +1,4 @@
-export const API_BASE_URL = '127.0.0.1:5000';
+export const API_BASE_URL = ':5000';
 
 const USER_URL = '/user';
 const RANK_URL = '/rank';
