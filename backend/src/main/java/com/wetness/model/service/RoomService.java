@@ -4,10 +4,7 @@ import com.wetness.db.entity.MapSessionRoom;
 import com.wetness.db.entity.Room;
 import com.wetness.db.entity.RoomUser;
 import com.wetness.db.entity.User;
-import com.wetness.db.repository.RoomRepository;
-import com.wetness.db.repository.RoomUserRepository;
-import com.wetness.db.repository.UserRepository;
-import com.wetness.db.repository.WorkoutRepository;
+import com.wetness.db.repository.*;
 import com.wetness.model.dto.request.DisconnectionReq;
 import com.wetness.model.dto.request.EnterRoomReq;
 import com.wetness.model.dto.request.MakeRoomReq;
@@ -33,6 +30,7 @@ public class RoomService {
 
     private final UserRepository userRepository;
     private final RoomRepository roomRepository;
+    private final GameRepository gameRepository;
     private final RoomUserRepository roomUserRepository;
 
     private final WorkoutRepository workoutRepository;
@@ -194,6 +192,7 @@ public class RoomService {
         MapSessionRoom tmp = mapSessions.get(title);
         Room room = tmp.getRoom();
         int headcount = mapSessionNamesConnections.get(title).size();
+        boolean isGaming = !gameRepository.findByRoomIdAndIsPlaying(room.getId(),true).isEmpty();
 
         return RoomListRes.builder()
                 .workout(room.getWorkout().getId())
@@ -201,7 +200,7 @@ public class RoomService {
                 .headcount(headcount)
                 .isLocked(room.isLocked())
                 .managerNickname(userRepository.getOne(room.getManagerId()).getNickname())
-                //.isGaming()
+                .isGaming(isGaming)
                 .build();
     }
 }
