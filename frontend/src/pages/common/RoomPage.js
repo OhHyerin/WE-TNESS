@@ -75,6 +75,9 @@ class RoomClass extends Component {
 
       isFinish: undefined,
       rank: [],
+      isReady: undefined,
+      readyState: new Map(),
+      isPossibleStart: true,
     };
 
     this.joinSession = this.joinSession.bind(this);
@@ -84,8 +87,11 @@ class RoomClass extends Component {
     this.onbeforeunload = this.onbeforeunload.bind(this);
 
     // 커스텀
+    this.join = this.join.bind(this);
     this.startSignal = this.startSignal.bind(this);
     this.start = this.start.bind(this);
+    this.readySignal = this.readySignal.bind(this);
+    this.checkPossibleStart = this.checkPossibleStart.bind(this);
   }
 
   // state 업데이트 & 세션 입장 (sessionId랑 token 따로 빼서? => 백에서 준 토큰으로 입장 )
@@ -171,11 +177,21 @@ class RoomClass extends Component {
           console.warn(exception);
         });
 
+        mySession.on('signal:join', event => {
+          this.readyState.set(event.data, false);
+        });
+
         mySession.on('signal:start', event => {
           this.setState({
             gameId: event.data,
           });
           this.start();
+        });
+
+        mySession.on('signal:ready', event => {
+          const data = event.data.split(',');
+          this.readyState.set(data[0], data[1]);
+          this.checkPossibleStart();
         });
 
         // --- 4) Connect to the session with a valid user token ---
@@ -190,6 +206,7 @@ class RoomClass extends Component {
           .connect(token)
           // , { clientData: this.state.myUserName }
           .then(async () => {
+            this.join();
             const devices = await this.OV.getDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
@@ -229,6 +246,16 @@ class RoomClass extends Component {
     );
   }
 
+  join() {
+    const mySession = this.state.session;
+    if (this.state.myUserName !== this.state.managerNickname) {
+      mySession.signal({
+        data: this.state.myUserName,
+        type: 'join',
+      });
+    }
+  }
+
   start() {
     console.log('게임 시작');
     this.setState({
@@ -238,6 +265,7 @@ class RoomClass extends Component {
   }
 
   startSignal() {
+    console.log(this.isPossibleStart);
     const mySession = this.state.session;
     const data = new Date();
 
@@ -267,6 +295,30 @@ class RoomClass extends Component {
       .catch(err => {
         console.log(err);
       });
+  }
+
+  readySignal() {
+    const mySession = this.state.session;
+
+    this.setState({
+      isReady: !this.state.isReady,
+    });
+
+    mySession.signal({
+      data: `${this.state.myUserName},${this.state.isReady}`,
+      type: 'ready',
+    });
+  }
+
+  // 레디가 다 되었는지 확인
+  checkPossibleStart() {
+    if (this.myUserName === this.managerNickname) {
+      if (this.readyState.every((value, key) => value)) {
+        this.setState({
+          isPossibleStart: true,
+        });
+      }
+    }
   }
 
   leaveSession() {
@@ -342,7 +394,7 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { title, myUserName, isGaming, managerNickname } = this.state;
+    const { title, myUserName, isGaming, managerNickname, isPossibleStart, isReady } = this.state;
 
     return (
       <Container>
@@ -365,9 +417,11 @@ class RoomClass extends Component {
             {isGaming ? (
               <Timer></Timer>
             ) : myUserName === managerNickname ? (
-              <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
+              <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
+                시작!
+              </SubmitBtn>
             ) : (
-              <SubmitBtn>준비 !</SubmitBtn>
+              <SubmitBtn onClick={this.readySignal}>준비 !</SubmitBtn>
             )}
 
             {/* 실시간 순위 & 최종 순위 */}
