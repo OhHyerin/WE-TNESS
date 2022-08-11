@@ -1,12 +1,16 @@
-import React, { Component, useEffect } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { Navigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
 import './RoomPage.css';
 import SubmitBtn from '../../components/common/SubmitBtn';
+import { createRoom } from '../../features/room/RoomSlice';
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
 // url :
@@ -14,10 +18,22 @@ const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 function RoomPage() {
+  const dispatch = useDispatch();
+
   const sessionInfo = getSessionInfo();
   const nickname = useSelector(state => state.user.currentUser.nickname);
-
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+
+  // ui 작업을 위해 임시로 새로고침 시 방 생성 구현
+  useEffect(() => {
+    const payload = {
+      workoutId: 3,
+      password: '',
+      title: 'gd',
+    };
+    dispatch(createRoom(payload));
+  }, [dispatch]);
+
   if (isAuthenticated) {
     if (sessionInfo) {
       return <RoomClass sessionInfo={sessionInfo} nickname={nickname}></RoomClass>;
@@ -255,8 +271,7 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { mySessionId } = this.state;
-    const { myUserName } = this.state;
+    const { mySessionId, title, myUserName } = this.state;
 
     return (
       <div className="container">
@@ -265,7 +280,7 @@ class RoomClass extends Component {
         ) : (
           <div id="session">
             <div id="session-header">
-              <h1 id="session-title">{mySessionId}</h1>
+              <h1 id="session-title">방 제목 :{title}</h1>
               <input
                 className="btn btn-large btn-danger"
                 type="button"
@@ -275,25 +290,23 @@ class RoomClass extends Component {
               />
             </div>
 
+            <Timer></Timer>
+
             {/* 내 화면 ? */}
-            <div id="video-container" className="col-md-6">
+            <div id="video-container">
               {this.state.publisher !== undefined ? (
                 <div>
-                  <div
-                    className="stream-container col-md-6 col-xs-6"
-                    onClick={() => this.handleMainVideoStream(this.state.publisher)}>
+                  <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
                     <UserVideoComponent streamManager={this.state.publisher} />
                   </div>
+                  <p>{myUserName}</p>
                   <SubmitBtn> 시작! </SubmitBtn>
                 </div>
               ) : null}
 
               {/* 친구들 화면? */}
               {this.state.subscribers.map((sub, i) => (
-                <div
-                  key={i}
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(sub)}>
+                <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
                   <UserVideoComponent streamManager={sub} />
                 </div>
               ))}
@@ -383,3 +396,62 @@ class RoomClass extends Component {
 }
 
 export default RoomPage;
+
+const Timer = () => {
+  const [value, setValue] = useState(60);
+  useEffect(() => {
+    const myInterval = setInterval(() => {
+      if (value > 0) {
+        setValue(value - 0.1);
+      }
+      if (value <= 0) {
+        clearInterval(myInterval);
+      }
+    }, 100);
+    return () => {
+      clearInterval(myInterval);
+    };
+  });
+
+  return (
+    <div>
+      <CustomizedProgressBars value={value}></CustomizedProgressBars>
+    </div>
+  );
+};
+
+const HurryLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === 'light' ? '#f44336' : '#f44336',
+  },
+}));
+
+const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+  },
+}));
+
+function CustomizedProgressBars(props) {
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <p>남은 시간 : {props.value}</p>
+      {props.value <= 30 ? (
+        <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      ) : (
+        <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      )}
+    </Box>
+  );
+}

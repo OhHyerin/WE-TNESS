@@ -1,3 +1,10 @@
 .stream-container {
-	padding: 0;
+  padding: 0;
+}
+
+#video-container {
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 50px;
 }
