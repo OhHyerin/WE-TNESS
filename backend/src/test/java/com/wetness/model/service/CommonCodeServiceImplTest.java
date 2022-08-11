@@ -12,13 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 @SpringBootTest
 class CommonCodeServiceImplTest {
 
-    @Autowired
-    CommonCodeService commonCodeService;
-
-    @Test
-    @Transactional
-    public void findCommonCode() {
-        String val = commonCodeService.findCommonCodeName("1100000000");
-        Assertions.assertThat(val).isEqualTo("서울특별시");
-    }
+//    @Autowired
+//    CommonCodeService commonCodeService;
+//
+//    @Test
+//    @Transactional
+//    public void findCommonCode() {
+//        String val = commonCodeService.findCommonCodeName("1100000000");
+//        Assertions.assertThat(val).isEqualTo("서울특별시");
+//    }
 }
