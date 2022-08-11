@@ -14,11 +14,12 @@ const signup = createAsyncThunk('signup', async (payload, { rejectWithValue }) =
 
 const checkNickname = createAsyncThunk('checkNickname', async (payload, { rejectWithValue }) => {
   const nickname = payload;
+  const headers = { 'Access-Control-Allow-Origin': '*' };
   try {
-    const res = await axios.get(api.checkNickname(nickname));
+    const res = await axios.get(api.checkNickname(nickname), headers);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
