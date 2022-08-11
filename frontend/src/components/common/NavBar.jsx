@@ -105,7 +105,7 @@ export default function NavBar() {
         <Nav>
           <NavBtns>
             <Link to="/">홈</Link>
-            <Link to="history/:userNickname">기록</Link>
+            <Link to={`history/${userNickname}`}>기록</Link>
             <Link to="ranking">랭킹</Link>
           </NavBtns>
           <div></div>

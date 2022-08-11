@@ -5,7 +5,8 @@ import axios from 'axios';
 import { useSelector } from 'react-redux';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
-import './UserVideo.css';
+import './RoomPage.css';
+import SubmitBtn from '../../components/common/SubmitBtn';
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
 // url :
@@ -277,10 +278,13 @@ class RoomClass extends Component {
             {/* 내 화면 ? */}
             <div id="video-container" className="col-md-6">
               {this.state.publisher !== undefined ? (
-                <div
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(this.state.publisher)}>
-                  <UserVideoComponent streamManager={this.state.publisher} />
+                <div>
+                  <div
+                    className="stream-container col-md-6 col-xs-6"
+                    onClick={() => this.handleMainVideoStream(this.state.publisher)}>
+                    <UserVideoComponent streamManager={this.state.publisher} />
+                  </div>
+                  <SubmitBtn> 시작! </SubmitBtn>
                 </div>
               ) : null}
 
