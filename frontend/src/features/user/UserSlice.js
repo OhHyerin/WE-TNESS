@@ -21,7 +21,7 @@ const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => 
     setCurrentUser(decodeAccessToken(res.data.accessToken));
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -30,7 +30,7 @@ const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
     const res = await axios.post(api.logout(), {}, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 

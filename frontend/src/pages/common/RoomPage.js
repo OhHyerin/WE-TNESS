@@ -1,11 +1,30 @@
-import React, { Component, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { Component, useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { styled as styledC } from '@mui/material';
+import styled from 'styled-components';
+import Box from '@mui/material/Box';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { TurnedIn } from '@mui/icons-material';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
-import './UserVideo.css';
+import SubmitBtn from '../../components/common/SubmitBtn';
+import { createRoom } from '../../features/room/RoomSlice';
+import setConfig from '../../features/authHeader';
+import api from '../../api';
+
+const Container = styled.div`
+  padding: 0;
+`;
+
+const VideoContainer = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 50px;
+`;
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
 // url :
@@ -13,13 +32,26 @@ const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 function RoomPage() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const sessionInfo = getSessionInfo();
   const nickname = useSelector(state => state.user.currentUser.nickname);
-
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+
+  // ui 작업을 위해 임시로 새로고침 시 방 생성 구현
+  // useEffect(() => {
+  //   const payload = {
+  //     workoutId: 3,
+  //     password: '',
+  //     title: 'gd',
+  //   };
+  //   dispatch(createRoom(payload));
+  // }, [dispatch]);
+
   if (isAuthenticated) {
     if (sessionInfo) {
-      return <RoomClass sessionInfo={sessionInfo} nickname={nickname}></RoomClass>;
+      return <RoomClass sessionInfo={sessionInfo} nickname={nickname} navigate={navigate}></RoomClass>;
     }
     return <div>세션정보없음</div>;
   }
@@ -40,15 +72,26 @@ class RoomClass extends Component {
       publisher: undefined,
       subscribers: [],
       currentVideoDevice: undefined,
+
+      isFinish: undefined,
+      rank: [],
+      isReady: undefined,
+      readyState: new Map(),
+      isPossibleStart: true,
     };
 
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
-    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
-    this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
+
+    // 커스텀
+    this.join = this.join.bind(this);
+    this.startSignal = this.startSignal.bind(this);
+    this.start = this.start.bind(this);
+    this.readySignal = this.readySignal.bind(this);
+    this.checkPossibleStart = this.checkPossibleStart.bind(this);
   }
 
   // state 업데이트 & 세션 입장 (sessionId랑 token 따로 빼서? => 백에서 준 토큰으로 입장 )
@@ -61,6 +104,7 @@ class RoomClass extends Component {
         title: sessionInfo.title,
         myUserName: nickname,
         managerNickname: sessionInfo.managerNickname,
+        isGaming: false,
       });
     }, 300);
     this.joinSession(sessionInfo.token);
@@ -72,18 +116,6 @@ class RoomClass extends Component {
 
   onbeforeunload(event) {
     this.leaveSession();
-  }
-
-  handleChangeSessionId(e) {
-    this.setState({
-      mySessionId: e.target.value,
-    });
-  }
-
-  handleChangeUserName(e) {
-    this.setState({
-      myUserName: e.target.value,
-    });
   }
 
   handleMainVideoStream(stream) {
@@ -145,6 +177,23 @@ class RoomClass extends Component {
           console.warn(exception);
         });
 
+        mySession.on('signal:join', event => {
+          this.readyState.set(event.data, false);
+        });
+
+        mySession.on('signal:start', event => {
+          this.setState({
+            gameId: event.data,
+          });
+          this.start();
+        });
+
+        mySession.on('signal:ready', event => {
+          const data = event.data.split(',');
+          this.readyState.set(data[0], data[1]);
+          this.checkPossibleStart();
+        });
+
         // --- 4) Connect to the session with a valid user token ---
 
         // 'getToken' method is simulating what your server-side should do.
@@ -157,6 +206,7 @@ class RoomClass extends Component {
           .connect(token)
           // , { clientData: this.state.myUserName }
           .then(async () => {
+            this.join();
             const devices = await this.OV.getDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
@@ -196,6 +246,81 @@ class RoomClass extends Component {
     );
   }
 
+  join() {
+    const mySession = this.state.session;
+    if (this.state.myUserName !== this.state.managerNickname) {
+      mySession.signal({
+        data: this.state.myUserName,
+        type: 'join',
+      });
+    }
+  }
+
+  start() {
+    console.log('게임 시작');
+    this.setState({
+      isGaming: true,
+      rank: [],
+    });
+  }
+
+  startSignal() {
+    console.log(this.isPossibleStart);
+    const mySession = this.state.session;
+    const data = new Date();
+
+    // 타이틀 수정 후  roomId: this.state.title,
+    const roomId = 123;
+    const createDate = [
+      data.getFullYear(),
+      data.getMonth(),
+      data.getDay(),
+      data.getHours(),
+      data.getMinutes(),
+      data.getSeconds(),
+    ];
+    const payload = {
+      roomId,
+      createDate,
+    };
+    axios
+      .post(api.start(), payload, setConfig())
+      .then(res => {
+        console.log(res.data);
+        mySession.signal({
+          data: res.data.gameId,
+          type: 'start',
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  readySignal() {
+    const mySession = this.state.session;
+
+    this.setState({
+      isReady: !this.state.isReady,
+    });
+
+    mySession.signal({
+      data: `${this.state.myUserName},${this.state.isReady}`,
+      type: 'ready',
+    });
+  }
+
+  // 레디가 다 되었는지 확인
+  checkPossibleStart() {
+    if (this.myUserName === this.managerNickname) {
+      if (this.readyState.every((value, key) => value)) {
+        this.setState({
+          isPossibleStart: true,
+        });
+      }
+    }
+  }
+
   leaveSession() {
     // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
 
@@ -204,17 +329,32 @@ class RoomClass extends Component {
     if (mySession) {
       mySession.disconnect();
     }
+    axios
+      .patch(
+        api.quit(),
+        {
+          nickname: this.state.myUserName,
+          title: this.state.title,
+        },
+        setConfig()
+      )
+      .then(() => {
+        // Empty all properties...
+        this.OV = null;
+        this.setState({
+          session: undefined,
+          subscribers: [],
+          mySessionId: undefined,
+          myUserName: undefined,
+          mainStreamManager: undefined,
+          publisher: undefined,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
 
-    // Empty all properties...
-    this.OV = null;
-    this.setState({
-      session: undefined,
-      subscribers: [],
-      mySessionId: undefined,
-      myUserName: undefined,
-      mainStreamManager: undefined,
-      publisher: undefined,
-    });
+    this.props.navigate('/');
   }
 
   async switchCamera() {
@@ -254,17 +394,16 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { mySessionId } = this.state;
-    const { myUserName } = this.state;
+    const { title, myUserName, isGaming, managerNickname, isPossibleStart, isReady } = this.state;
 
     return (
-      <div className="container">
+      <Container>
         {this.state.session === undefined ? (
           <div>세션정보없어용</div>
         ) : (
           <div id="session">
             <div id="session-header">
-              <h1 id="session-title">{mySessionId}</h1>
+              <h1 id="session-title">방 제목 :{title}</h1>
               <input
                 className="btn btn-large btn-danger"
                 type="button"
@@ -274,108 +413,100 @@ class RoomClass extends Component {
               />
             </div>
 
-            {/* 내 화면 ? */}
-            <div id="video-container" className="col-md-6">
+            {/* 타이머 & 시작버튼 */}
+            {isGaming ? (
+              <Timer></Timer>
+            ) : myUserName === managerNickname ? (
+              <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
+                시작!
+              </SubmitBtn>
+            ) : (
+              <SubmitBtn onClick={this.readySignal}>준비 !</SubmitBtn>
+            )}
+
+            {/* 실시간 순위 & 최종 순위 */}
+            <div></div>
+
+            {/* 내 화면 */}
+            <VideoContainer>
               {this.state.publisher !== undefined ? (
-                <div
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(this.state.publisher)}>
-                  <UserVideoComponent streamManager={this.state.publisher} />
+                <div>
+                  <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
+                    <UserVideoComponent streamManager={this.state.publisher} />
+                  </div>
+                  <p>내 닉네임 : {myUserName}</p>
                 </div>
               ) : null}
 
-              {/* 친구들 화면? */}
+              {/* 친구들 화면 */}
               {this.state.subscribers.map((sub, i) => (
-                <div
-                  key={i}
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(sub)}>
+                <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
                   <UserVideoComponent streamManager={sub} />
                 </div>
               ))}
-            </div>
+            </VideoContainer>
           </div>
         )}
-      </div>
+      </Container>
     );
   }
-
-  /**
-   * --------------------------
-   * SERVER-SIDE RESPONSIBILITY
-   * --------------------------
-   * These methods retrieve the mandatory user token from OpenVidu Server.
-   * This behavior MUST BE IN YOUR SERVER-SIDE IN PRODUCTION (by using
-   * the API REST, openvidu-java-client or openvidu-node-client):
-   *   1) Initialize a Session in OpenVidu Server	(POST /openvidu/api/sessions)
-   *   2) Create a Connection in OpenVidu Server (POST /openvidu/api/sessions/<SESSION_ID>/connection)
-   *   3) The Connection.token must be consumed in Session.connect() method
-   */
-
-  // getToken() {
-  //   return this.createSession(this.state.mySessionId).then(sessionId => {
-  //     console.log(sessionId);
-  //     this.createToken(sessionId);
-  //   });
-  // }
-
-  // // eslint-disable-next-line class-methods-use-this
-  // createSession(sessionId) {
-  //   return new Promise((resolve, reject) => {
-  //     const data = JSON.stringify({ customSessionId: sessionId });
-  //     axios
-  //       .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions', data, {
-  //         headers: {
-  //           Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-  //           'Content-Type': 'application/json',
-  //         },
-  //       })
-  //       .then(response => {
-  //         console.log('CREATE SESION', response);
-  //         resolve(response.data.id);
-  //       })
-  //       .catch(response => {
-  //         const error = { ...response };
-  //         if (error?.response?.status === 409) {
-  //           resolve(sessionId);
-  //         } else {
-  //           console.log(error);
-  //           console.warn('No connection to OpenVidu Server. This may be a certificate error at ' + OPENVIDU_SERVER_URL);
-  //           if (
-  //             window.confirm(
-  //               'No connection to OpenVidu Server. This may be a certificate error at "' +
-  //                 OPENVIDU_SERVER_URL +
-  //                 '"\n\nClick OK to navigate and accept it. ' +
-  //                 'If no certificate warning is shown, then check that your OpenVidu Server is up and running at "' +
-  //                 OPENVIDU_SERVER_URL +
-  //                 '"'
-  //             )
-  //           ) {
-  //             window.location.assign(OPENVIDU_SERVER_URL + '/accept-certificate');
-  //           }
-  //         }
-  //       });
-  //   });
-  // }
-
-  // // eslint-disable-next-line class-methods-use-this
-  // createToken(sessionId) {
-  //   return new Promise((resolve, reject) => {
-  //     const data = {};
-  //     axios
-  //       .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions/' + sessionId + '/connection', data, {
-  //         headers: {
-  //           Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-  //           'Content-Type': 'application/json',
-  //         },
-  //       })
-  //       .then(response => {
-  //         console.log('TOKEN', response);
-  //         resolve(response.data.token);
-  //       })
-  //       .catch(error => reject(error));
-  //   });
-  // }
 }
 
 export default RoomPage;
+
+// 1분 타이머
+const Timer = () => {
+  const [value, setValue] = useState(60);
+  useEffect(() => {
+    const myInterval = setInterval(() => {
+      if (value > 0) {
+        setValue(value - 0.1);
+      }
+      if (value <= 0) {
+        clearInterval(myInterval);
+      }
+    }, 100);
+    return () => {
+      clearInterval(myInterval);
+    };
+  });
+
+  return (
+    <>
+      <CustomizedProgressBars value={value}></CustomizedProgressBars>
+    </>
+  );
+};
+
+const HurryLinearProgress = styledC(LinearProgress)(({ theme }) => ({
+  height: 10,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === 'light' ? '#f44336' : '#f44336',
+  },
+}));
+
+const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
+  height: 20,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+}));
+
+function CustomizedProgressBars(props) {
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      <p>남은 시간 : {props.value}</p>
+      {props.value <= 30 ? (
+        <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      ) : (
+        <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      )}
+    </Box>
+  );
+}

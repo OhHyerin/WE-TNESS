@@ -34,7 +34,7 @@ const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWith
     console.log(res.data);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -55,7 +55,7 @@ const searchRooms = createAsyncThunk('searchRooms', async (arg, { rejectWithValu
     console.log(res.data);
     return res.data;
   } catch (error) {
-    return rejectWithValue(error.response);
+    return rejectWithValue(error.response.data);
   }
 });
 
@@ -67,7 +67,7 @@ const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithVa
     setSessionInfo(res.data);
     return res.data;
   } catch (error) {
-    return rejectWithValue(error.response);
+    return rejectWithValue(error.response.data);
   }
 });
 
@@ -79,7 +79,7 @@ const joinRoom = createAsyncThunk('joinRoom', async (payload, { rejectWithValue 
     setSessionInfo(res.data);
     return res.data;
   } catch (error) {
-    return rejectWithValue(error.response);
+    return rejectWithValue(error.response.data);
   }
 });
 
