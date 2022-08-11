@@ -4,6 +4,7 @@ export const API_BASE_URL = 'http://localhost:5000';
 const USER_URL = '/user';
 const RANK_URL = '/rank';
 const ROOM_URL = '/room';
+const GAME_URL = '/game';
 
 const LOGIN_URL = '/login';
 const KAKAO_URL = '/kakao';
@@ -25,6 +26,7 @@ const HISTORY_URL = '';
 const MAKE_URL = '/make';
 const ENTER_URL = '/enter';
 const SEARCH_URL = '/search?keyword=';
+
 const START_URL = '/start';
 
 export default {
@@ -49,5 +51,5 @@ export default {
   joinRoom: () => API_BASE_URL + ROOM_URL + ENTER_URL,
   searchRooms: keyword => API_BASE_URL + ROOM_URL + SEARCH_URL + `${keyword}`,
 
-  start: () => API_BASE_URL + ROOM_URL + START_URL,
+  start: () => API_BASE_URL + GAME_URL + START_URL,
 };

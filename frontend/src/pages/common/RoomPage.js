@@ -67,8 +67,6 @@ class RoomClass extends Component {
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
-    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
-    this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
 
@@ -99,18 +97,6 @@ class RoomClass extends Component {
 
   onbeforeunload(event) {
     this.leaveSession();
-  }
-
-  handleChangeSessionId(e) {
-    this.setState({
-      mySessionId: e.target.value,
-    });
-  }
-
-  handleChangeUserName(e) {
-    this.setState({
-      myUserName: e.target.value,
-    });
   }
 
   handleMainVideoStream(stream) {
@@ -173,7 +159,7 @@ class RoomClass extends Component {
         });
 
         mySession.on('signal:start', event => {
-          this.state({
+          this.setState({
             gameId: event.data,
           });
           this.start();
@@ -240,16 +226,34 @@ class RoomClass extends Component {
 
   startSignal() {
     const mySession = this.state.session;
+    const data = new Date();
+
+    // 타이틀 수정 후  roomId: this.state.title,
+    const roomId = 123;
+    const createDate = [
+      data.getFullYear(),
+      data.getMonth(),
+      data.getDay(),
+      data.getHours(),
+      data.getMinutes(),
+      data.getSeconds(),
+    ];
     const payload = {
-      roomId: this.mySessionId,
-      createDate: '',
+      roomId,
+      createDate,
     };
-    axios.put(api.start(), payload, setConfig()).then(res => {
-      mySession.signal({
-        data: res.data.gameId,
-        type: 'start',
+    axios
+      .post(api.start(), payload, setConfig())
+      .then(res => {
+        console.log(res.data);
+        mySession.signal({
+          data: res.data.gameId,
+          type: 'start',
+        });
+      })
+      .catch(err => {
+        console.log(err);
       });
-    });
   }
 
   leaveSession() {
@@ -310,7 +314,7 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { title, myUserName, isGaming } = this.state;
+    const { title, myUserName, isGaming, managerNickname } = this.state;
 
     return (
       <div className="container">
@@ -331,7 +335,7 @@ class RoomClass extends Component {
 
             {isGaming ? <Timer></Timer> : null}
 
-            {/* 내 화면 ? */}
+            {/* 내 화면 */}
             <div id="video-container">
               {this.state.publisher !== undefined ? (
                 <div>
@@ -339,11 +343,16 @@ class RoomClass extends Component {
                     <UserVideoComponent streamManager={this.state.publisher} />
                   </div>
                   <p>내 닉네임 : {myUserName}</p>
-                  <SubmitBtn onClick={this.start}> 시작! </SubmitBtn>
+
+                  {myUserName === managerNickname ? (
+                    <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
+                  ) : (
+                    <SubmitBtn>준비 !</SubmitBtn>
+                  )}
                 </div>
               ) : null}
 
-              {/* 친구들 화면? */}
+              {/* 친구들 화면 */}
               {this.state.subscribers.map((sub, i) => (
                 <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
                   <UserVideoComponent streamManager={sub} />
@@ -355,87 +364,11 @@ class RoomClass extends Component {
       </div>
     );
   }
-
-  /**
-   * --------------------------
-   * SERVER-SIDE RESPONSIBILITY
-   * --------------------------
-   * These methods retrieve the mandatory user token from OpenVidu Server.
-   * This behavior MUST BE IN YOUR SERVER-SIDE IN PRODUCTION (by using
-   * the API REST, openvidu-java-client or openvidu-node-client):
-   *   1) Initialize a Session in OpenVidu Server	(POST /openvidu/api/sessions)
-   *   2) Create a Connection in OpenVidu Server (POST /openvidu/api/sessions/<SESSION_ID>/connection)
-   *   3) The Connection.token must be consumed in Session.connect() method
-   */
-
-  // getToken() {
-  //   return this.createSession(this.state.mySessionId).then(sessionId => {
-  //     console.log(sessionId);
-  //     this.createToken(sessionId);
-  //   });
-  // }
-
-  // // eslint-disable-next-line class-methods-use-this
-  // createSession(sessionId) {
-  //   return new Promise((resolve, reject) => {
-  //     const data = JSON.stringify({ customSessionId: sessionId });
-  //     axios
-  //       .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions', data, {
-  //         headers: {
-  //           Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-  //           'Content-Type': 'application/json',
-  //         },
-  //       })
-  //       .then(response => {
-  //         console.log('CREATE SESION', response);
-  //         resolve(response.data.id);
-  //       })
-  //       .catch(response => {
-  //         const error = { ...response };
-  //         if (error?.response?.status === 409) {
-  //           resolve(sessionId);
-  //         } else {
-  //           console.log(error);
-  //           console.warn('No connection to OpenVidu Server. This may be a certificate error at ' + OPENVIDU_SERVER_URL);
-  //           if (
-  //             window.confirm(
-  //               'No connection to OpenVidu Server. This may be a certificate error at "' +
-  //                 OPENVIDU_SERVER_URL +
-  //                 '"\n\nClick OK to navigate and accept it. ' +
-  //                 'If no certificate warning is shown, then check that your OpenVidu Server is up and running at "' +
-  //                 OPENVIDU_SERVER_URL +
-  //                 '"'
-  //             )
-  //           ) {
-  //             window.location.assign(OPENVIDU_SERVER_URL + '/accept-certificate');
-  //           }
-  //         }
-  //       });
-  //   });
-  // }
-
-  // // eslint-disable-next-line class-methods-use-this
-  // createToken(sessionId) {
-  //   return new Promise((resolve, reject) => {
-  //     const data = {};
-  //     axios
-  //       .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions/' + sessionId + '/connection', data, {
-  //         headers: {
-  //           Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-  //           'Content-Type': 'application/json',
-  //         },
-  //       })
-  //       .then(response => {
-  //         console.log('TOKEN', response);
-  //         resolve(response.data.token);
-  //       })
-  //       .catch(error => reject(error));
-  //   });
-  // }
 }
 
 export default RoomPage;
 
+// 1분 타이머
 const Timer = () => {
   const [value, setValue] = useState(60);
   useEffect(() => {
@@ -472,13 +405,10 @@ const HurryLinearProgress = styled(LinearProgress)(({ theme }) => ({
 }));
 
 const BorderLinearProgress = styled(LinearProgress)(({ theme }) => ({
-  height: 10,
+  height: 20,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
-  },
-  [`& .${linearProgressClasses.bar}`]: {
-    borderRadius: 5,
   },
 }));
 
