@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { Box, Button, Modal } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { checkNickname } from '../../features/user/SignupSlice';
+import { signout } from '../../features/user/UserSlice';
 import { fetchUserInfo, edit, changePassword, fetchNickname } from '../../features/user/EditSlice';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import IconTextField from '../../components/common/IconTextField';
@@ -15,6 +18,8 @@ import AddressForm from '../../components/common/auth/AddressForm';
 import GenderForm from '../../components/common/auth/GenderForm';
 import BodyForm from '../../components/common/auth/BodyForm';
 import CheckBtn from '../../components/common/CheckBtn';
+
+const MySwal = withReactContent(Swal);
 
 const SignupForm = styled.form`
   display: flex;
@@ -42,6 +47,7 @@ const style = {
 
 export default function EditPage() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(fetchUserInfo());
@@ -75,12 +81,21 @@ export default function EditPage() {
   function onSubmitHandler(e) {
     e.preventDefault();
     const payload = {
+      nickname: userInfo.nickname,
+      gender: userInfo.gender,
+      weight: userInfo.weight,
+      height: userInfo.height,
       addressCode,
-      ...userInfo,
     };
     console.log(payload);
     dispatch(edit(payload))
-      .then(() => {})
+      .then(() => {
+        MySwal.fire({
+          title: <p>회원정보 변경</p>,
+          titleText: <p>변경되었습니다.</p>,
+          icon: 'success',
+        });
+      })
       .catch(err => {
         console.log(err);
       });
@@ -94,6 +109,11 @@ export default function EditPage() {
     dispatch(changePassword(payload))
       .then(res => {
         if (res.type === 'changePassword/fulfilled') {
+          MySwal.fire({
+            title: <p>비밀번호 변경</p>,
+            titleText: <p>변경되었습니다.</p>,
+            icon: 'success',
+          });
           dispatch(handleClose());
         } else {
           setIsEditError(true);
@@ -102,6 +122,11 @@ export default function EditPage() {
       .catch(err => {
         console.log(err);
       });
+  }
+
+  // 회원 탈퇴
+  function onSignoutHandler(e) {
+    dispatch(signout()).then(navigate('/'));
   }
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
@@ -160,6 +185,7 @@ export default function EditPage() {
           </SignupForm>
           <LabelBox>
             <Button onClick={handleOpen}>비밀번호 변경</Button>
+            <Button onClick={onSignoutHandler}>회원 탈퇴</Button>
           </LabelBox>
         </FormBox>
       </div>

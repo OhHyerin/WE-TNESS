@@ -4,6 +4,8 @@ import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import { Box, Button, Modal, TextField, IconButton, FormControl } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import logo from '../../assets/images/logo.jpg';
 import PageBox from '../../components/common/auth/PageBox';
 import FormBox from '../../components/common/auth/FormBox';
@@ -13,6 +15,8 @@ import KakaoLoginBar from '../../components/common/auth/KakaoLoginBar';
 import KAKAO_AUTH_URL from '../../api/Oauth';
 import { login, findPassword } from '../../features/user/UserSlice';
 import IconTextField from '../../components/common/IconTextField';
+
+const MySwal = withReactContent(Swal);
 
 const LoginForm = styled.form`
   display: flex;
@@ -75,6 +79,10 @@ export default function Login() {
     dispatch(login(payload))
       .then(res => {
         if (res.type === 'login/fulfilled') {
+          MySwal.fire({
+            title: <p>로그인</p>,
+            icon: 'success',
+          });
           navigate('/');
         } else {
           setIsLoginError(true);

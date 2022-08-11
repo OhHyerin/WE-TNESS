@@ -83,12 +83,7 @@ export default function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const currentUser = useSelector(state => state.user.currentUser);
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const isSearched = useSelector(state => state.room.isSearched);
-
-  // 방 입장 관련
-  const sessionId = useSelector(state => state.room.sessionInfo.sessionId);
 
   function onCreate(e) {
     e.preventDefault();
@@ -97,7 +92,7 @@ export default function Home() {
       title: roomInfo.title,
       password: roomInfo.password,
     };
-    dispatch(createRoom(payload)).then(navigate(sessionId));
+    dispatch(createRoom(payload)).then(res => navigate('/room'));
   }
 
   // 방 생성 관련
@@ -170,19 +165,6 @@ export default function Home() {
           <RoomFilter2 />
         </>
         <RoomList />
-
-        {/* 방 입장 테스트 버튼 */}
-        <button
-          onClick={() => {
-            const payload = {
-              workoutId: 1,
-              title: '스쿼트 짱',
-              password: '',
-            };
-            dispatch(createRoom(payload)).then(navigate(sessionId));
-          }}>
-          방 입장
-        </button>
       </div>
 
       {/* 카카오 로그인 추가정보 입력 모달 */}

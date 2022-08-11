@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 import { signup, checkNickname, checkEmail, fetchNickname, fetchEmail } from '../../features/user/SignupSlice';
 import PageBox from '../../components/common/auth/PageBox';
 import FormBox from '../../components/common/auth/FormBox';
@@ -12,6 +14,8 @@ import PasswordForm from '../../components/common/auth/PasswordForm';
 import IconTextField from '../../components/common/IconTextField';
 import CheckBtn from '../../components/common/CheckBtn';
 import logo from '../../assets/images/logo.jpg';
+
+const MySwal = withReactContent(Swal);
 
 const SignupForm = styled.form`
   display: flex;
@@ -29,6 +33,7 @@ export default function SignupPage() {
   const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
   const isPossibleEmail = useSelector(state => state.signup.isPossibleEmail);
   const [isSignupError, setIsSignupError] = useState(false);
+  const errorMsg = useSelector(state => state.signup.errorMsg);
 
   const [isCheckNN, setIsCheckNN] = useState(false);
   const [isCheckEmail, setIsCheckEmail] = useState(false);
@@ -45,15 +50,17 @@ export default function SignupPage() {
   function onCheckNicknameHandler(e) {
     e.preventDefault();
     const payload = userInfo.nickname;
-    setIsCheckNN(true);
-    dispatch(checkNickname(payload));
+    dispatch(checkNickname(payload)).then(() => {
+      setIsCheckNN(true);
+    });
   }
 
   function onCheckEmailHandler(e) {
     e.preventDefault();
     const payload = userInfo.email;
-    setIsCheckEmail(true);
-    dispatch(checkEmail(payload));
+    dispatch(checkEmail(payload)).then(() => {
+      setIsCheckEmail(true);
+    });
   }
 
   function onSubmitHandler(e) {
@@ -66,6 +73,11 @@ export default function SignupPage() {
     dispatch(signup(payload))
       .then(res => {
         if (res.type === 'signup/fulfilled') {
+          MySwal.fire({
+            title: <p>환영합니다!</p>,
+            titleText: <p>로그인 해주세요!</p>,
+            icon: 'success',
+          });
           navigate('/login');
         } else {
           setIsSignupError(true);
@@ -120,7 +132,15 @@ export default function SignupPage() {
               value={userInfo.email}
               onChange={onEmailHandler}
               helperText={
-                isCheckEmail ? (isPossibleEmail ? '사용 가능한 이메일입니다.' : '사용중인 이메일입니다.') : null
+                isCheckEmail ? (
+                  isPossibleEmail ? (
+                    '사용 가능한 이메일입니다.'
+                  ) : errorMsg ? (
+                    <p>{errorMsg}</p>
+                  ) : (
+                    '사용중인 이메일입니다.'
+                  )
+                ) : null
               }
             />
           </InputBox>

@@ -21,7 +21,7 @@ const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => 
     setCurrentUser(decodeAccessToken(res.data.accessToken));
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -30,7 +30,7 @@ const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
     const res = await axios.post(api.logout(), {}, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -71,6 +71,20 @@ const findPassword = createAsyncThunk('findPassword', async (payload, { rejectWi
     const response = await axios.post(api.findPassword(), payload);
     return response;
   } catch (err) {
+    return rejectWithValue(err.response);
+  }
+});
+
+const signout = createAsyncThunk('signout', async (arg, { rejectWithValue }) => {
+  try {
+    const res = await axios.delete(api.signout(), {}, setConfig());
+    removeAccessToken();
+    removeRefreshToken();
+    removeCurrentUser();
+    console.log(res);
+    return res.data;
+  } catch (err) {
+    console.log(err);
     return rejectWithValue(err.response);
   }
 });
@@ -116,7 +130,7 @@ export const UserSlice = createSlice({
     },
   },
   extraReducers: {
-    [login.fulfilled]: (state, action) => {
+    [login.fulfilled]: state => {
       state.isAuthenticated = true;
       state.currentUser = getCurrentUser();
     },
@@ -138,10 +152,13 @@ export const UserSlice = createSlice({
     [kakaoLogin.fulfilled]: (state, action) => {
       state.kakaoInfo = action.payload;
     },
+    [signout.fulfilled]: state => {
+      state.isAuthenticated = false;
+    },
   },
 });
 
-export { login, logout, fetchFollowingList, fetchFollowerList, kakaoLogin, findPassword };
+export { login, logout, fetchFollowingList, fetchFollowerList, kakaoLogin, findPassword, signout };
 export const { fetchCurrentUser, checkLogin, toggleIsLoding } = UserSlice.actions;
 
 export default UserSlice.reducer;
