@@ -26,6 +26,7 @@ const HISTORY_URL = '';
 const MAKE_URL = '/make';
 const ENTER_URL = '/enter';
 const SEARCH_URL = '/search?keyword=';
+const QUIT_URL = '/disconnect';
 
 const START_URL = '/start';
 
@@ -47,9 +48,11 @@ export default {
   fetchHistory: nickname => API_BASE_URL + USER_URL + HISTORY_URL + `/${nickname}`,
   fetchRankList: () => API_BASE_URL + RANK_URL,
   fetchRoomList: () => API_BASE_URL + ROOM_URL,
+  searchRooms: keyword => API_BASE_URL + ROOM_URL + SEARCH_URL + `${keyword}`,
+
   createRoom: () => API_BASE_URL + ROOM_URL + MAKE_URL,
   joinRoom: () => API_BASE_URL + ROOM_URL + ENTER_URL,
-  searchRooms: keyword => API_BASE_URL + ROOM_URL + SEARCH_URL + `${keyword}`,
+  quit: () => API_BASE_URL + ROOM_URL + QUIT_URL,
 
   start: () => API_BASE_URL + GAME_URL + START_URL,
 };

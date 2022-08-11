@@ -40,14 +40,14 @@ function RoomPage() {
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   // ui 작업을 위해 임시로 새로고침 시 방 생성 구현
-  useEffect(() => {
-    const payload = {
-      workoutId: 3,
-      password: '',
-      title: 'gd',
-    };
-    dispatch(createRoom(payload));
-  }, [dispatch]);
+  // useEffect(() => {
+  //   const payload = {
+  //     workoutId: 3,
+  //     password: '',
+  //     title: 'gd',
+  //   };
+  //   dispatch(createRoom(payload));
+  // }, [dispatch]);
 
   if (isAuthenticated) {
     if (sessionInfo) {
@@ -277,17 +277,30 @@ class RoomClass extends Component {
     if (mySession) {
       mySession.disconnect();
     }
-
-    // Empty all properties...
-    this.OV = null;
-    this.setState({
-      session: undefined,
-      subscribers: [],
-      mySessionId: undefined,
-      myUserName: undefined,
-      mainStreamManager: undefined,
-      publisher: undefined,
-    });
+    axios
+      .patch(
+        api.quit(),
+        {
+          nickname: this.state.myUserName,
+          title: this.state.title,
+        },
+        setConfig()
+      )
+      .then(() => {
+        // Empty all properties...
+        this.OV = null;
+        this.setState({
+          session: undefined,
+          subscribers: [],
+          mySessionId: undefined,
+          myUserName: undefined,
+          mainStreamManager: undefined,
+          publisher: undefined,
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
 
     this.props.navigate('/');
   }
