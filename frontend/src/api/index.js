@@ -1,8 +1,10 @@
-export const API_BASE_URL = 'http://localhost:8080';
+export const API_BASE_URL = 'http://localhost:5000';
+// 'http://i7a205.p.ssafy.io' +':5000'
 
 const USER_URL = '/user';
 const RANK_URL = '/rank';
 const ROOM_URL = '/room';
+const GAME_URL = '/game';
 
 const LOGIN_URL = '/login';
 const KAKAO_URL = '/kakao';
@@ -24,6 +26,9 @@ const HISTORY_URL = '';
 const MAKE_URL = '/make';
 const ENTER_URL = '/enter';
 const SEARCH_URL = '/search?keyword=';
+const QUIT_URL = '/disconnect';
+
+const START_URL = '/start';
 
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
@@ -43,7 +48,11 @@ export default {
   fetchHistory: nickname => API_BASE_URL + USER_URL + HISTORY_URL + `/${nickname}`,
   fetchRankList: () => API_BASE_URL + RANK_URL,
   fetchRoomList: () => API_BASE_URL + ROOM_URL,
+  searchRooms: keyword => API_BASE_URL + ROOM_URL + SEARCH_URL + `${keyword}`,
+
   createRoom: () => API_BASE_URL + ROOM_URL + MAKE_URL,
   joinRoom: () => API_BASE_URL + ROOM_URL + ENTER_URL,
-  searchRooms: keyword => API_BASE_URL + ROOM_URL + SEARCH_URL + `${keyword}`,
+  quit: () => API_BASE_URL + ROOM_URL + QUIT_URL,
+
+  start: () => API_BASE_URL + GAME_URL + START_URL,
 };
