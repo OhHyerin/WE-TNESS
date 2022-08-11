@@ -333,7 +333,17 @@ class RoomClass extends Component {
               />
             </div>
 
-            {isGaming ? <Timer></Timer> : null}
+            {/* 타이머 & 시작버튼 */}
+            {isGaming ? (
+              <Timer></Timer>
+            ) : myUserName === managerNickname ? (
+              <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
+            ) : (
+              <SubmitBtn>준비 !</SubmitBtn>
+            )}
+
+            {/* 실시간 순위 & 최종 순위 */}
+            <div></div>
 
             {/* 내 화면 */}
             <div id="video-container">
@@ -343,12 +353,6 @@ class RoomClass extends Component {
                     <UserVideoComponent streamManager={this.state.publisher} />
                   </div>
                   <p>내 닉네임 : {myUserName}</p>
-
-                  {myUserName === managerNickname ? (
-                    <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
-                  ) : (
-                    <SubmitBtn>준비 !</SubmitBtn>
-                  )}
                 </div>
               ) : null}
 
@@ -386,9 +390,9 @@ const Timer = () => {
   });
 
   return (
-    <div>
+    <>
       <CustomizedProgressBars value={value}></CustomizedProgressBars>
-    </div>
+    </>
   );
 };
 
