@@ -49,6 +49,7 @@ const Logo = styled.div`
 
 export default function NavBar() {
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  const userNickname = useSelector(state => state.user.currentUser.nickname);
 
   return (
     <div id="nav">
@@ -82,7 +83,7 @@ export default function NavBar() {
       <Nav>
         <NavBtns>
           <Link to="/">홈</Link>
-          <Link to="history/:userNickname">기록</Link>
+          <Link to={`history/${userNickname}`}>기록</Link>
           <Link to="ranking">랭킹</Link>
         </NavBtns>
         <div></div>

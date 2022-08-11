@@ -4,10 +4,11 @@ import api from '../../api/index';
 import setConfig from '../authHeader';
 
 const fetchHistory = createAsyncThunk('fetchHistory', async (payload, { rejectWithValue }) => {
+  const { nickname } = payload;
   try {
-    const res = await axios.post(api.fetchHistory(), payload, setConfig());
+    const res = await axios.get(api.fetchHistory(nickname), setConfig());
     console.log(res);
-    return res;
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
@@ -54,17 +55,17 @@ const initialState = {
 export const HistorySlice = createSlice({
   name: 'history',
   initialState,
-  reducers: {
-    fetchInfo: (state, action) => {
+  reducers: {},
+  extraReducers: {
+    [fetchHistory.fulfilled]: (state, action) => {
       state.achieveAwards = action.payload.achieveAwards;
       state.heatMapList = action.payload.heatMapList;
       state.weeklyCalories = action.payload.weeklyCalories;
     },
   },
-  extraReducers: {},
 });
 
 export { fetchHistory };
-export const { fetchInfo } = HistorySlice.actions;
+export const {} = HistorySlice.actions;
 
 export default HistorySlice.reducer;
