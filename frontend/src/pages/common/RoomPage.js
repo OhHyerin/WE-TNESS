@@ -6,11 +6,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { TurnedIn } from '@mui/icons-material';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
 import './RoomPage.css';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { createRoom } from '../../features/room/RoomSlice';
+import setConfig from '../../features/authHeader';
+import api from '../../api';
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
 // url :
@@ -57,6 +60,8 @@ class RoomClass extends Component {
       publisher: undefined,
       subscribers: [],
       currentVideoDevice: undefined,
+
+      rank: [],
     };
 
     this.joinSession = this.joinSession.bind(this);
@@ -66,6 +71,10 @@ class RoomClass extends Component {
     this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
+
+    // 커스텀
+    this.startSignal = this.startSignal.bind(this);
+    this.start = this.start.bind(this);
   }
 
   // state 업데이트 & 세션 입장 (sessionId랑 token 따로 빼서? => 백에서 준 토큰으로 입장 )
@@ -78,6 +87,7 @@ class RoomClass extends Component {
         title: sessionInfo.title,
         myUserName: nickname,
         managerNickname: sessionInfo.managerNickname,
+        isGaming: false,
       });
     }, 300);
     this.joinSession(sessionInfo.token);
@@ -162,6 +172,13 @@ class RoomClass extends Component {
           console.warn(exception);
         });
 
+        mySession.on('signal:start', event => {
+          this.state({
+            gameId: event.data,
+          });
+          this.start();
+        });
+
         // --- 4) Connect to the session with a valid user token ---
 
         // 'getToken' method is simulating what your server-side should do.
@@ -211,6 +228,28 @@ class RoomClass extends Component {
         // });
       }
     );
+  }
+
+  start() {
+    console.log('게임 시작');
+    this.setState({
+      isGaming: true,
+      rank: [],
+    });
+  }
+
+  startSignal() {
+    const mySession = this.state.session;
+    const payload = {
+      roomId: this.mySessionId,
+      createDate: '',
+    };
+    axios.put(api.start(), payload, setConfig()).then(res => {
+      mySession.signal({
+        data: res.data.gameId,
+        type: 'start',
+      });
+    });
   }
 
   leaveSession() {
@@ -271,7 +310,7 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { mySessionId, title, myUserName } = this.state;
+    const { title, myUserName, isGaming } = this.state;
 
     return (
       <div className="container">
@@ -290,7 +329,7 @@ class RoomClass extends Component {
               />
             </div>
 
-            <Timer></Timer>
+            {isGaming ? <Timer></Timer> : null}
 
             {/* 내 화면 ? */}
             <div id="video-container">
@@ -299,8 +338,8 @@ class RoomClass extends Component {
                   <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
                     <UserVideoComponent streamManager={this.state.publisher} />
                   </div>
-                  <p>{myUserName}</p>
-                  <SubmitBtn> 시작! </SubmitBtn>
+                  <p>내 닉네임 : {myUserName}</p>
+                  <SubmitBtn onClick={this.start}> 시작! </SubmitBtn>
                 </div>
               ) : null}
 
