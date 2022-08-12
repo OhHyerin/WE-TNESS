@@ -370,13 +370,13 @@ class RoomClass extends Component {
         Url = 'https://teachablemachine.withgoogle.com/models/TPlEwiz6u/';
         break;
       case 2: // 푸쉬업
-        Url = '';
+        Url = 'https://teachablemachine.withgoogle.com/models/rlT_xgNAW/';
         break;
       case 3: // 버피
         Url = '';
         break;
       case 4: // 런지
-        Url = '';
+        Url = 'https://teachablemachine.withgoogle.com/models/9drs8J9Nm/';
       default:
         this.setState({
           isModelError: true,
@@ -503,7 +503,7 @@ class RoomClass extends Component {
     const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
-    if (prediction[1].probability.toFixed(2) > 0.99) {
+    if (prediction[0].probability.toFixed(2) > 0.99) {
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -518,7 +518,7 @@ class RoomClass extends Component {
           })
           .catch(() => {});
       }
-    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
     }
   }
