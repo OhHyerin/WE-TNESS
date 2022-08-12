@@ -6,6 +6,7 @@ import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
 import com.wetness.model.dto.response.DiaryRespDto;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,45 +16,38 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Service("gameService")
 public class GameServiceImpl implements GameService{
 
-    @Autowired
-    GameRepository gameRepo;
-    @Autowired
-    GameRecordRepository gameRecordRepo;
-    @Autowired
-    UserRepository userRepo;
-    @Autowired
-    WorkoutRepository workoutRepo;
+    private final GameRepository gameRepo;
+    private final GameRecordRepository gameRecordRepo;
+    private final UserRepository userRepo;
+    private final WorkoutRepository workoutRepo;
 
-    @Autowired
-    DiaryRepository diaryRepo;
+    private final DiaryRepository diaryRepo;
 
-    @Autowired
-    MedalRepository medalRepo;
-    @Autowired
-    RankRepository rankRepo;
-
-    @Autowired
-    RoomRepository roomRepo;
-
-    @Autowired
-    FitnessRecordRepository fitRepo;
+    private final MedalRepository medalRepo;
+    private final RankRepository rankRepo;
+    private final RoomRepository roomRepo;
+    private final FitnessRecordRepository fitRepo;
+    private final AwardRepository awardRepo;
+    private final UserAwardRepository userAwardRepo;
 
     @Override
-    public Long startGame(GameReqDto gameReqDto, Long userId) {
+    public Long startGame(String title, Long userId) {
 
-        Room room = roomRepo.findById(gameReqDto.getRoomId()).get();
+        Room room = roomRepo.findByTitle(title);
 
         //userId validation 체크 추가하기 -> Room 생성할 때 생성한 user 정보가 없어서 애매함
         
         Game game = new Game.GameBuilder().buildRoom(room).
-                buildCreateTime(gameReqDto.getCreateDate()).buildIsPlaying(true)
+                buildCreateTime().buildIsPlaying(true)
                 .getGame();
 
 
         Long gameId = gameRepo.save(game).getId();
+
         return gameId;
     }
 
