@@ -60,10 +60,8 @@ const searchRooms = createAsyncThunk('searchRooms', async (arg, { rejectWithValu
 });
 
 const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithValue }) => {
-  console.log(payload);
   try {
     const res = await axios.post(api.createRoom(), payload, setConfig());
-    console.log(res.data);
     setSessionInfo(res.data);
     return res.data;
   } catch (error) {
@@ -72,10 +70,8 @@ const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithVa
 });
 
 const joinRoom = createAsyncThunk('joinRoom', async (payload, { rejectWithValue }) => {
-  console.log(payload);
   try {
     const res = await axios.post(api.joinRoom(), payload, setConfig());
-    console.log(res.data);
     setSessionInfo(res.data);
     return res.data;
   } catch (error) {
