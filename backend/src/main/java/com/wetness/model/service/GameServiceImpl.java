@@ -41,6 +41,9 @@ public class GameServiceImpl implements GameService{
     @Autowired
     FitnessRecordRepository fitRepo;
 
+    @Autowired
+    AwardService awardService;
+
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
 
@@ -124,6 +127,9 @@ public class GameServiceImpl implements GameService{
         this.insertMedal(gameResult);
 //fitness record 저장
         this.insertFitnessRecord(gameResult);
+//award 체크
+        awardService.awardCheckMedal(user.getId());
+        awardService.awardCheckWorkout(user.getId(), gameResult.getWorkout().getId(), gameResult.getScore());
 
         return userGameId;
     }

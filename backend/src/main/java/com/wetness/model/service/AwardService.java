@@ -12,6 +12,8 @@ public interface AwardService {
 
     void awardCheckMedal(Long userId);
 
+    void awardCheckWorkout(Long userId, int workoutId, double score);
+
     ArrayList<AwardDto> getAwards(Long userId);
 
 }

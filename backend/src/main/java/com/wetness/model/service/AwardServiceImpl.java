@@ -27,15 +27,27 @@ public class AwardServiceImpl implements AwardService {
     private static final String LOGIN_3 = "login_3";
     private static final String LOGIN_5 = "login_5";
     private static final String GOLD_1 = "gold_1";
-    private static final String GOLD_10 = "gold_1";
-    private static final String SILVER_1 = "gold_1";
+    private static final String GOLD_10 = "gold_10";
+    private static final String SILVER_1 = "silver_1";
     private static final String SILVER_22 = "silver_22";
     private static final String BRONZE_1 = "bronze_1";
+    private static final String BRONZE_33 = "bronze_33";
     private static final String PUSHUP_20 = "pushup_20";
     private static final String PUSHUP_40 = "pushup_40";
+    private static final String BURPEE_20 = "burpee_20";
+    private static final String BURPEE_40 = "burpee_40";
+    private static final String SQUAT_20 = "squat_20";
+    private static final String SQUAT_40 = "squat_40";
+    private static final String PLANK_1 = "plank_1";
+    private static final String PLANK_2 = "plank_2";
     private static final String FOLLOWER_1 = "follower_1";
     private static final String FOLLOWER_10 = "follower_10";
     private static final String FOLLOWER_100 = "follower_100";
+
+    private static final int SQUAT = 1;
+    private static final int PUSH_UP = 2;
+    private static final int BURPEE = 3;
+    private static final int PLANK = 4;
 
     @Override
     @Transactional
@@ -101,9 +113,47 @@ public class AwardServiceImpl implements AwardService {
             if (bronze == 1) {
                 registerAwardIfNotExistAndSendMessage(user, BRONZE_1);
             }
+            if (bronze == 33) {
+                registerAwardIfNotExistAndSendMessage(user, BRONZE_33);
+            }
         }
+    }
 
-
+    @Override
+    @Transactional
+    public void awardCheckWorkout(Long userId, int workoutId, double score) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user != null) {
+            if (workoutId == SQUAT) {
+                if (score >= 20) {
+                    registerAwardIfNotExistAndSendMessage(user, SQUAT_20);
+                }
+                if (score >= 40) {
+                    registerAwardIfNotExistAndSendMessage(user, SQUAT_40);
+                }
+            } else if (workoutId == PUSH_UP) {
+                if (score >= 20) {
+                    registerAwardIfNotExistAndSendMessage(user, PUSHUP_20);
+                }
+                if (score >= 40) {
+                    registerAwardIfNotExistAndSendMessage(user, PUSHUP_40);
+                }
+            } else if (workoutId == BURPEE) {
+                if (score >= 20) {
+                    registerAwardIfNotExistAndSendMessage(user, BURPEE_20);
+                }
+                if (score >= 40) {
+                    registerAwardIfNotExistAndSendMessage(user, BURPEE_40);
+                }
+            } else if (workoutId == PLANK) {
+                if (score >= 1.0) {
+                    registerAwardIfNotExistAndSendMessage(user, PLANK_1);
+                }
+                if (score >= 2.0) {
+                    registerAwardIfNotExistAndSendMessage(user, PLANK_2);
+                }
+            }
+        }
     }
 
     @Override
