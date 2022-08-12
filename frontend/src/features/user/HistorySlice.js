@@ -28,30 +28,37 @@ const initialState = {
     {
       date: 'mon',
       value: '',
+      login: false,
     },
     {
       date: 'tue',
       value: '',
+      login: false,
     },
     {
       date: 'wed',
       value: '',
+      login: false,
     },
     {
       date: 'thu',
       value: '',
+      login: false,
     },
     {
       date: 'fri',
       value: '',
+      login: false,
     },
     {
       date: 'sat',
       value: '',
+      login: false,
     },
     {
       date: 'sun',
       value: '',
+      login: false,
     },
   ],
   diaryPhotos: [],

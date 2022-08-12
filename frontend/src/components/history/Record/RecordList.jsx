@@ -39,7 +39,7 @@ export default function RecordList() {
     <RecordBox>
       <h2>운동 기록</h2>
       <h3>오늘의 칼로리 소모량</h3>
-      <p>{todayCalorie}</p>
+      <p>{todayCalorie} kcal</p>
       <HeatmapBox>
         <CalendarHeatmap
           startDate={getDate('start')}
