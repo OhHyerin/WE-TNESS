@@ -2,14 +2,12 @@ import React, { Component, useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-import * as tf from '@tensorflow/tfjs';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
 import { styled as styledC } from '@mui/material';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
-import { TurnedIn } from '@mui/icons-material';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
@@ -484,7 +482,7 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { title, myUserName, isGaming, managerNickname, isPossibleStart, isReady } = this.state;
+    const { title, myUserName, isGaming, managerNickname, isPossibleStart, isReady, count } = this.state;
 
     return (
       <Container>
@@ -504,6 +502,7 @@ class RoomClass extends Component {
             </div>
 
             {/* 타이머 & 시작버튼 */}
+            {count}
             {isGaming ? (
               <Timer></Timer>
             ) : myUserName === managerNickname ? (
