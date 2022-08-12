@@ -86,7 +86,7 @@ public class RoomService {
         Room room = mapSessionRoom.getRoom();
         // 방이 잠겨있는데 비밀번호가 다르다면
         if(room.isLocked()&&!(room.getPassword().equals(enterRoomReq.getPassword()))) {
-            return new EnterRoomRes("Unauthorized", room.getTitle(), userRepository.getOne(room.getManagerId()).getNickname());
+            return new EnterRoomRes("Unauthorized", room.getTitle(), userRepository.getOne(room.getManagerId()).getNickname(), room.getWorkout().getId());
         }
         Connection connection = mapSessionRoom.getSession()
                                 .createConnection(connectionProperties);
@@ -101,7 +101,7 @@ public class RoomService {
                     .userId(userDetails.getId())
                     .enterTime(new Timestamp(System.currentTimeMillis()))
                     .build());
-            return new EnterRoomRes(connection.getToken(), room.getTitle(), userRepository.getOne(room.getManagerId()).getNickname());
+            return new EnterRoomRes(connection.getToken(), room.getTitle(), userRepository.getOne(room.getManagerId()).getNickname(),room.getWorkout().getId());
 
 
 
@@ -113,32 +113,27 @@ public class RoomService {
 
         User user = userRepository.findByNickname(req.getNickname());
         String sessionName = req.getTitle();
-        Session session = this.mapSessions.get(sessionName).getSession();
         long roomId = this.mapSessions.get(sessionName).getRoom().getId();
         Room room = roomRepository.findById(roomId).orElse(null);
         if(room==null) throw new Exception("해당하는 방이 디비에 없습니다");
         // disconnection 된 사람이 방장이라면 방 삭제
-        int managerId = (int) this.mapSessions.get(sessionName).getRoom().getManagerId();
-        if(managerId==user.getId()){
+        Session session = this.mapSessions.get(sessionName).getSession();
+        Map<String,Connection> sessionInfo = this.mapSessionNamesConnections.get(sessionName);
 
+        if(sessionInfo.size()==1){
             room.setTerminateDate(new Timestamp(System.currentTimeMillis()));
-            session.close();
             this.mapSessions.remove(sessionName);
             this.mapSessionNamesConnections.remove(sessionName);
-            
-        // 방장이 아니라면 세션으로의 커넥션만 제거
-        }else{
+        }
 
-            String connectionId = this.mapSessionNamesConnections.get(sessionName).get(req.getNickname()).getConnectionId();
-            List<Connection> list = session.getActiveConnections();
-            // 커넥션이 유지되고 있다면 제거
-            boolean match = list.stream()
-                    .anyMatch(connection -> connection.getConnectionId().equals(connectionId));
-            if(match){
-                session.forceDisconnect(connectionId);
+        else{
+            //방장이 나갔다면 세션 종료
+            if(req.getNickname().equals(room.getManagerId())){
+                session.close();
+                // 방장이 아니라면 세션으로의 커넥션 정보만 제거
+            }else{
+                sessionInfo.remove(req.getNickname());
             }
-
-            this.mapSessionNamesConnections.get(sessionName).remove(req.getNickname());
         }
         // room_user 테이블에서 방을 나간 시간 설정
         RoomUser roomUser = roomUserRepository.findByRoomIdAndUserId(room.getId(), user.getId());
