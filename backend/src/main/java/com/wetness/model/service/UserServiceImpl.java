@@ -9,6 +9,7 @@ import com.wetness.db.repository.CommonCodeRepository;
 import com.wetness.db.repository.LoggedContinueRepository;
 import com.wetness.db.repository.LoggedInRepository;
 import com.wetness.db.repository.UserRepository;
+import com.wetness.exception.DropUserException;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
@@ -77,7 +78,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginSocialDto registerSocialUser(Map<String, Object> data){
+    public LoginSocialDto registerSocialUser(Map<String, Object> data) {
 
         RandomString randomString = new RandomString(20);
         User user = new User();
@@ -101,10 +102,10 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        LoginSocialDto loginSocialDto =  loginSocialUser(user);
+        LoginSocialDto loginSocialDto = loginSocialUser(user);
         loginSocialDto.setExistUser("false");
 
-        return  loginSocialDto;
+        return loginSocialDto;
     }
 
     @Override
@@ -322,8 +323,8 @@ public class UserServiceImpl implements UserService {
             // id를 포함해 kakao account 관련 정보 빼오기
             String id = obj.get("id").toString();
             result.put("id", id);
-            for(Object key : kakaoAccount.keySet()){
-                result.put((String) key,kakaoAccount.get(key));
+            for (Object key : kakaoAccount.keySet()) {
+                result.put((String) key, kakaoAccount.get(key));
             }
 
 
@@ -400,6 +401,10 @@ public class UserServiceImpl implements UserService {
     public LoginDto loginUser(User user) {
         Authentication authentication = getAuthentication(user);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (userDetails.getRole().equals("drop")) {
+            throw new DropUserException();
+        }
+
         String accessToken = jwtUtil.createAccessToken(authentication);
         String refreshToken = jwtUtil.createRefreshToken();
 
@@ -411,6 +416,7 @@ public class UserServiceImpl implements UserService {
 
         return new LoginDto("200", null, accessToken, refreshToken);
     }
+
     @Override
     @Transactional
     public LoginSocialDto loginSocialUser(User user) {
@@ -423,7 +429,7 @@ public class UserServiceImpl implements UserService {
         saveRefreshToken(userDetails.getNickname(), refreshToken);
         setLoginData(userDetails.getId());
 
-        return new LoginSocialDto("true","200", null, accessToken, refreshToken);
+        return new LoginSocialDto("true", "200", null, accessToken, refreshToken);
     }
 
     @Override
