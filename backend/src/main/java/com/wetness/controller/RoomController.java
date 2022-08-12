@@ -76,7 +76,7 @@ public class RoomController {
             roomService.disconnect(disconnectionReq);
             return ResponseEntity.ok().build();
         }catch (Exception e){
-            return ResponseEntity.internalServerError().body(e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
 
     }

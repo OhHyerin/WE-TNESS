@@ -14,4 +14,5 @@ public class EnterRoomRes {
     private String token;
     private String title;
     private String managerNickname;
+    private int workoutId;
 }
