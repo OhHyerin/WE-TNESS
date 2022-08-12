@@ -7,4 +7,6 @@ public interface RoomRepository extends JpaRepository<Room, Long> {
 
     Room save(Room room);
 
+
+    Room findByTitle(String title);
 }
