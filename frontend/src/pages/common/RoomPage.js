@@ -62,17 +62,20 @@ class RoomClass extends Component {
       subscribers: [],
       currentVideoDevice: undefined,
 
+      isModelError: undefined,
+
       webcam: undefined,
 
       isFinish: undefined,
-      rank: [],
       isReady: undefined,
       readyState: new Map(),
       isPossibleStart: true,
 
       count: 0,
-      status: undefined,
       check: undefined,
+
+      countList: new Map(), // 유저이름, 개수 저장
+      rankList: [], // 유저이름, 개수 => 1등부터 차례로 저장
     };
 
     this.joinSession = this.joinSession.bind(this);
@@ -113,6 +116,11 @@ class RoomClass extends Component {
       this.joinSession(sessionInfo.token);
     }, 300);
     this.init();
+    setTimeout(() => {
+      this.setState({
+        isLodaing: false,
+      });
+    }, 500);
   }
 
   componentWillUnmount() {
@@ -182,10 +190,12 @@ class RoomClass extends Component {
           console.warn(exception);
         });
 
+        // 입장 신호 수신
         mySession.on('signal:join', event => {
           this.state.readyState.set(event.data, false);
         });
 
+        // 시작 신호 수신
         mySession.on('signal:start', event => {
           this.setState({
             gameId: event.data,
@@ -193,10 +203,27 @@ class RoomClass extends Component {
           this.start();
         });
 
+        // 준비 신호 수신
         mySession.on('signal:ready', event => {
           const data = event.data.split(',');
           this.readyState.set(data[0], data[1]);
           this.checkPossibleStart();
+        });
+
+        // 모든 유저 1회 추가마다 수신
+        mySession.on('signal:count', event => {
+          const count = event.data.split(',');
+          this.state.countList.set(count[0], count[1]);
+
+          const ranks = new Map([...this.state.countList.entries()].sort((a, b) => b[1] - a[1]));
+          const rankL = [];
+
+          ranks.forEach((item, index) => {
+            rankL.push({ nickname: index, count: item });
+          });
+          this.setState({
+            rankList: rankL,
+          });
         });
 
         // --- 4) Connect to the session with a valid user token ---
@@ -337,7 +364,6 @@ class RoomClass extends Component {
 
   // 모델 생성
   async setModel() {
-    console.log(this.state.workoutId, '모델 생성!');
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
@@ -349,8 +375,12 @@ class RoomClass extends Component {
       case 3: // 버피
         Url = '';
         break;
-      default:
+      case 4: // 런지
         Url = '';
+      default:
+        this.setState({
+          isModelError: true,
+        });
         break;
     }
 
@@ -376,18 +406,23 @@ class RoomClass extends Component {
       case 3:
         await this.burpeePredict();
         break;
+      case 4:
+        await this.lungePredict();
+      default:
+        break;
     }
     window.requestAnimationFrame(this.loop);
   }
 
+  // 스쿼트
   async squatPredict() {
     // Prediction #1: run input through posenet
     // estimatePose can take in an image, video or canvas html element
-
     const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
-    if (prediction[0].probability.toFixed(2) > 0.99) {
+    // 앉았을 때 check => check 상태에서 일어나면 count + 1 => 내 개수 signal
+    if (prediction[1].probability.toFixed(2) > 0.99) {
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -402,9 +437,88 @@ class RoomClass extends Component {
           })
           .catch(() => {});
       }
-      this.setState({ status: 'up' });
-    } else if (prediction[1].probability.toFixed(2) > 0.99) {
-      this.setState({ status: 'down' });
+    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+      this.setState({ check: true });
+    }
+  }
+
+  // 푸쉬업
+  async pushupPredict() {
+    // Prediction #1: run input through posenet
+    // estimatePose can take in an image, video or canvas html element
+    const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
+    // Prediction 2: run input through teachable machine classification model
+    const prediction = await this.state.model.predict(posenetOutput);
+    if (prediction[1].probability.toFixed(2) > 0.99) {
+      if (this.state.check) {
+        this.setState({
+          count: this.state.count + 1,
+        });
+        this.state.session
+          .signal({
+            data: `${this.state.myUserName},${this.state.count}`,
+            type: 'count',
+          })
+          .then(() => {
+            this.setState({ check: false });
+          })
+          .catch(() => {});
+      }
+    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+      this.setState({ check: true });
+    }
+  }
+
+  // 버피
+  async burpeePredict() {
+    // Prediction #1: run input through posenet
+    // estimatePose can take in an image, video or canvas html element
+    const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
+    // Prediction 2: run input through teachable machine classification model
+    const prediction = await this.state.model.predict(posenetOutput);
+    if (prediction[1].probability.toFixed(2) > 0.99) {
+      if (this.state.check) {
+        this.setState({
+          count: this.state.count + 1,
+        });
+        this.state.session
+          .signal({
+            data: `${this.state.myUserName},${this.state.count}`,
+            type: 'count',
+          })
+          .then(() => {
+            this.setState({ check: false });
+          })
+          .catch(() => {});
+      }
+    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+      this.setState({ check: true });
+    }
+  }
+
+  // 런지
+  async lungePredict() {
+    // Prediction #1: run input through posenet
+    // estimatePose can take in an image, video or canvas html element
+    const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
+    // Prediction 2: run input through teachable machine classification model
+    const prediction = await this.state.model.predict(posenetOutput);
+    if (prediction[1].probability.toFixed(2) > 0.99) {
+      if (this.state.check) {
+        this.setState({
+          count: this.state.count + 1,
+        });
+        this.state.session
+          .signal({
+            data: `${this.state.myUserName},${this.state.count}`,
+            type: 'count',
+          })
+          .then(() => {
+            this.setState({ check: false });
+          })
+          .catch(() => {});
+      }
+    } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
     }
   }
@@ -482,8 +596,12 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { title, myUserName, isGaming, managerNickname, isPossibleStart, isReady, count } = this.state;
+    const { isModelError, title, myUserName, isGaming, managerNickname, isPossibleStart, isReady, count, rankList } =
+      this.state;
 
+    if (isModelError) {
+      return <div>모델 생성 실패요</div>;
+    }
     return (
       <Container>
         {this.state.session === undefined ? (
@@ -502,7 +620,6 @@ class RoomClass extends Component {
             </div>
 
             {/* 타이머 & 시작버튼 */}
-            {count}
             {isGaming ? (
               <Timer></Timer>
             ) : myUserName === managerNickname ? (
@@ -514,9 +631,10 @@ class RoomClass extends Component {
             )}
 
             {/* 실시간 순위 & 최종 순위 */}
-            <div></div>
+            <RankTable rankList={rankList}></RankTable>
 
             {/* 내 화면 */}
+            <p>현재 개수 :{count}</p>
             <VideoContainer>
               {this.state.publisher !== undefined ? (
                 <div>
@@ -590,12 +708,30 @@ const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
 function CustomizedProgressBars(props) {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      <p>남은 시간 : {props.value}</p>
       {props.value <= 30 ? (
         <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
       ) : (
         <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
       )}
     </Box>
+  );
+}
+
+const RankBox = styled.div``;
+
+function RankTable({ rankList }) {
+  return (
+    <RankBox>
+      {rankList
+        ? rankList.map((item, i) => {
+            if (i === 0) {
+              return <p>1등 : {item.nickname} </p>;
+            }
+            if (i === 1) {
+              return <p>2등 : {item.nickname} </p>;
+            }
+          })
+        : null}
+    </RankBox>
   );
 }
