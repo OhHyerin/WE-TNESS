@@ -42,6 +42,8 @@ export default function UserProfile(props) {
   };
   const handleCloseFollowing = () => setOpenFollowing(false);
 
+  const matches = useSelector(state => state.history.matches);
+
   return (
     <>
       <div>유저 네임 : {props.userNickname}</div>
@@ -50,10 +52,10 @@ export default function UserProfile(props) {
         <Button onClick={handleOpenFollowing}>팔로잉 :{followingList.length}</Button>
       </div>
       <div>
-        <span>총 경기 수 : </span>
-        <span>1등 : </span>
-        <span>2등 : </span>
-        <span>3등 : </span>
+        <span>총 경기 수 : {matches.totalCnt} </span>
+        <span>1등 : {matches.gold} </span>
+        <span>2등 : {matches.silver} </span>
+        <span>3등 : {matches.bronze} </span>
       </div>
 
       {/* 모달 - 팔로워, 팔로잉 */}

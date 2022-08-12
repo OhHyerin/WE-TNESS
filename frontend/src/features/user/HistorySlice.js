@@ -17,7 +17,12 @@ const fetchHistory = createAsyncThunk('fetchHistory', async (payload, { rejectWi
 const initialState = {
   achieveAwards: [1, 3],
   heatMapList: [],
-  matches: {},
+  matches: {
+    bronze: 0,
+    gold: 0,
+    silver: 0,
+    totalCnt: 0,
+  },
   todayCalories: '',
   weeklyCalories: [
     {
@@ -58,9 +63,11 @@ export const HistorySlice = createSlice({
   reducers: {},
   extraReducers: {
     [fetchHistory.fulfilled]: (state, action) => {
-      state.achieveAwards = action.payload.achieveAwards;
+      state.achieveAwards = action.payload.award;
       state.heatMapList = action.payload.heatMapList;
-      state.weeklyCalories = action.payload.weeklyCalories;
+      state.matches = action.payload.medal;
+      state.todayCalorie = action.payload.todayCalorie;
+      state.weeklyCalories = action.payload.weeklyRecords;
     },
   },
 });
