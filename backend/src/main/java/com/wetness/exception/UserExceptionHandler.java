@@ -12,20 +12,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class UserExceptionHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<?> expiredJwtException(ExpiredJwtException e){
+    public ResponseEntity<?> expiredJwtException(ExpiredJwtException e) {
         return new ResponseEntity<BaseResponseEntity>(
                 new BaseResponseEntity(401, "expired"), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(SignatureException.class)
-    public ResponseEntity<?> signatureException(SignatureException e){
+    public ResponseEntity<?> signatureException(SignatureException e) {
         return new ResponseEntity<BaseResponseEntity>(
                 new BaseResponseEntity(401, "wrong signature"), HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(NoJwtTokenException.class)
-    public ResponseEntity<?> noJwtTokenException(NoJwtTokenException e){
+    public ResponseEntity<?> noJwtTokenException(NoJwtTokenException e) {
         return new ResponseEntity<BaseResponseEntity>(
                 new BaseResponseEntity(401, "no token"), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(DropUserException.class)
+    public ResponseEntity<?> dropUserException(DropUserException e) {
+        return new ResponseEntity<BaseResponseEntity>(
+                new BaseResponseEntity(401, "drop User"), HttpStatus.BAD_REQUEST);
     }
 }
