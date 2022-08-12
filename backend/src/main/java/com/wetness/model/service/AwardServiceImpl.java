@@ -57,11 +57,13 @@ public class AwardServiceImpl implements AwardService {
             int maxConsecutively = loggedContinue.getMaxConsecutively();
             User user = userRepository.findById(userId).orElse(null);
             if (user != null) {
-                if (maxConsecutively == 1) {
+                if (maxConsecutively >= 1) {
                     registerAwardIfNotExistAndSendMessage(user, LOGIN_1);
-                } else if (maxConsecutively == 3) {
+                }
+                if (maxConsecutively >= 3) {
                     registerAwardIfNotExistAndSendMessage(user, LOGIN_3);
-                } else if (maxConsecutively == 5) {
+                }
+                if (maxConsecutively >= 5) {
                     registerAwardIfNotExistAndSendMessage(user, LOGIN_5);
                 }
             }
@@ -98,22 +100,24 @@ public class AwardServiceImpl implements AwardService {
             int silver = medal.getSilver();
             int bronze = medal.getBronze();
 
-            if (gold == 1) {
+            if (gold >= 1) {
                 registerAwardIfNotExistAndSendMessage(user, GOLD_1);
-            } else if (gold == 10) {
+            }
+            if (gold >= 10) {
                 registerAwardIfNotExistAndSendMessage(user, GOLD_10);
             }
 
-            if (silver == 1) {
+            if (silver >= 1) {
                 registerAwardIfNotExistAndSendMessage(user, SILVER_1);
-            } else if (silver == 2) {
+            }
+            if (silver >= 22) {
                 registerAwardIfNotExistAndSendMessage(user, SILVER_22);
             }
 
-            if (bronze == 1) {
+            if (bronze >= 1) {
                 registerAwardIfNotExistAndSendMessage(user, BRONZE_1);
             }
-            if (bronze == 33) {
+            if (bronze >= 33) {
                 registerAwardIfNotExistAndSendMessage(user, BRONZE_33);
             }
         }
