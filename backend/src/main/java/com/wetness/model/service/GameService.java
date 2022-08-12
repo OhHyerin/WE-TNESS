@@ -10,7 +10,7 @@ import com.wetness.model.dto.response.DiaryRespDto;
 import java.util.List;
 
 public interface GameService {
-    Long startGame(String title, Long userId);
+    Long startGame(GameReqDto gameReqDto, Long userId);
     void terminateGame(GameResultReqDto result, Long userId);
 
     Long insertResult(GameResultReqDto result, UserDetailsImpl user);

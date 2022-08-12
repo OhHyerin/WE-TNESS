@@ -32,11 +32,11 @@ public class GameController {
     @Autowired
     private AwsS3Util awsS3Util;
 
-    @PostMapping("/start/{title}")
-    public ResponseEntity<Map<String,Long>> startGame(@PathVariable String title,
+    @PostMapping("/start")
+    public ResponseEntity<Map<String,Long>> startGame(@RequestBody GameReqDto gameReqDto,
                                                       @AuthenticationPrincipal UserDetailsImpl user){
 
-        Long gameId = gameService.startGame(title,user.id()); //exception 처리 필요
+        Long gameId = gameService.startGame(gameReqDto,user.id()); //exception 처리 필요
 
         Map<String,Long> result = new HashMap<>();
         result.put("gameId", gameId);

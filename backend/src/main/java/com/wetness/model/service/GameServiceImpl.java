@@ -35,14 +35,14 @@ public class GameServiceImpl implements GameService{
     private final UserAwardRepository userAwardRepo;
 
     @Override
-    public Long startGame(String title, Long userId) {
+    public Long startGame(GameReqDto gameReqDto, Long userId) {
 
-        Room room = roomRepo.findByTitle(title);
+        Room room = roomRepo.findByTitle(gameReqDto.getTitle());
 
         //userId validation 체크 추가하기 -> Room 생성할 때 생성한 user 정보가 없어서 애매함
         
         Game game = new Game.GameBuilder().buildRoom(room).
-                buildCreateTime().buildIsPlaying(true)
+                buildCreateTime(gameReqDto.getCreateDate()).buildIsPlaying(true)
                 .getGame();
 
 
