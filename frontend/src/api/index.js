@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://i7a205.p.ssafy.io:5000/api';
+export const API_BASE_URL = 'http://localhost/api';
 
 const USER_URL = '/user';
 const RANK_URL = '/rank';
