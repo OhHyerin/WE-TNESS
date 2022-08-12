@@ -2,7 +2,9 @@ import React, { Component, useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-import { useDispatch, useSelector } from 'react-redux';
+import * as tf from '@tensorflow/tfjs';
+import * as tmPose from '@teachablemachine/pose';
+import { useSelector } from 'react-redux';
 import { styled as styledC } from '@mui/material';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
@@ -11,7 +13,6 @@ import { TurnedIn } from '@mui/icons-material';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
-import { createRoom } from '../../features/room/RoomSlice';
 import setConfig from '../../features/authHeader';
 import api from '../../api';
 
@@ -32,22 +33,11 @@ const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 function RoomPage() {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const sessionInfo = getSessionInfo();
   const nickname = useSelector(state => state.user.currentUser.nickname);
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-
-  // ui 작업을 위해 임시로 새로고침 시 방 생성 구현
-  // useEffect(() => {
-  //   const payload = {
-  //     workoutId: 3,
-  //     password: '',
-  //     title: 'gd',
-  //   };
-  //   dispatch(createRoom(payload));
-  // }, [dispatch]);
 
   if (isAuthenticated) {
     if (sessionInfo) {
@@ -65,6 +55,7 @@ class RoomClass extends Component {
     this.state = {
       token: undefined,
       title: undefined,
+      workoutId: undefined,
       managerNickname: undefined,
       myUserName: undefined,
       session: undefined,
@@ -73,11 +64,17 @@ class RoomClass extends Component {
       subscribers: [],
       currentVideoDevice: undefined,
 
+      webcam: undefined,
+
       isFinish: undefined,
       rank: [],
       isReady: undefined,
       readyState: new Map(),
       isPossibleStart: true,
+
+      count: 0,
+      status: undefined,
+      check: undefined,
     };
 
     this.joinSession = this.joinSession.bind(this);
@@ -87,27 +84,37 @@ class RoomClass extends Component {
     this.onbeforeunload = this.onbeforeunload.bind(this);
 
     // 커스텀
+    this.init = this.init.bind(this);
     this.join = this.join.bind(this);
     this.startSignal = this.startSignal.bind(this);
     this.start = this.start.bind(this);
     this.readySignal = this.readySignal.bind(this);
     this.checkPossibleStart = this.checkPossibleStart.bind(this);
+
+    // 모션 인식
+    this.setModel = this.setModel.bind(this);
+    this.loop = this.loop.bind(this);
+    this.squatPredict = this.squatPredict.bind(this);
   }
 
-  // state 업데이트 & 세션 입장 (sessionId랑 token 따로 빼서? => 백에서 준 토큰으로 입장 )
+  // state 업데이트 => 모델 생성 & 세션 입장 (백에서 받은 token으로 입장)
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
     const { sessionInfo, nickname } = this.props;
+    this.setState({
+      token: sessionInfo.token,
+      title: sessionInfo.title,
+      workoutId: 1,
+      // workoutId: sessionInfo.workoutId,
+      myUserName: nickname,
+      managerNickname: sessionInfo.managerNickname,
+      isGaming: false,
+    });
     setTimeout(() => {
-      this.setState({
-        token: sessionInfo.token,
-        title: sessionInfo.title,
-        myUserName: nickname,
-        managerNickname: sessionInfo.managerNickname,
-        isGaming: false,
-      });
+      this.setModel();
+      this.joinSession(sessionInfo.token);
     }, 300);
-    this.joinSession(sessionInfo.token);
+    this.init();
   }
 
   componentWillUnmount() {
@@ -178,7 +185,7 @@ class RoomClass extends Component {
         });
 
         mySession.on('signal:join', event => {
-          this.readyState.set(event.data, false);
+          this.state.readyState.set(event.data, false);
         });
 
         mySession.on('signal:start', event => {
@@ -210,7 +217,6 @@ class RoomClass extends Component {
             const devices = await this.OV.getDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-            console.log(this.state.session);
             // --- 5) Get your own camera stream ---
 
             // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
@@ -256,47 +262,6 @@ class RoomClass extends Component {
     }
   }
 
-  start() {
-    console.log('게임 시작');
-    this.setState({
-      isGaming: true,
-      rank: [],
-    });
-  }
-
-  startSignal() {
-    console.log(this.isPossibleStart);
-    const mySession = this.state.session;
-    const data = new Date();
-
-    // 타이틀 수정 후  roomId: this.state.title,
-    const roomId = 123;
-    const createDate = [
-      data.getFullYear(),
-      data.getMonth(),
-      data.getDay(),
-      data.getHours(),
-      data.getMinutes(),
-      data.getSeconds(),
-    ];
-    const payload = {
-      roomId,
-      createDate,
-    };
-    axios
-      .post(api.start(), payload, setConfig())
-      .then(res => {
-        console.log(res.data);
-        mySession.signal({
-          data: res.data.gameId,
-          type: 'start',
-        });
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  }
-
   readySignal() {
     const mySession = this.state.session;
 
@@ -318,6 +283,131 @@ class RoomClass extends Component {
           isPossibleStart: true,
         });
       }
+    }
+  }
+
+  startSignal() {
+    const mySession = this.state.session;
+    const data = new Date();
+
+    const { title } = this.state;
+    const createDate = [
+      data.getFullYear(),
+      data.getMonth(),
+      data.getDay(),
+      data.getHours(),
+      data.getMinutes(),
+      data.getSeconds(),
+    ];
+    const payload = {
+      title,
+      createDate,
+    };
+    axios
+      .post(api.start(), payload, setConfig())
+      .then(res => {
+        mySession.signal({
+          data: res.data.gameId,
+          type: 'start',
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  start() {
+    this.setState({
+      isGaming: true,
+      rank: [],
+    });
+    window.requestAnimationFrame(this.loop);
+  }
+
+  // 모션 비디오
+  async init() {
+    const size = 200;
+    const flip = true; // whether to flip the webcam
+    // eslint-disable-next-line no-undef
+    const webcam = new tmPose.Webcam(size, size, flip);
+    await this.setState({ webcam }); // width, height, flip
+
+    // Convenience function to setup a webcam
+    await this.state.webcam.setup(); // request access to the webcam
+    this.state.webcam.play();
+  }
+
+  // 모델 생성
+  async setModel() {
+    console.log(this.state.workoutId, '모델 생성!');
+    let Url = '1';
+    switch (this.state.workoutId) {
+      case 1: // 스쿼트
+        Url = 'https://teachablemachine.withgoogle.com/models/TPlEwiz6u/';
+        break;
+      case 2: // 푸쉬업
+        Url = '';
+        break;
+      case 3: // 버피
+        Url = '';
+        break;
+      default:
+        Url = '';
+        break;
+    }
+
+    const modelURL = `${Url}model.json`;
+    const metadataURL = `${Url}metadata.json`;
+    // load the model and metadata
+    // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+    // Note: the pose library adds a tmPose object to your window (window.tmPose)
+    this.setState({
+      model: await tmPose.load(modelURL, metadataURL),
+    });
+  }
+
+  async loop(timestamp) {
+    this.state.webcam.update(); // update the webcam frame
+    switch (this.state.workoutId) {
+      case 1:
+        await this.squatPredict();
+        break;
+      case 2:
+        await this.pushupPredict();
+        break;
+      case 3:
+        await this.burpeePredict();
+        break;
+    }
+    window.requestAnimationFrame(this.loop);
+  }
+
+  async squatPredict() {
+    // Prediction #1: run input through posenet
+    // estimatePose can take in an image, video or canvas html element
+
+    const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
+    // Prediction 2: run input through teachable machine classification model
+    const prediction = await this.state.model.predict(posenetOutput);
+    if (prediction[0].probability.toFixed(2) > 0.99) {
+      if (this.state.check) {
+        this.setState({
+          count: this.state.count + 1,
+        });
+        this.state.session
+          .signal({
+            data: `${this.state.myUserName},${this.state.count}`,
+            type: 'count',
+          })
+          .then(() => {
+            this.setState({ check: false });
+          })
+          .catch(() => {});
+      }
+      this.setState({ status: 'up' });
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
+      this.setState({ status: 'down' });
+      this.setState({ check: true });
     }
   }
 
@@ -421,7 +511,7 @@ class RoomClass extends Component {
                 시작!
               </SubmitBtn>
             ) : (
-              <SubmitBtn onClick={this.readySignal}>준비 !</SubmitBtn>
+              <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
             )}
 
             {/* 실시간 순위 & 최종 순위 */}
