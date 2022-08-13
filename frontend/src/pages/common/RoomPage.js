@@ -116,7 +116,7 @@ class RoomClass extends Component {
     setTimeout(() => {
       this.setModel();
       this.joinSession(sessionInfo.token);
-    }, 300);
+    }, 500);
     this.init();
   }
 
@@ -311,21 +311,23 @@ class RoomClass extends Component {
 
   startSignal() {
     const mySession = this.state.session;
-    const data = new Date();
 
+    const data = new Date();
     const { title } = this.state;
+    console.log(typeof data.getUTCSeconds());
     const createDate = [
-      data.getFullYear(),
-      data.getMonth(),
-      data.getDay(),
-      data.getHours(),
-      data.getMinutes(),
-      data.getSeconds(),
+      data.getUTCFullYear(),
+      data.getUTCMonth(),
+      data.getUTCDate(),
+      data.getUTCHours(),
+      data.getUTCMinutes(),
+      data.getUTCSeconds(),
     ];
     const payload = {
       title,
       createDate,
     };
+    console.log(payload);
     axios
       .post(api.start(), payload, setConfig())
       .then(res => {
@@ -340,15 +342,20 @@ class RoomClass extends Component {
   }
 
   start() {
+    console.log('게임 시작!');
     this.setState({
       isGaming: true,
       rank: [],
     });
-    window.requestAnimationFrame(this.loop);
+    setTimeout(() => {
+      window.requestAnimationFrame(this.loop);
+    }, 100);
   }
 
   // 모션 비디오
   async init() {
+    console.log('학습 비디오 생성!');
+
     const size = 200;
     const flip = true; // whether to flip the webcam
     // eslint-disable-next-line no-undef
@@ -362,6 +369,7 @@ class RoomClass extends Component {
 
   // 모델 생성
   async setModel() {
+    console.log('모델 생성!');
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
@@ -375,6 +383,7 @@ class RoomClass extends Component {
         break;
       case 4: // 런지
         Url = 'https://teachablemachine.withgoogle.com/models/9drs8J9Nm/';
+        break;
       default:
         this.setState({
           isModelError: true,
@@ -407,6 +416,7 @@ class RoomClass extends Component {
           break;
         case 4:
           await this.lungePredict();
+          break;
         default:
           break;
       }
@@ -628,15 +638,22 @@ class RoomClass extends Component {
             </div>
             <GuideBox>
               {/* 타이머 & 시작버튼 */}
-              {isGaming ? (
-                <Timer></Timer>
-              ) : myUserName === managerNickname ? (
-                <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
-                  시작!
-                </SubmitBtn>
-              ) : (
-                <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
-              )}
+              <TimeBox>
+                {isGaming ? (
+                  <Timer></Timer>
+                ) : (
+                  <StartBtn>
+                    {myUserName === managerNickname ? (
+                      <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
+                        시작!
+                      </SubmitBtn>
+                    ) : (
+                      <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                    )}
+                  </StartBtn>
+                )}
+              </TimeBox>
+
               <InfoBox>
                 {/* 실시간 순위 & 최종 순위 */}
                 <LiveRank rankList={rankList}></LiveRank>
@@ -681,6 +698,15 @@ const GuideBox = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+const TimeBox = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+`;
+
+const StartBtn = styled.div``;
 
 const InfoBox = styled.div`
   display: flex;
@@ -806,10 +832,13 @@ const LiveBox = styled.div`
 function LiveRank({ rankList }) {
   const rankListLi = rankList.map((item, i) => {
     if (i <= 2) {
-      <li>
-        {i + 1}등 : {item.nickname}
-      </li>;
+      return (
+        <li key={i}>
+          {i + 1}등 : {item.nickname}
+        </li>
+      );
     }
+    return null;
   });
   return (
     <LiveBox>
