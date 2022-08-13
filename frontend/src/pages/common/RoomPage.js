@@ -4,7 +4,7 @@ import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
-import { styled as styledC, Box, List, ListItem, Paper, Grid } from '@mui/material';
+import { styled as styledC, Box, Paper, Grid, CircularProgress } from '@mui/material';
 import styled from 'styled-components';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -62,6 +62,7 @@ class RoomClass extends Component {
       publisher: undefined,
       subscribers: [],
       currentVideoDevice: undefined,
+      connectionErr: false,
 
       isModelError: undefined,
 
@@ -119,7 +120,7 @@ class RoomClass extends Component {
     setTimeout(() => {
       this.setModel();
       this.joinSession(sessionInfo.token);
-    }, 500);
+    }, 1000);
     this.init();
   }
 
@@ -270,6 +271,7 @@ class RoomClass extends Component {
             });
           })
           .catch(error => {
+            this.setState({ session: undefined, connectionErr: true });
             console.log('There was an error connecting to the session:', error.code, error.message);
           });
         // });
@@ -316,7 +318,6 @@ class RoomClass extends Component {
 
     const data = new Date();
     const { title } = this.state;
-    console.log(typeof data.getUTCSeconds());
     const createDate = [
       data.getUTCFullYear(),
       data.getUTCMonth(),
@@ -530,6 +531,7 @@ class RoomClass extends Component {
     if (mySession) {
       mySession.disconnect();
     }
+
     axios
       .patch(
         api.quit(),
@@ -550,13 +552,11 @@ class RoomClass extends Component {
           mainStreamManager: undefined,
           publisher: undefined,
         });
-        removeSessionInfo();
+        this.props.navigate('/');
       })
       .catch(err => {
         console.log(err);
       });
-
-    this.props.navigate('/');
   }
 
   async switchCamera() {
@@ -597,6 +597,7 @@ class RoomClass extends Component {
 
   render() {
     const {
+      connectionErr,
       workoutId,
       isModelError,
       title,
@@ -612,10 +613,15 @@ class RoomClass extends Component {
     if (isModelError) {
       return <div>모델 생성 실패요</div>;
     }
+    if (connectionErr) {
+      return <div>올바르게 방입장했는지 확인좀요 ㅎㅎ</div>;
+    }
     return (
       <Container>
         {this.state.session === undefined ? (
-          <div>세션정보없어용</div>
+          <Box sx={{ display: 'flex' }}>
+            <CircularProgress />
+          </Box>
         ) : (
           // 방 제목 & 나가기 버튼 => navbar로 이동해야 함
           <div id="session">
@@ -701,13 +707,6 @@ const Item = styledC(Paper)(({ theme }) => ({
   textAlign: 'center',
   color: theme.palette.text.secondary,
 }));
-
-const GuideBox = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-`;
 
 const TimeBox = styled.div`
   display: flex;
