@@ -121,7 +121,6 @@ class RoomClass extends Component {
   }
 
   componentWillUnmount() {
-    this.leaveSession();
     window.removeEventListener('beforeunload', this.onbeforeunload);
   }
 
@@ -372,7 +371,7 @@ class RoomClass extends Component {
         Url = 'https://teachablemachine.withgoogle.com/models/rlT_xgNAW/';
         break;
       case 3: // 버피
-        Url = '';
+        Url = 'https://teachablemachine.withgoogle.com/models/759k-ZvHL/';
         break;
       case 4: // 런지
         Url = 'https://teachablemachine.withgoogle.com/models/9drs8J9Nm/';
@@ -435,8 +434,7 @@ class RoomClass extends Component {
           })
           .then(() => {
             this.setState({ check: false });
-          })
-          .catch(() => {});
+          });
       }
     } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -462,8 +460,7 @@ class RoomClass extends Component {
           })
           .then(() => {
             this.setState({ check: false });
-          })
-          .catch(() => {});
+          });
       }
     } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -489,8 +486,7 @@ class RoomClass extends Component {
           })
           .then(() => {
             this.setState({ check: false });
-          })
-          .catch(() => {});
+          });
       }
     } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -516,8 +512,7 @@ class RoomClass extends Component {
           })
           .then(() => {
             this.setState({ check: false });
-          })
-          .catch(() => {});
+          });
       }
     } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
