@@ -50,7 +50,7 @@ export default function DiaryList() {
     <div style={{ width: '50%' }}>
       <Card sx={{ maxWidth: 1, margin: 1 }}>
         <CardContent>
-          <h2>내 운동 다이어리</h2>
+          <h2 style={{ textAlign: 'center' }}>내 운동 다이어리</h2>
         </CardContent>
       </Card>
       <Diary>

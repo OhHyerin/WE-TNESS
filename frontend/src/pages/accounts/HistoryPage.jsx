@@ -25,7 +25,7 @@ export default function HistoryPage() {
       <div>
         <h1>{nickname}님의 운동 현황 페이지</h1>
         <UserProfile userNickname={nickname}></UserProfile>
-        {/* <AwardList></AwardList> */}
+        <AwardList></AwardList>
         <MatchList></MatchList>
         <RecordList></RecordList>
         <DiaryList></DiaryList>

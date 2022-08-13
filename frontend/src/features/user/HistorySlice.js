@@ -15,7 +15,7 @@ const fetchHistory = createAsyncThunk('fetchHistory', async (payload, { rejectWi
 });
 
 const initialState = {
-  achieveAwards: [1, 3],
+  achieveAwards: [{ award: 'login_1', receiveDate: '2022-08-10T11:43:17' }],
   heatMapList: [],
   matches: {
     bronze: 0,
