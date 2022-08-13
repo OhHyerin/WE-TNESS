@@ -9,7 +9,7 @@ import styled from 'styled-components';
 import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import UserVideoComponent from './UserVideoComponent';
-import { getSessionInfo } from '../../features/Token';
+import { getSessionInfo, removeSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import setConfig from '../../features/authHeader';
 import api from '../../api';
@@ -66,6 +66,7 @@ class RoomClass extends Component {
 
       webcam: undefined,
 
+      isGaming: undefined,
       isFinish: undefined,
       isReady: undefined,
       readyState: new Map(),
@@ -110,20 +111,17 @@ class RoomClass extends Component {
       myUserName: nickname,
       managerNickname: sessionInfo.managerNickname,
       isGaming: false,
+      isFinish: false,
     });
     setTimeout(() => {
       this.setModel();
       this.joinSession(sessionInfo.token);
     }, 300);
     this.init();
-    setTimeout(() => {
-      this.setState({
-        isLodaing: false,
-      });
-    }, 500);
   }
 
   componentWillUnmount() {
+    this.leaveSession();
     window.removeEventListener('beforeunload', this.onbeforeunload);
   }
 
@@ -224,6 +222,7 @@ class RoomClass extends Component {
           this.setState({
             rankList: rankL,
           });
+          console.log(this.state.rankList);
         });
 
         // --- 4) Connect to the session with a valid user token ---
@@ -395,23 +394,25 @@ class RoomClass extends Component {
   }
 
   async loop(timestamp) {
-    this.state.webcam.update(); // update the webcam frame
-    switch (this.state.workoutId) {
-      case 1:
-        await this.squatPredict();
-        break;
-      case 2:
-        await this.pushupPredict();
-        break;
-      case 3:
-        await this.burpeePredict();
-        break;
-      case 4:
-        await this.lungePredict();
-      default:
-        break;
+    if (this.state.session && this.state.isGaming) {
+      this.state.webcam.update(); // update the webcam frame
+      switch (this.state.workoutId) {
+        case 1:
+          await this.squatPredict();
+          break;
+        case 2:
+          await this.pushupPredict();
+          break;
+        case 3:
+          await this.burpeePredict();
+          break;
+        case 4:
+          await this.lungePredict();
+        default:
+          break;
+      }
+      window.requestAnimationFrame(this.loop);
     }
-    window.requestAnimationFrame(this.loop);
   }
 
   // 스쿼트
@@ -551,6 +552,7 @@ class RoomClass extends Component {
           mainStreamManager: undefined,
           publisher: undefined,
         });
+        removeSessionInfo();
       })
       .catch(err => {
         console.log(err);
@@ -596,8 +598,18 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { isModelError, title, myUserName, isGaming, managerNickname, isPossibleStart, isReady, count, rankList } =
-      this.state;
+    const {
+      workoutId,
+      isModelError,
+      title,
+      myUserName,
+      isGaming,
+      managerNickname,
+      isPossibleStart,
+      isReady,
+      count,
+      rankList,
+    } = this.state;
 
     if (isModelError) {
       return <div>모델 생성 실패요</div>;
@@ -607,6 +619,7 @@ class RoomClass extends Component {
         {this.state.session === undefined ? (
           <div>세션정보없어용</div>
         ) : (
+          // 방 제목 & 나가기 버튼 => navbar로 이동해야 함
           <div id="session">
             <div id="session-header">
               <h1 id="session-title">방 제목 :{title}</h1>
@@ -618,23 +631,29 @@ class RoomClass extends Component {
                 value="Leave session"
               />
             </div>
+            <GuideBox>
+              {/* 타이머 & 시작버튼 */}
+              {isGaming ? (
+                <Timer></Timer>
+              ) : myUserName === managerNickname ? (
+                <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
+                  시작!
+                </SubmitBtn>
+              ) : (
+                <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+              )}
+              <InfoBox>
+                {/* 실시간 순위 & 최종 순위 */}
+                <LiveRank rankList={rankList}></LiveRank>
 
-            {/* 타이머 & 시작버튼 */}
-            {isGaming ? (
-              <Timer></Timer>
-            ) : myUserName === managerNickname ? (
-              <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
-                시작!
-              </SubmitBtn>
-            ) : (
-              <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
-            )}
+                {/* 애니매이션 & 결과창 */}
 
-            {/* 실시간 순위 & 최종 순위 */}
-            <RankTable rankList={rankList}></RankTable>
+                {/* 운동정보 및 내 횟수와 순위 */}
+                <MyWorkoutInfo count={count} workoutId={workoutId} rankList={rankList} myUserName={myUserName} />
+              </InfoBox>
+            </GuideBox>
 
             {/* 내 화면 */}
-            <p>현재 개수 :{count}</p>
             <VideoContainer>
               {this.state.publisher !== undefined ? (
                 <div>
@@ -660,6 +679,19 @@ class RoomClass extends Component {
 }
 
 export default RoomPage;
+
+const GuideBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const InfoBox = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+`;
 
 // 1분 타이머
 const Timer = () => {
@@ -717,21 +749,77 @@ function CustomizedProgressBars(props) {
   );
 }
 
-const RankBox = styled.div``;
+// 내 운동정보
 
-function RankTable({ rankList }) {
+const MyBox = styled.div`
+  border: solid black 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MyRank = styled.div`
+  display: flex;
+`;
+function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
+  const workoutName = function () {
+    switch (workoutId) {
+      case 1: {
+        return '스쿼트';
+      }
+      case 2: {
+        return '팔굽혀펴기';
+      }
+      case 3: {
+        return '버피';
+      }
+      case 4: {
+        return '런지';
+      }
+      default: {
+        return '운동 정보 없음';
+      }
+    }
+  };
+
+  const myRank = function () {
+    return rankList.findIndex(item => item.nickname === myUserName) + 1;
+  };
+
   return (
-    <RankBox>
-      {rankList
-        ? rankList.map((item, i) => {
-            if (i === 0) {
-              return <p>1등 : {item.nickname} </p>;
-            }
-            if (i === 1) {
-              return <p>2등 : {item.nickname} </p>;
-            }
-          })
-        : null}
-    </RankBox>
+    <MyBox>
+      <p>1분 {workoutName()}!!!</p>
+      <p>나의 운동 횟수 {count}개</p>
+      <MyRank>
+        <p>나의 순위</p> {myRank()} <p>등!</p>
+      </MyRank>
+    </MyBox>
+  );
+}
+
+// 실시간 랭킹
+
+const LiveBox = styled.div`
+  border: solid black 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+function LiveRank({ rankList }) {
+  const rankListLi = rankList.map((item, i) => {
+    if (i <= 2) {
+      <li>
+        {i + 1}등 : {item.nickname}
+      </li>;
+    }
+  });
+  return (
+    <LiveBox>
+      <p>실시간 랭킹 !!</p>
+      <ul>{rankListLi}</ul>
+    </LiveBox>
   );
 }
