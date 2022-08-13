@@ -4,10 +4,11 @@ import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
-import { styled as styledC } from '@mui/material';
+import { styled as styledC, Box, List, ListItem, Paper, Grid } from '@mui/material';
 import styled from 'styled-components';
-import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMedal } from '@fortawesome/free-solid-svg-icons';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo, removeSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
@@ -96,6 +97,7 @@ class RoomClass extends Component {
     // 모션 인식
     this.setModel = this.setModel.bind(this);
     this.loop = this.loop.bind(this);
+    this.countSignal = this.countSignal.bind(this);
     this.squatPredict = this.squatPredict.bind(this);
   }
 
@@ -107,6 +109,7 @@ class RoomClass extends Component {
       token: sessionInfo.token,
       title: sessionInfo.title,
       workoutId: 1,
+      count: 0,
       // workoutId: sessionInfo.workoutId,
       myUserName: nickname,
       managerNickname: sessionInfo.managerNickname,
@@ -221,7 +224,6 @@ class RoomClass extends Component {
           this.setState({
             rankList: rankL,
           });
-          console.log(this.state.rankList);
         });
 
         // --- 4) Connect to the session with a valid user token ---
@@ -424,6 +426,17 @@ class RoomClass extends Component {
     }
   }
 
+  countSignal() {
+    this.state.session
+      .signal({
+        data: `${this.state.myUserName},${this.state.count}`,
+        type: 'count',
+      })
+      .then(() => {
+        this.setState({ check: false });
+      });
+  }
+
   // 스쿼트
   async squatPredict() {
     // Prediction #1: run input through posenet
@@ -437,14 +450,9 @@ class RoomClass extends Component {
         this.setState({
           count: this.state.count + 1,
         });
-        this.state.session
-          .signal({
-            data: `${this.state.myUserName},${this.state.count}`,
-            type: 'count',
-          })
-          .then(() => {
-            this.setState({ check: false });
-          });
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
       }
     } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -463,14 +471,9 @@ class RoomClass extends Component {
         this.setState({
           count: this.state.count + 1,
         });
-        this.state.session
-          .signal({
-            data: `${this.state.myUserName},${this.state.count}`,
-            type: 'count',
-          })
-          .then(() => {
-            this.setState({ check: false });
-          });
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
       }
     } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -489,14 +492,9 @@ class RoomClass extends Component {
         this.setState({
           count: this.state.count + 1,
         });
-        this.state.session
-          .signal({
-            data: `${this.state.myUserName},${this.state.count}`,
-            type: 'count',
-          })
-          .then(() => {
-            this.setState({ check: false });
-          });
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
       }
     } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -515,14 +513,9 @@ class RoomClass extends Component {
         this.setState({
           count: this.state.count + 1,
         });
-        this.state.session
-          .signal({
-            data: `${this.state.myUserName},${this.state.count}`,
-            type: 'count',
-          })
-          .then(() => {
-            this.setState({ check: false });
-          });
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
       }
     } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -636,34 +629,43 @@ class RoomClass extends Component {
                 value="Leave session"
               />
             </div>
-            <GuideBox>
-              {/* 타이머 & 시작버튼 */}
-              <TimeBox>
-                {isGaming ? (
-                  <Timer></Timer>
-                ) : (
-                  <StartBtn>
-                    {myUserName === managerNickname ? (
+            <Box sx={{ flexGrow: 1 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  {/* 타이머 & 시작버튼 */}
+                  <TimeBox>
+                    {isGaming ? (
+                      <Timer></Timer>
+                    ) : myUserName === managerNickname ? (
                       <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
                         시작!
                       </SubmitBtn>
                     ) : (
                       <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
                     )}
-                  </StartBtn>
-                )}
-              </TimeBox>
+                  </TimeBox>
+                </Grid>
 
-              <InfoBox>
                 {/* 실시간 순위 & 최종 순위 */}
-                <LiveRank rankList={rankList}></LiveRank>
+                <Grid item xs={4}>
+                  <Item>
+                    <LiveRank rankList={rankList}></LiveRank>
+                  </Item>
+                </Grid>
 
                 {/* 애니매이션 & 결과창 */}
+                <Grid item xs={4}>
+                  <Item>애니매이션</Item>
+                </Grid>
 
                 {/* 운동정보 및 내 횟수와 순위 */}
-                <MyWorkoutInfo count={count} workoutId={workoutId} rankList={rankList} myUserName={myUserName} />
-              </InfoBox>
-            </GuideBox>
+                <Grid item xs={4}>
+                  <Item>
+                    <MyWorkoutInfo count={count} workoutId={workoutId} rankList={rankList} myUserName={myUserName} />
+                  </Item>
+                </Grid>
+              </Grid>
+            </Box>
 
             {/* 내 화면 */}
             <VideoContainer>
@@ -692,6 +694,14 @@ class RoomClass extends Component {
 
 export default RoomPage;
 
+const Item = styledC(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
 const GuideBox = styled.div`
   display: flex;
   flex-direction: column;
@@ -704,14 +714,6 @@ const TimeBox = styled.div`
   width: 100%;
   align-items: center;
   justify-content: center;
-`;
-
-const StartBtn = styled.div``;
-
-const InfoBox = styled.div`
-  display: flex;
-  width: 100%;
-  justify-content: space-between;
 `;
 
 // 1분 타이머
@@ -773,7 +775,6 @@ function CustomizedProgressBars(props) {
 // 내 운동정보
 
 const MyBox = styled.div`
-  border: solid black 2px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -822,7 +823,6 @@ function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
 // 실시간 랭킹
 
 const LiveBox = styled.div`
-  border: solid black 2px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -834,7 +834,10 @@ function LiveRank({ rankList }) {
     if (i <= 2) {
       return (
         <li key={i}>
-          {i + 1}등 : {item.nickname}
+          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
+          <p>
+            {item.nickname} {item.count}개
+          </p>
         </li>
       );
     }
