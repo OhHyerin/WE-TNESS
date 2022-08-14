@@ -2,13 +2,11 @@ package com.wetness.model.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetness.auth.jwt.JwtUtil;
+import com.wetness.db.entity.Follow;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.LoggedIn;
 import com.wetness.db.entity.User;
-import com.wetness.db.repository.CommonCodeRepository;
-import com.wetness.db.repository.LoggedContinueRepository;
-import com.wetness.db.repository.LoggedInRepository;
-import com.wetness.db.repository.UserRepository;
+import com.wetness.db.repository.*;
 import com.wetness.exception.DropUserException;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
@@ -50,6 +48,8 @@ public class UserServiceImpl implements UserService {
     private final LoggedContinueRepository loggedContinueRepository;
     private final CommonCodeRepository commonCodeRepository;
     private final LoggedInRepository loggedInRepository;
+    private final FollowRepository followRepository;
+
     private final AwardService awardService;
 
     private final PasswordEncoder passwordEncoder;
@@ -198,6 +198,10 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByNickname(nickname);
         if (user != null) {
             user.setRole("drop");
+            //해당 유저를 팔로우 하고 있는 레코드 삭제
+            ArrayList<Follow> byFollowing = followRepository.findByFollowing(user);
+            followRepository.deleteAll(byFollowing);
+
             return true;
         }
         return false;
