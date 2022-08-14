@@ -2,6 +2,7 @@ package com.wetness.controller;
 
 import com.wetness.model.dto.request.*;
 import com.wetness.model.dto.response.DiaryRespDto;
+import com.wetness.model.service.AwardService;
 import com.wetness.model.service.GameService;
 import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
@@ -30,13 +31,17 @@ public class GameController {
     UserService userService;
 
     @Autowired
+    AwardService awardService;
+
+    @Autowired
     private AwsS3Util awsS3Util;
 
-    @PostMapping("/start/{title}")
-    public ResponseEntity<Map<String,Long>> startGame(@PathVariable String title,
+
+    @PostMapping("/start")
+    public ResponseEntity<Map<String,Long>> startGame(@RequestBody GameReqDto gameReqDto,
                                                       @AuthenticationPrincipal UserDetailsImpl user){
 
-        Long gameId = gameService.startGame(title,user.id()); //exception 처리 필요
+        Long gameId = gameService.startGame(gameReqDto,user.id()); //exception 처리 필요
 
         Map<String,Long> result = new HashMap<>();
         result.put("gameId", gameId);
@@ -51,6 +56,9 @@ public class GameController {
         gameService.terminateGame(gameResult,user.id());
 //결과 저장        
         Long userGameId = gameService.insertResult(gameResult,user);
+//award 체크
+        awardService.awardCheckMedal(user.getId());
+        awardService.awardCheckWorkout(user.getId(), gameResult.getWorkoutId(), gameResult.getScore());
 
         Map<String,Long> result = new HashMap<>();
         result.put("game_record_id",userGameId);
