@@ -16,6 +16,7 @@ public class UserDetailsImpl implements UserDetails {
     private String password;
     private String nickname;
     private String role;
+    private Collection<? extends GrantedAuthority> authorities;
 
 
     public UserDetailsImpl(long id, String email,String password, String nickname, String role) {
@@ -40,7 +41,7 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return this.authorities;
     }
 
     public long id(){return this.id;}
@@ -54,6 +55,9 @@ public class UserDetailsImpl implements UserDetails {
     public String getUsername() {
         return this.email;
     }
+
+
+    public String getRole(){return this.role;}
 
     @Override
     public boolean isAccountNonExpired() {
@@ -86,11 +90,12 @@ public class UserDetailsImpl implements UserDetails {
     @Override
     public String toString() {
         return "UserDetailsImpl{" +
-                "id='" + id +'\'' +
+                "id=" + id +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", nickname='" + nickname + '\'' +
                 ", role='" + role + '\'' +
+                ", authorities=" + authorities.toString() +
                 '}';
     }
 }

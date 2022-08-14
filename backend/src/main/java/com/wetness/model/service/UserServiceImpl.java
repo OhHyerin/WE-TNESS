@@ -56,7 +56,6 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    private final String hostKakao = "https://kauth.kakao.com/oauth/token";
 
     @Override
     @Transactional
@@ -240,10 +239,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String getSocialAccessToken(String auth, String code) throws IOException {
+    public String getSocialAccessToken(String code) throws IOException {
 
 
-        URL url = new URL(hostKakao);
+        URL url = new URL("https://kauth.kakao.com/oauth/token");
 
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         String token = "";
@@ -257,7 +256,7 @@ public class UserServiceImpl implements UserService {
             // Client_id = REST_API_KEY 수정 필요
             sb.append("&client_id=cddf8fe3437329bf32a17342aa27ea7e");
             // 초기 프론트에서 설정한 Redirect_uri
-            sb.append("&redirect_uri=http://localhost:8080/user/login/kakao");
+            sb.append("&redirect_uri=http://localhost:3000/user/login/kakao");
             sb.append("&code=" + code);
 
             bw.write(sb.toString());

@@ -45,10 +45,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Autowired
     UserDetailsServiceImpl userDetailsService;
     private static final String[] Exclude_Paths =
-            {"/", "/user/login/**", "/user/join","/user/duplicate-email/*", "/user/duplicate-nickname/*",
-             "/user/refresh", "/room/disconnect", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
-                    , "/swagger-resources/**","/v2/api-docs","/csrf", "/error", "/report", "/report/*", "/user/send-pw"};
-//"/user/duplicate-email/*",
+            {"/api", "/api/user/login/**", "/api/user/join", "/api/user/duplicate-email/*", "/api/user/duplicate-nickname/*",
+                    "/api/user/refresh", "/api/room/disconnect", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
+                    , "/swagger-resources/**", "/v2/api-docs", "/csrf", "/error", "/api/report", "/api/report/*", "/api/user/send-pw"};
+
+    //"/user/duplicate-email/*",
     @Override
     public void configure(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
 
@@ -67,7 +68,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
     }
 
-    //TODO cors 관련 확인 필요
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

@@ -1,6 +1,5 @@
 package com.wetness.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetness.auth.jwt.JwtUtil;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.User;
@@ -12,20 +11,14 @@ import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
-import net.bytebuddy.utility.RandomString;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Pattern;
@@ -38,28 +31,20 @@ import static com.wetness.util.InputUtil.EMAIL_REGEX;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Validated
 public class UserController {
 
-    public static final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private static final String SUCCESS = "success";
-    private static final String FAIL = "fail";
     private final UserService userService;
-    private final CommonCodeService commonCodeService;
-
     private final JwtUtil jwtUtil;
     private final MailService mailService;
-    private final PasswordEncoder passwordEncoder;
-    private final AuthenticationManager authenticationManager;
 
 
     @PostMapping("/join")
     @ApiOperation(value = "회원가입")
     public ResponseEntity<BaseResponseEntity> registerUser(@Valid @RequestBody JoinUserDto joinUserDto) {
-//        System.out.println("회원가입시 원래 암호 : " + joinUserDto.getPassword());
-//        System.out.println("회원가입시 변경된 암호 : " + passwordEncoder.encode(joinUserDto.getPassword()));
+
         if (userService.registerUser(joinUserDto)) {
             return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
         }
@@ -97,7 +82,6 @@ public class UserController {
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
-    //TODO security User role 체크 추가 필요
     @PatchMapping("/pw")
     @ApiOperation(value = "비밀번호 수정")
     public ResponseEntity<BaseResponseEntity> updateUserPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
@@ -107,17 +91,6 @@ public class UserController {
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
-
-//    @PostMapping("/findEmail")
-//    @ApiOperation(value = "이메일 찾기")
-//    public ResponseEntity<FindEmailResDto> findId(@RequestParam("nickname") String nickname) {
-//        System.out.println("sendPwd Nickname : " + nickname);
-//
-//        User user = userService.findByNickname(nickname);
-//        FindEmailResDto resDto = new FindEmailResDto(user.getEmail());
-//
-//        return ResponseEntity.status(200).body(resDto);
-//    }
 
     @PostMapping("/send-pw")
     @ApiOperation(value = "비밀번호 찾기를 위한 이메일 인증")
@@ -159,17 +132,17 @@ public class UserController {
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
-    @GetMapping("/login/{auth}")
+    @PostMapping("/login/kakao")
     @ApiOperation(value = "소셜 로그인")
-    public ResponseEntity<?> loginSocial(@PathVariable("auth") String auth, @RequestParam(value = "code") String code) throws IOException {
-
-        String token = userService.getSocialAccessToken(auth, code);
-
+    public ResponseEntity<?> loginSocial(@RequestParam(value = "code") String code) throws IOException {
+        System.out.println("aaaaaaaaaaaaaaa");
+        String token = userService.getSocialAccessToken(code);
+        System.out.println("bbbbbbbbbbbbbbb");
         // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
         Map<String, Object> data = userService.getUserInfo(token);
-
+        System.out.println("ccccccccccccccc");
         Optional<User> userOpt = userService.socialLogin(data);
-
+        System.out.println("ddddddddddddddd");
         // 유저가 db에 있다면
         if (userOpt.isPresent()) {
             User user = userOpt.get();

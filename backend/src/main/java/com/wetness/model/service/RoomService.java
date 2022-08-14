@@ -11,7 +11,6 @@ import com.wetness.model.dto.request.MakeRoomReq;
 import com.wetness.model.dto.response.EnterRoomRes;
 import com.wetness.model.dto.response.RoomListRes;
 import io.openvidu.java.client.*;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Value;
@@ -189,7 +188,7 @@ public class RoomService {
         boolean isGaming = !gameRepository.findByRoomIdAndIsPlaying(room.getId(),true).isEmpty();
 
         return RoomListRes.builder()
-                .workout(room.getWorkout().getId())
+                .workoutId(room.getWorkout().getId())
                 .title(room.getTitle())
                 .headcount(headcount)
                 .isLocked(room.isLocked())

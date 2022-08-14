@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.ArrayList;
 
 @RestController
-@RequestMapping("/award")
+@RequestMapping("/api/award")
 @RequiredArgsConstructor
 public class AwardController {
     private final AwardService awardService;

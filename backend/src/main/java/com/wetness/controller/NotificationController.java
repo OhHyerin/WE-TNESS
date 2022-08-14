@@ -15,30 +15,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/notice")
+@RequestMapping("/api/notice")
 @RequiredArgsConstructor
 public class NotificationController {
 
     private final NotificationService notificationService;
 
     @PostMapping("/invite")
-    public ResponseEntity<?> registerInviteMessage(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                                   @RequestBody NotificationReqDto notificationReqDto) {
+    public ResponseEntity<?> registerInviteMessage(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody NotificationReqDto notificationReqDto) {
         if (notificationService.registerInviteMessage(notificationReqDto, userDetails.getNickname())) {
             return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
-
-//    해당 기능은 유저를 팔로우 할때 자동으로 실행되도록 변경함
-//    @PostMapping("/follow")
-//    public ResponseEntity<?> registerFollowMessage(@AuthenticationPrincipal UserDetailsImpl userDetails,
-//                                                   @RequestBody NotificationReqDto notificationReqDto) {
-//        if (notificationService.registerFollowMessage(notificationReqDto, userDetails.getNickname())) {
-//            return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
-//        }
-//        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
-//    }
 
     @GetMapping
     public ResponseEntity<?> getNotification(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -47,8 +36,7 @@ public class NotificationController {
     }
 
     @PostMapping("check")
-    public ResponseEntity<?> checkNotification(@AuthenticationPrincipal UserDetailsImpl userDetails,
-                                               @RequestBody NotificationReqDto notificationReqDto) {
+    public ResponseEntity<?> checkNotification(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestBody NotificationReqDto notificationReqDto) {
         if (notificationService.checkNotification(userDetails.id(), notificationReqDto.getNotificationId())) {
             return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
         }

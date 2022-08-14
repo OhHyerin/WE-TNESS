@@ -44,7 +44,7 @@ public interface UserService {
 
     String getRefreshToken(String nickname);
 
-    String getSocialAccessToken(String social, String code) throws IOException;
+    String getSocialAccessToken(String code) throws IOException;
 
     Map<String, Object> getUserInfo(String accessToken) throws IOException;
 
