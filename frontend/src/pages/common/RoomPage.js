@@ -4,11 +4,11 @@ import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
-import { styled as styledC, Box, Paper, Grid, CircularProgress, Modal } from '@mui/material';
+import { styled as styledC, Box, Paper, Grid, CircularProgress, Modal, Chip } from '@mui/material';
 import styled from 'styled-components';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IoMicSharp, IoMicOffSharp, IoVideocamOff, IoVideocam } from 'react-icons/io5';
+import { IoMicOutline, IoMicOffOutline, IoVideocamOffOutline, IoVideocamOutline } from 'react-icons/io5';
 import { faMedal } from '@fortawesome/free-solid-svg-icons';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
@@ -37,6 +37,7 @@ const SubContainer = styled.div`
 
 const MainContainer = styled.div`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
 `;
@@ -80,8 +81,8 @@ class RoomClass extends Component {
       currentVideoDevice: undefined,
       connectionErr: false,
 
-      audiostate: false,
-      videostate: true,
+      audioState: true,
+      videoState: true,
 
       isStart: undefined,
       countdown: 3,
@@ -91,11 +92,12 @@ class RoomClass extends Component {
       webcam: undefined,
 
       isGaming: undefined,
-      isFinish: undefined,
+      isFinish: false,
       isReady: undefined,
       readyState: new Map(),
       isPossibleStart: true,
 
+      gameId: undefined,
       count: 0,
       check: undefined,
 
@@ -116,6 +118,7 @@ class RoomClass extends Component {
     this.start = this.start.bind(this);
     this.readySignal = this.readySignal.bind(this);
     this.checkPossibleStart = this.checkPossibleStart.bind(this);
+    this.setFinish = this.setFinish.bind(this);
 
     // 모션 인식
     this.setModel = this.setModel.bind(this);
@@ -409,10 +412,10 @@ class RoomClass extends Component {
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
-        Url = 'https://teachablemachine.withgoogle.com/models/TPlEwiz6u/';
+        Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
         break;
       case 2: // 푸쉬업
-        Url = 'https://teachablemachine.withgoogle.com/models/rlT_xgNAW/';
+        Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
         break;
       case 3: // 버피
         Url = 'https://teachablemachine.withgoogle.com/models/759k-ZvHL/';
@@ -471,6 +474,43 @@ class RoomClass extends Component {
       });
   }
 
+  // 게임 종료 정보 전달
+  setFinish() {
+    console.log('게임 끝!');
+    this.setState({
+      isFinish: true,
+    });
+
+    const data = new Date();
+    const terminateDate = [
+      data.getUTCFullYear(),
+      data.getUTCMonth(),
+      data.getUTCDate(),
+      data.getUTCHours(),
+      data.getUTCMinutes(),
+      data.getUTCSeconds(),
+    ];
+
+    // 내 랭크정보 전달 수정 필요
+    const rank = 1;
+    const payload = {
+      gameId: this.state.gameId,
+      terminateDate,
+      workoutId: this.state.workoutId,
+      score: this.state.count,
+      rank,
+    };
+    console.log(payload);
+    axios
+      .post(api.end(), payload, setConfig())
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   // 스쿼트
   async squatPredict() {
     // Prediction #1: run input through posenet
@@ -479,7 +519,7 @@ class RoomClass extends Component {
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
     // 앉았을 때 check => check 상태에서 일어나면 count + 1 => 내 개수 signal
-    if (prediction[1].probability.toFixed(2) > 0.99) {
+    if (prediction[0].probability.toFixed(2) > 0.99) {
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -488,7 +528,7 @@ class RoomClass extends Component {
           this.countSignal();
         }, 10);
       }
-    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
     }
   }
@@ -500,7 +540,8 @@ class RoomClass extends Component {
     const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
-    if (prediction[1].probability.toFixed(2) > 0.99) {
+    if (prediction[0].probability.toFixed(2) > 0.99) {
+      console.log('푸쉬업 올라감');
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -509,7 +550,8 @@ class RoomClass extends Component {
           this.countSignal();
         }, 10);
       }
-    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
+      console.log('푸쉬업 내려감');
       this.setState({ check: true });
     }
   }
@@ -636,6 +678,7 @@ class RoomClass extends Component {
       workoutId,
       isModelError,
       title,
+      isFinish,
       myUserName,
       isGaming,
       managerNickname,
@@ -658,19 +701,7 @@ class RoomClass extends Component {
             <CircularProgress />
           </Box>
         ) : (
-          // 방 제목 & 나가기 버튼 => navbar로 이동해야 함
-          <div id="session">
-            <div id="session-header">
-              <h1 id="session-title">방 제목 :{title}</h1>
-              <input
-                className="btn btn-large btn-danger"
-                type="button"
-                id="buttonLeaveSession"
-                onClick={this.leaveSession}
-                value="Leave session"
-              />
-            </div>
-
+          <div>
             {/* 카운트 다운 모달 */}
             <Modal open={isStart}>
               <Box sx={countDownStyle}>
@@ -685,7 +716,7 @@ class RoomClass extends Component {
                   {/* 타이머 & 시작버튼 */}
                   <TimeBox>
                     {isGaming ? (
-                      <Timer></Timer>
+                      <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
                     ) : myUserName === managerNickname ? (
                       <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
                         시작!
@@ -698,9 +729,7 @@ class RoomClass extends Component {
 
                 {/* 실시간 순위 & 최종 순위 */}
                 <Grid item xs={4}>
-                  <Item>
-                    <LiveRank rankList={rankList}></LiveRank>
-                  </Item>
+                  <Item>{isFinish ? <div>게임 끝남요</div> : <LiveRank rankList={rankList}></LiveRank>}</Item>
                 </Grid>
 
                 {/* 애니매이션 & 결과창 */}
@@ -728,65 +757,77 @@ class RoomClass extends Component {
                       </div>
                     );
                   }
+                  return null;
                 })}
               </SubContainer>
 
               {/* 내 화면 */}
-              <MainContainer>
+              <>
                 {this.state.publisher !== undefined ? (
-                  <div>
+                  <MainContainer>
                     <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
                       <UserVideoComponent streamManager={this.state.publisher} />
                     </div>
 
-                    <div>
-                      <p>내 닉네임 : {myUserName}</p>
+                    <MyInfoBox>
+                      <Chip label={myUserName} variant="outlined" />
 
                       {/* 마이크 & 카메라 onOff */}
                       <MicVideoBtn>
-                        {this.state.audiostate ? (
-                          <IoMicSharp
-                            color="#9FA9D8"
-                            size="24"
-                            onClick={() => {
-                              this.state.publisher.publishAudio(!this.state.audiostate);
-                              this.setState({ audiostate: !this.state.audiostate });
-                            }}
-                          />
-                        ) : (
-                          <IoMicOffSharp
-                            color="#50468c"
-                            size="24"
-                            onClick={() => {
-                              this.state.publisher.publishAudio(!this.state.audiostate);
-                              this.setState({ audiostate: !this.state.audiostate });
-                            }}
-                          />
-                        )}
-                        {this.state.videostate ? (
-                          <IoVideocam
-                            color="#9FA9D8"
-                            size="24"
-                            onClick={() => {
-                              this.state.publisher.publishVideo(!this.state.videostate);
-                              this.setState({ videostate: !this.state.videostate });
-                            }}
-                          />
-                        ) : (
-                          <IoVideocamOff
-                            color="#50468c"
-                            size="24"
-                            onClick={() => {
-                              this.state.publisher.publishVideo(!this.state.videostate);
-                              this.setState({ videostate: !this.state.videostate });
-                            }}
-                          />
-                        )}
+                        <Chip
+                          label={
+                            this.state.audioState ? (
+                              <IoMicOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishAudio(!this.state.audioState);
+                                  this.setState({ audioState: !this.state.audioState });
+                                }}
+                              />
+                            ) : (
+                              <IoMicOffOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishAudio(!this.state.audioState);
+                                  this.setState({ audioState: !this.state.audioState });
+                                }}
+                              />
+                            )
+                          }
+                          variant="outlined"
+                        />
+
+                        <Chip
+                          label={
+                            this.state.videoState ? (
+                              <IoVideocamOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishVideo(!this.state.videoState);
+                                  this.setState({ videoState: !this.state.videoState });
+                                }}
+                              />
+                            ) : (
+                              <IoVideocamOffOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishVideo(!this.state.videoState);
+                                  this.setState({ videoState: !this.state.videoState });
+                                }}
+                              />
+                            )
+                          }
+                          variant="outlined"
+                        />
                       </MicVideoBtn>
-                    </div>
-                  </div>
+                    </MyInfoBox>
+                  </MainContainer>
                 ) : null}
-              </MainContainer>
+              </>
 
               <SubContainer>
                 {/* 친구들 화면 */}
@@ -798,6 +839,7 @@ class RoomClass extends Component {
                       </div>
                     );
                   }
+                  return null;
                 })}
               </SubContainer>
             </VideoContainer>
@@ -810,11 +852,19 @@ class RoomClass extends Component {
 
 export default RoomPage;
 
+const MyInfoBox = styled.div`
+  display: flex;
+  width: 100%;
+  padding-top: 5px;
+  justify-content: space-between;
+  align-items: center;
+`;
+
 const MicVideoBtn = styled.ul`
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 10px;
 `;
 
 const countDownStyle = {
@@ -845,20 +895,23 @@ const TimeBox = styled.div`
 `;
 
 // 1분 타이머
-const Timer = () => {
-  const [value, setValue] = useState(60);
+const Timer = ({ setFinish, isFinish }) => {
+  const [value, setValue] = useState(5);
   useEffect(() => {
-    const myInterval = setInterval(() => {
-      if (value > 0) {
-        setValue(value - 0.1);
-      }
-      if (value <= 0) {
+    if (!isFinish) {
+      const myInterval = setInterval(() => {
+        if (value > 0) {
+          setValue(value - 0.1);
+        }
+        if (value <= 0) {
+          setFinish();
+          clearInterval(myInterval);
+        }
+      }, 100);
+      return () => {
         clearInterval(myInterval);
-      }
-    }, 100);
-    return () => {
-      clearInterval(myInterval);
-    };
+      };
+    }
   });
 
   return (
