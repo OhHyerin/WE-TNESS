@@ -81,7 +81,7 @@ public class RoomService {
                                 .type(ConnectionType.WEBRTC).data(userData)
                                 .role(OpenViduRole.PUBLISHER).build();
 
-        MapSessionRoom mapSessionRoom = this.mapSessions.get(enterRoomReq.getSessionName());
+        MapSessionRoom mapSessionRoom = this.mapSessions.get(enterRoomReq.getTitle());
 
         Room room = mapSessionRoom.getRoom();
         // 방이 잠겨있는데 비밀번호가 다르다면
@@ -91,10 +91,10 @@ public class RoomService {
         Connection connection = mapSessionRoom.getSession()
                                 .createConnection(connectionProperties);
 
-        if(!this.mapSessionNamesConnections.containsKey(enterRoomReq.getSessionName())){
-            this.mapSessionNamesConnections.put(enterRoomReq.getSessionName(), new ConcurrentHashMap<>());
+        if(!this.mapSessionNamesConnections.containsKey(enterRoomReq.getTitle())){
+            this.mapSessionNamesConnections.put(enterRoomReq.getTitle(), new ConcurrentHashMap<>());
         }
-        this.mapSessionNamesConnections.get(enterRoomReq.getSessionName()).put(userDetails.getNickname(), connection);
+        this.mapSessionNamesConnections.get(enterRoomReq.getTitle()).put(userDetails.getNickname(), connection);
 
         roomUserRepository.save(RoomUser.builder()
                     .roomId(room.getId())
