@@ -21,7 +21,6 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/fitness")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class FitnessController {
 
     private final FitnessRecordService fitnessRecordService;

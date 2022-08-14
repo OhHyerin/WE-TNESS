@@ -26,7 +26,6 @@ import java.util.Optional;
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/api/room")
-@CrossOrigin("*")
 public class RoomController {
 
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);

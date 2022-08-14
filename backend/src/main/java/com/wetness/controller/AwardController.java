@@ -16,7 +16,6 @@ import java.util.ArrayList;
 @RestController
 @RequestMapping("/api/award")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class AwardController {
     private final AwardService awardService;
 

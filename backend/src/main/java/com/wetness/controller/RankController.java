@@ -22,7 +22,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/rank")
 @RequiredArgsConstructor
-@CrossOrigin("*")
 public class RankController {
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private static final String SUCCESS = "success";
