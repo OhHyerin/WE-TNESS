@@ -1,6 +1,45 @@
 import { useState } from 'react';
 import { Cell, Pie, PieChart, Sector } from 'recharts';
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
+
+const Profile = styled.div`
+  display: flex;
+  align-items: center;
+  > * {
+    margin: 10px;
+  }
+`;
+
+const MatchTile = styled.div`
+  display: flex;
+  flex-direction: column;
+  > * {
+    border-radius: 4px;
+    box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+    margin: 0px 5px;
+  }
+`;
+const TotalMatch = styled.div`
+  display: flex;
+  align-items: center;
+  > * {
+    padding: 10px;
+    font-size: 20px;
+  }
+`;
+const Match = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px;
+  width: 63px;
+`;
+const List = styled.div`
+  display: flex;
+`;
+
 // 차트 관련
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
@@ -76,12 +115,28 @@ export default function MatchList() {
   return (
     <div>
       <h2>내 전적</h2>
-      <div>
-        <span>총 경기 수 : {matches.totalCnt} </span>
-        <span>1등 : {matches.gold} </span>
-        <span>2등 : {matches.silver} </span>
-        <span>3등 : {matches.bronze} </span>
-      </div>
+      <Profile>
+        <MatchTile>
+          <TotalMatch>
+            <div>총 경기 수</div>
+            <div>{matches.totalCnt}</div>
+          </TotalMatch>
+          <List>
+            <Match>
+              <div>1등</div>
+              <div>{matches.gold}</div>
+            </Match>
+            <Match>
+              <div>2등</div>
+              <div>{matches.silver}</div>
+            </Match>
+            <Match>
+              <div>3등</div>
+              <div>{matches.bronze}</div>
+            </Match>
+          </List>
+        </MatchTile>
+      </Profile>
       <div>
         {/* 원형 그래프 */}
         <PieChart width={400} height={400}>

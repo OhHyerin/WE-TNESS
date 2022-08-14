@@ -36,23 +36,25 @@ export default function RecordList() {
     console.log(e, v);
   }
   return (
-    <RecordBox>
+    <>
       <h2>운동 기록</h2>
-      <h3>오늘의 칼로리 소모량</h3>
-      <p>{todayCalorie} kcal</p>
-      <HeatmapBox>
-        <CalendarHeatmap
-          startDate={getDate('start')}
-          endDate={getDate('end')}
-          values={heatMapList}
-          showWeekdayLabels={true}
-          onMouseOver={onHover}
-        />
-      </HeatmapBox>
-      <BarBox>
-        <BarChart></BarChart>
-      </BarBox>
-    </RecordBox>
+      <RecordBox>
+        <h3>오늘의 칼로리 소모량</h3>
+        <p>{todayCalorie} kcal</p>
+        <HeatmapBox>
+          <CalendarHeatmap
+            startDate={getDate('start')}
+            endDate={getDate('end')}
+            values={heatMapList}
+            showWeekdayLabels={true}
+            onMouseOver={onHover}
+          />
+        </HeatmapBox>
+        <BarBox>
+          <BarChart></BarChart>
+        </BarBox>
+      </RecordBox>
+    </>
   );
 }
 
