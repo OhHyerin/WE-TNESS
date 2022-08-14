@@ -22,7 +22,7 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping("/fitness")
+@RequestMapping("/api/fitness")
 @RequiredArgsConstructor
 public class FitnessController {
 
