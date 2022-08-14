@@ -512,4 +512,16 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public ArrayList<UserInfoResDto> searchUserWithKeyword(String keyword) {
+        ArrayList<UserInfoResDto> list = new ArrayList<UserInfoResDto>();
+        ArrayList<User> users = userRepository.findByNicknameContains(keyword);
+
+        for (User u : users) {
+            String address = getAddress(u.getSidoCode(), u.getGugunCode());
+            UserInfoResDto userInfoResDto = UserInfoResDto.generateUserInfoResDto(u, address);
+            list.add(userInfoResDto);
+        }
+        return list;
+    }
 }

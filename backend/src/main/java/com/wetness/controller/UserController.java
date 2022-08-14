@@ -211,4 +211,10 @@ public class UserController {
         ArrayList<String> loginDateLog = userService.getLoginDateLog(userDetails.getId());
         return ResponseEntity.ok().body(loginDateLog);
     }
+
+    @GetMapping("/info")
+    public ResponseEntity<?> getUserInfo(@RequestParam String keyword) {
+        ArrayList<UserInfoResDto> list = userService.searchUserWithKeyword(keyword);
+        return ResponseEntity.ok().body(new UsersInfoResDto(list));
+    }
 }

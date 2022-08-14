@@ -76,4 +76,6 @@ public interface UserService {
     ArrayList<LoginLogResDto> getLoginLog(long userId);
 
     ArrayList<String> getLoginDateLog(long userId);
+
+    ArrayList<UserInfoResDto> searchUserWithKeyword(String keyword);
 }
