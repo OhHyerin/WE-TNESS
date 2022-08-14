@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/follow")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin("*")
 public class FollowController {
 
     private final FollowService followService;

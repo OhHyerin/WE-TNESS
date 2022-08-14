@@ -41,6 +41,7 @@ import static com.wetness.util.InputUtil.EMAIL_REGEX;
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Validated
+@CrossOrigin("*")
 public class UserController {
 
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);

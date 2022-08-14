@@ -20,6 +20,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/game")
+@CrossOrigin("*")
 public class GameController {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
