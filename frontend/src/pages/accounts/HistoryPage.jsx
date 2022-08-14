@@ -23,7 +23,6 @@ export default function HistoryPage() {
   if (isAuthenticated) {
     return (
       <div>
-        <h1>{nickname}님의 운동 현황 페이지</h1>
         <UserProfile userNickname={nickname}></UserProfile>
         <AwardList></AwardList>
         <MatchList></MatchList>
