@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class RoomService {
     private String OPENVIDU_URL;
     @Value("${wetness.openvidu.secret}")
     private String SECRET;
-    private OpenVidu openVidu = new OpenVidu("https://localhost:4443/","WETNESS");
+    private final OpenVidu openVidu = new OpenVidu("https://localhost:4443/","WETNESS");
     // 운동종류(int) : {방제목 : 세션+방}
     private Map<String, MapSessionRoom> mapSessions = new ConcurrentHashMap<>();
     // 방 제목 : {유저 닉네임 : 커넥션}
@@ -127,7 +128,7 @@ public class RoomService {
 
         else{
             //방장이 나갔다면 세션 종료
-            if(req.getNickname().equals(room.getManagerId())){
+            if(user.getId().equals(room.getManagerId())){
                 session.close();
                 // 방장이 아니라면 세션으로의 커넥션 정보만 제거
             }else{
@@ -177,7 +178,7 @@ public class RoomService {
             }
         }
 
-        return list;
+        return list.stream().distinct().collect(Collectors.toList());
     }
 
     private RoomListRes getRoomListResutil(String title){
