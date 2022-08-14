@@ -19,7 +19,7 @@ import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
-import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId } from '../../features/room/RoomSlice';
+import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId, setNowRoom } from '../../features/room/RoomSlice';
 import { removeSessionInfo } from '../../features/Token';
 
 const style = {
@@ -91,6 +91,12 @@ export default function Home() {
   }, []);
 
   function onCreate(e) {
+    const arg = {
+      title: roomInfo.title,
+      locked: !!roomInfo.password,
+      workout: roomInfo.workoutId,
+    };
+    dispatch(setNowRoom(arg));
     e.preventDefault();
     const payload = {
       workoutId: roomInfo.workoutId,

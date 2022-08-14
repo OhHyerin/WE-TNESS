@@ -51,6 +51,7 @@ function RoomPage() {
 
   const sessionInfo = getSessionInfo();
   const nickname = useSelector(state => state.user.currentUser.nickname);
+
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   if (isAuthenticated) {
@@ -145,6 +146,8 @@ class RoomClass extends Component {
   }
 
   componentWillUnmount() {
+    this.leaveSession();
+    console.log('leave Session');
     window.removeEventListener('beforeunload', this.onbeforeunload);
   }
 
