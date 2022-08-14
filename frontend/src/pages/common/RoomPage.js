@@ -4,12 +4,13 @@ import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
-import { styled as styledC } from '@mui/material';
+import { styled as styledC, Box, Paper, Grid, CircularProgress } from '@mui/material';
 import styled from 'styled-components';
-import Box from '@mui/material/Box';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMedal } from '@fortawesome/free-solid-svg-icons';
 import UserVideoComponent from './UserVideoComponent';
-import { getSessionInfo } from '../../features/Token';
+import { getSessionInfo, removeSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import setConfig from '../../features/authHeader';
 import api from '../../api';
@@ -61,11 +62,13 @@ class RoomClass extends Component {
       publisher: undefined,
       subscribers: [],
       currentVideoDevice: undefined,
+      connectionErr: false,
 
       isModelError: undefined,
 
       webcam: undefined,
 
+      isGaming: undefined,
       isFinish: undefined,
       isReady: undefined,
       readyState: new Map(),
@@ -95,6 +98,7 @@ class RoomClass extends Component {
     // 모션 인식
     this.setModel = this.setModel.bind(this);
     this.loop = this.loop.bind(this);
+    this.countSignal = this.countSignal.bind(this);
     this.squatPredict = this.squatPredict.bind(this);
   }
 
@@ -106,21 +110,18 @@ class RoomClass extends Component {
       token: sessionInfo.token,
       title: sessionInfo.title,
       workoutId: 1,
+      count: 0,
       // workoutId: sessionInfo.workoutId,
       myUserName: nickname,
       managerNickname: sessionInfo.managerNickname,
       isGaming: false,
+      isFinish: false,
     });
     setTimeout(() => {
       this.setModel();
       this.joinSession(sessionInfo.token);
-    }, 300);
+    }, 1000);
     this.init();
-    setTimeout(() => {
-      this.setState({
-        isLodaing: false,
-      });
-    }, 500);
   }
 
   componentWillUnmount() {
@@ -270,6 +271,7 @@ class RoomClass extends Component {
             });
           })
           .catch(error => {
+            this.setState({ session: undefined, connectionErr: true });
             console.log('There was an error connecting to the session:', error.code, error.message);
           });
         // });
@@ -313,21 +315,22 @@ class RoomClass extends Component {
 
   startSignal() {
     const mySession = this.state.session;
-    const data = new Date();
 
+    const data = new Date();
     const { title } = this.state;
     const createDate = [
-      data.getFullYear(),
-      data.getMonth(),
-      data.getDay(),
-      data.getHours(),
-      data.getMinutes(),
-      data.getSeconds(),
+      data.getUTCFullYear(),
+      data.getUTCMonth(),
+      data.getUTCDate(),
+      data.getUTCHours(),
+      data.getUTCMinutes(),
+      data.getUTCSeconds(),
     ];
     const payload = {
       title,
       createDate,
     };
+    console.log(payload);
     axios
       .post(api.start(), payload, setConfig())
       .then(res => {
@@ -342,15 +345,20 @@ class RoomClass extends Component {
   }
 
   start() {
+    console.log('게임 시작!');
     this.setState({
       isGaming: true,
       rank: [],
     });
-    window.requestAnimationFrame(this.loop);
+    setTimeout(() => {
+      window.requestAnimationFrame(this.loop);
+    }, 100);
   }
 
   // 모션 비디오
   async init() {
+    console.log('학습 비디오 생성!');
+
     const size = 200;
     const flip = true; // whether to flip the webcam
     // eslint-disable-next-line no-undef
@@ -364,6 +372,7 @@ class RoomClass extends Component {
 
   // 모델 생성
   async setModel() {
+    console.log('모델 생성!');
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
@@ -373,10 +382,11 @@ class RoomClass extends Component {
         Url = 'https://teachablemachine.withgoogle.com/models/rlT_xgNAW/';
         break;
       case 3: // 버피
-        Url = '';
+        Url = 'https://teachablemachine.withgoogle.com/models/759k-ZvHL/';
         break;
       case 4: // 런지
         Url = 'https://teachablemachine.withgoogle.com/models/9drs8J9Nm/';
+        break;
       default:
         this.setState({
           isModelError: true,
@@ -395,23 +405,37 @@ class RoomClass extends Component {
   }
 
   async loop(timestamp) {
-    this.state.webcam.update(); // update the webcam frame
-    switch (this.state.workoutId) {
-      case 1:
-        await this.squatPredict();
-        break;
-      case 2:
-        await this.pushupPredict();
-        break;
-      case 3:
-        await this.burpeePredict();
-        break;
-      case 4:
-        await this.lungePredict();
-      default:
-        break;
+    if (this.state.session && this.state.isGaming) {
+      this.state.webcam.update(); // update the webcam frame
+      switch (this.state.workoutId) {
+        case 1:
+          await this.squatPredict();
+          break;
+        case 2:
+          await this.pushupPredict();
+          break;
+        case 3:
+          await this.burpeePredict();
+          break;
+        case 4:
+          await this.lungePredict();
+          break;
+        default:
+          break;
+      }
+      window.requestAnimationFrame(this.loop);
     }
-    window.requestAnimationFrame(this.loop);
+  }
+
+  countSignal() {
+    this.state.session
+      .signal({
+        data: `${this.state.myUserName},${this.state.count}`,
+        type: 'count',
+      })
+      .then(() => {
+        this.setState({ check: false });
+      });
   }
 
   // 스쿼트
@@ -427,15 +451,9 @@ class RoomClass extends Component {
         this.setState({
           count: this.state.count + 1,
         });
-        this.state.session
-          .signal({
-            data: `${this.state.myUserName},${this.state.count}`,
-            type: 'count',
-          })
-          .then(() => {
-            this.setState({ check: false });
-          })
-          .catch(() => {});
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
       }
     } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -454,15 +472,9 @@ class RoomClass extends Component {
         this.setState({
           count: this.state.count + 1,
         });
-        this.state.session
-          .signal({
-            data: `${this.state.myUserName},${this.state.count}`,
-            type: 'count',
-          })
-          .then(() => {
-            this.setState({ check: false });
-          })
-          .catch(() => {});
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
       }
     } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -481,15 +493,9 @@ class RoomClass extends Component {
         this.setState({
           count: this.state.count + 1,
         });
-        this.state.session
-          .signal({
-            data: `${this.state.myUserName},${this.state.count}`,
-            type: 'count',
-          })
-          .then(() => {
-            this.setState({ check: false });
-          })
-          .catch(() => {});
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
       }
     } else if (prediction[0].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -508,15 +514,9 @@ class RoomClass extends Component {
         this.setState({
           count: this.state.count + 1,
         });
-        this.state.session
-          .signal({
-            data: `${this.state.myUserName},${this.state.count}`,
-            type: 'count',
-          })
-          .then(() => {
-            this.setState({ check: false });
-          })
-          .catch(() => {});
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
       }
     } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -531,6 +531,7 @@ class RoomClass extends Component {
     if (mySession) {
       mySession.disconnect();
     }
+
     axios
       .patch(
         api.quit(),
@@ -551,12 +552,11 @@ class RoomClass extends Component {
           mainStreamManager: undefined,
           publisher: undefined,
         });
+        this.props.navigate('/');
       })
       .catch(err => {
         console.log(err);
       });
-
-    this.props.navigate('/');
   }
 
   async switchCamera() {
@@ -596,17 +596,34 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { isModelError, title, myUserName, isGaming, managerNickname, isPossibleStart, isReady, count, rankList } =
-      this.state;
+    const {
+      connectionErr,
+      workoutId,
+      isModelError,
+      title,
+      myUserName,
+      isGaming,
+      managerNickname,
+      isPossibleStart,
+      isReady,
+      count,
+      rankList,
+    } = this.state;
 
     if (isModelError) {
       return <div>모델 생성 실패요</div>;
     }
+    if (connectionErr) {
+      return <div>올바르게 방입장했는지 확인좀요 ㅎㅎ</div>;
+    }
     return (
       <Container>
         {this.state.session === undefined ? (
-          <div>세션정보없어용</div>
+          <Box sx={{ display: 'flex' }}>
+            <CircularProgress />
+          </Box>
         ) : (
+          // 방 제목 & 나가기 버튼 => navbar로 이동해야 함
           <div id="session">
             <div id="session-header">
               <h1 id="session-title">방 제목 :{title}</h1>
@@ -618,23 +635,45 @@ class RoomClass extends Component {
                 value="Leave session"
               />
             </div>
+            <Box sx={{ flexGrow: 1 }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  {/* 타이머 & 시작버튼 */}
+                  <TimeBox>
+                    {isGaming ? (
+                      <Timer></Timer>
+                    ) : myUserName === managerNickname ? (
+                      <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
+                        시작!
+                      </SubmitBtn>
+                    ) : (
+                      <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                    )}
+                  </TimeBox>
+                </Grid>
 
-            {/* 타이머 & 시작버튼 */}
-            {isGaming ? (
-              <Timer></Timer>
-            ) : myUserName === managerNickname ? (
-              <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
-                시작!
-              </SubmitBtn>
-            ) : (
-              <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
-            )}
+                {/* 실시간 순위 & 최종 순위 */}
+                <Grid item xs={4}>
+                  <Item>
+                    <LiveRank rankList={rankList}></LiveRank>
+                  </Item>
+                </Grid>
 
-            {/* 실시간 순위 & 최종 순위 */}
-            <RankTable rankList={rankList}></RankTable>
+                {/* 애니매이션 & 결과창 */}
+                <Grid item xs={4}>
+                  <Item>애니매이션</Item>
+                </Grid>
+
+                {/* 운동정보 및 내 횟수와 순위 */}
+                <Grid item xs={4}>
+                  <Item>
+                    <MyWorkoutInfo count={count} workoutId={workoutId} rankList={rankList} myUserName={myUserName} />
+                  </Item>
+                </Grid>
+              </Grid>
+            </Box>
 
             {/* 내 화면 */}
-            <p>현재 개수 :{count}</p>
             <VideoContainer>
               {this.state.publisher !== undefined ? (
                 <div>
@@ -660,6 +699,21 @@ class RoomClass extends Component {
 }
 
 export default RoomPage;
+
+const Item = styledC(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
+const TimeBox = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+`;
 
 // 1분 타이머
 const Timer = () => {
@@ -717,21 +771,81 @@ function CustomizedProgressBars(props) {
   );
 }
 
-const RankBox = styled.div``;
+// 내 운동정보
 
-function RankTable({ rankList }) {
+const MyBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MyRank = styled.div`
+  display: flex;
+`;
+function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
+  const workoutName = function () {
+    switch (workoutId) {
+      case 1: {
+        return '스쿼트';
+      }
+      case 2: {
+        return '팔굽혀펴기';
+      }
+      case 3: {
+        return '버피';
+      }
+      case 4: {
+        return '런지';
+      }
+      default: {
+        return '운동 정보 없음';
+      }
+    }
+  };
+
+  const myRank = function () {
+    return rankList.findIndex(item => item.nickname === myUserName) + 1;
+  };
+
   return (
-    <RankBox>
-      {rankList
-        ? rankList.map((item, i) => {
-            if (i === 0) {
-              return <p>1등 : {item.nickname} </p>;
-            }
-            if (i === 1) {
-              return <p>2등 : {item.nickname} </p>;
-            }
-          })
-        : null}
-    </RankBox>
+    <MyBox>
+      <p>1분 {workoutName()}!!!</p>
+      <p>나의 운동 횟수 {count}개</p>
+      <MyRank>
+        <p>나의 순위</p> {myRank()} <p>등!</p>
+      </MyRank>
+    </MyBox>
+  );
+}
+
+// 실시간 랭킹
+
+const LiveBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+function LiveRank({ rankList }) {
+  const rankListLi = rankList.map((item, i) => {
+    if (i <= 2) {
+      return (
+        <li key={i}>
+          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
+          <p>
+            {item.nickname} {item.count}개
+          </p>
+        </li>
+      );
+    }
+    return null;
+  });
+  return (
+    <LiveBox>
+      <p>실시간 랭킹 !!</p>
+      <ul>{rankListLi}</ul>
+    </LiveBox>
   );
 }
