@@ -5,6 +5,7 @@ const USER_URL = '/user';
 const RANK_URL = '/rank';
 const ROOM_URL = '/room';
 const GAME_URL = '/game';
+const FITNESS_URL = '/fitness';
 
 const LOGIN_URL = '/login';
 const KAKAO_URL = '/kakao';
@@ -20,8 +21,6 @@ const FETCH_FOLLOWER_LIST_URL = '/follow/me';
 const FETCH_USER_INFO_URL = '/me';
 const CHANGE_PASSWORD = '/pw';
 const FIND_PASSWORD = '/findpassword';
-
-const HISTORY_URL = '';
 
 const MAKE_URL = '/make';
 const ENTER_URL = '/enter';
@@ -45,7 +44,7 @@ export default {
   fetchUserInfo: () => API_BASE_URL + USER_URL + FETCH_USER_INFO_URL,
   edit: () => API_BASE_URL + USER_URL,
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
-  fetchHistory: nickname => API_BASE_URL + USER_URL + HISTORY_URL + `/${nickname}`,
+  fetchHistory: nickname => API_BASE_URL + FITNESS_URL + `/${nickname}`,
   fetchRankList: () => API_BASE_URL + RANK_URL,
   fetchRoomList: () => API_BASE_URL + ROOM_URL,
   searchRooms: keyword => API_BASE_URL + ROOM_URL + SEARCH_URL + `${keyword}`,
