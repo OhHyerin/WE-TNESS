@@ -20,6 +20,15 @@ const BarBox = styled.div`
   width: 30%;
 `;
 
+const Tile = styled.div`
+  > * {
+    border-radius: 4px;
+    box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
+    margin: 0px 5px;
+  }
+  display: flex;
+`;
+
 function getDate(e) {
   const date = new Date();
   const stDate = new Date(date.getFullYear(), date.getMonth() - 3, date.getDate());
@@ -39,8 +48,12 @@ export default function RecordList() {
     <>
       <h2>운동 기록</h2>
       <RecordBox>
-        <h3>오늘의 칼로리 소모량</h3>
-        <p>{todayCalorie} kcal</p>
+        <Tile>
+          <h3>오늘의 칼로리 소모량</h3>
+        </Tile>
+        <Tile>
+          <p>{todayCalorie} kcal</p>
+        </Tile>
         <HeatmapBox>
           <CalendarHeatmap
             startDate={getDate('start')}
