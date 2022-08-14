@@ -47,7 +47,7 @@ const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { 
 const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios.get(api.fetchFollowerList(), setConfig());
-    console.log(res);
+    console.log(res.data);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
