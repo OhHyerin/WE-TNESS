@@ -26,6 +26,9 @@ const initialState = {
   sessionInfo: {},
   keyword: '',
   isRoom: false,
+
+  // 네비바 방 정보 표시
+  nowRoom: {},
 };
 
 const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWithValue }) => {
@@ -116,6 +119,9 @@ export const RoomSlice = createSlice({
       console.log(action.payload);
       state.isRoom = action.payload;
     },
+    setNowRoom: (state, action) => {
+      state.nowRoom = action.payload;
+    },
   },
   extraReducers: {
     [fetchRoomList.pending]: state => {
@@ -159,6 +165,7 @@ export const {
   setKeyword,
   setIsSearch,
   setIsRoom,
+  setNowRoom,
   fetchWorkoutId,
   fetchTitle,
   fetchPassword,

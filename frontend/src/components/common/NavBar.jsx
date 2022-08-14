@@ -6,6 +6,7 @@ import Badge from '@mui/material/Badge';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
+import LockIcon from '@mui/icons-material/Lock';
 import SearchForm from '../search/SearchForm';
 import AccountMenu from './Dropdown';
 import logo from '../../assets/images/logo.jpg';
@@ -56,6 +57,7 @@ export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
   const isRoom = useSelector(state => state.room.isRoom);
+  const nowRoom = useSelector(state => state.room.nowRoom);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -84,7 +86,10 @@ export default function NavBar() {
             <Logo>
               <img src={logo} alt="Logo" width={'40px'} height={'auto'} />
             </Logo>
-            <div>방정보</div>
+            <div>
+              {nowRoom.locked ? <LockIcon fontSize="small" /> : null} [
+              {nowRoom.workout === 1 ? '운동1' : nowRoom.workout === 2 ? '운동2' : '운동3'}] {nowRoom.title}{' '}
+            </div>
             <Button id="goOutBtn" variant="contained" color="error" onClick={handleGoOut}>
               나가기
             </Button>

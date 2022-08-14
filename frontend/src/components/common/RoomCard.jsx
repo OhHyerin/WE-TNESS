@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
-import { joinRoom } from '../../features/room/RoomSlice';
+import { joinRoom, setNowRoom } from '../../features/room/RoomSlice';
 
 const SubmitForm = styled.form`
   display: flex;
@@ -66,6 +66,12 @@ export default function RoomCard(props) {
 
   // 방 입장
   function onJoinRoom(e) {
+    const roomInfo = {
+      title,
+      locked,
+      workout,
+    };
+    dispatch(setNowRoom(roomInfo));
     e.preventDefault();
     const payload = {
       sessionName: props.room.title,
