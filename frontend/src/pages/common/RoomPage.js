@@ -4,16 +4,20 @@ import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
-import { styled as styledC, Box, Paper, Grid, CircularProgress } from '@mui/material';
+import { styled as styledC, Box, Paper, Grid, CircularProgress, Modal } from '@mui/material';
 import styled from 'styled-components';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IoMicSharp, IoMicOffSharp, IoVideocamOff, IoVideocam } from 'react-icons/io5';
 import { faMedal } from '@fortawesome/free-solid-svg-icons';
 import UserVideoComponent from './UserVideoComponent';
-import { getSessionInfo, removeSessionInfo } from '../../features/Token';
+import { getSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import setConfig from '../../features/authHeader';
 import api from '../../api';
+
+// 효과음
+import startSound from '../../assets/sound/startSound.wav';
 
 const Container = styled.div`
   padding: 0;
@@ -64,6 +68,12 @@ class RoomClass extends Component {
       currentVideoDevice: undefined,
       connectionErr: false,
 
+      audiostate: false,
+      videostate: true,
+
+      isStart: undefined,
+      countdown: 3,
+
       isModelError: undefined,
 
       webcam: undefined,
@@ -109,9 +119,8 @@ class RoomClass extends Component {
     this.setState({
       token: sessionInfo.token,
       title: sessionInfo.title,
-      workoutId: 1,
       count: 0,
-      // workoutId: sessionInfo.workoutId,
+      workoutId: sessionInfo.workoutId,
       myUserName: nickname,
       managerNickname: sessionInfo.managerNickname,
       isGaming: false,
@@ -346,13 +355,23 @@ class RoomClass extends Component {
 
   start() {
     console.log('게임 시작!');
-    this.setState({
-      isGaming: true,
-      rank: [],
-    });
+    new Audio(startSound).play();
+    this.setState({ isStart: true });
+    const countdown = setInterval(() => {
+      if (this.state.countdown <= 0) {
+        clearInterval(countdown);
+      } else {
+        this.setState({ countdown: this.state.countdown - 1 });
+      }
+    }, 1000);
     setTimeout(() => {
+      this.setState({
+        isStart: false,
+        isGaming: true,
+        rank: [],
+      });
       window.requestAnimationFrame(this.loop);
-    }, 100);
+    }, 3000);
   }
 
   // 모션 비디오
@@ -597,6 +616,8 @@ class RoomClass extends Component {
 
   render() {
     const {
+      isStart,
+      countdown,
       connectionErr,
       workoutId,
       isModelError,
@@ -635,6 +656,15 @@ class RoomClass extends Component {
                 value="Leave session"
               />
             </div>
+
+            {/* 카운트 다운 모달 */}
+            <Modal open={isStart}>
+              <Box sx={countDownStyle}>
+                <p>{countdown}</p>
+              </Box>
+            </Modal>
+
+            {/* 화면 위 쪽 UI */}
             <Box sx={{ flexGrow: 1 }}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
@@ -680,7 +710,52 @@ class RoomClass extends Component {
                   <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
                     <UserVideoComponent streamManager={this.state.publisher} />
                   </div>
-                  <p>내 닉네임 : {myUserName}</p>
+
+                  <div>
+                    <p>내 닉네임 : {myUserName}</p>
+
+                    {/* 마이크 & 카메라 onOff */}
+                    <MicVideoBtn>
+                      {this.state.audiostate ? (
+                        <IoMicSharp
+                          color="#9FA9D8"
+                          size="24"
+                          onClick={() => {
+                            this.state.publisher.publishAudio(!this.state.audiostate);
+                            this.setState({ audiostate: !this.state.audiostate });
+                          }}
+                        />
+                      ) : (
+                        <IoMicOffSharp
+                          color="#50468c"
+                          size="24"
+                          onClick={() => {
+                            this.state.publisher.publishAudio(!this.state.audiostate);
+                            this.setState({ audiostate: !this.state.audiostate });
+                          }}
+                        />
+                      )}
+                      {this.state.videostate ? (
+                        <IoVideocam
+                          color="#9FA9D8"
+                          size="24"
+                          onClick={() => {
+                            this.state.publisher.publishVideo(!this.state.videostate);
+                            this.setState({ videostate: !this.state.videostate });
+                          }}
+                        />
+                      ) : (
+                        <IoVideocamOff
+                          color="#50468c"
+                          size="24"
+                          onClick={() => {
+                            this.state.publisher.publishVideo(!this.state.videostate);
+                            this.setState({ videostate: !this.state.videostate });
+                          }}
+                        />
+                      )}
+                    </MicVideoBtn>
+                  </div>
                 </div>
               ) : null}
 
@@ -699,6 +774,25 @@ class RoomClass extends Component {
 }
 
 export default RoomPage;
+
+const MicVideoBtn = styled.ul`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+`;
+
+const countDownStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
 
 const Item = styledC(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
