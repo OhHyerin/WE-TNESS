@@ -4,6 +4,8 @@ export const API_BASE_URL = 'http://localhost:5000';
 const USER_URL = '/user';
 const RANK_URL = '/rank';
 const ROOM_URL = '/room';
+const GAME_URL = '/game';
+const FITNESS_URL = '/fitness';
 
 const LOGIN_URL = '/login';
 const KAKAO_URL = '/kakao';
@@ -20,11 +22,12 @@ const FETCH_USER_INFO_URL = '/me';
 const CHANGE_PASSWORD = '/pw';
 const FIND_PASSWORD = '/findpassword';
 
-const HISTORY_URL = '';
-
 const MAKE_URL = '/make';
 const ENTER_URL = '/enter';
 const SEARCH_URL = '/search?keyword=';
+const QUIT_URL = '/disconnect';
+
+const START_URL = '/start';
 
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
@@ -41,10 +44,14 @@ export default {
   fetchUserInfo: () => API_BASE_URL + USER_URL + FETCH_USER_INFO_URL,
   edit: () => API_BASE_URL + USER_URL,
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
-  fetchHistory: nickname => API_BASE_URL + USER_URL + HISTORY_URL + `/${nickname}`,
+  fetchHistory: nickname => API_BASE_URL + FITNESS_URL + `/${nickname}`,
   fetchRankList: () => API_BASE_URL + RANK_URL,
   fetchRoomList: () => API_BASE_URL + ROOM_URL,
+  searchRooms: keyword => API_BASE_URL + ROOM_URL + SEARCH_URL + `${keyword}`,
+
   createRoom: () => API_BASE_URL + ROOM_URL + MAKE_URL,
   joinRoom: () => API_BASE_URL + ROOM_URL + ENTER_URL,
-  searchRooms: keyword => API_BASE_URL + ROOM_URL + SEARCH_URL + `${keyword}`,
+  quit: () => API_BASE_URL + ROOM_URL + QUIT_URL,
+
+  start: () => API_BASE_URL + GAME_URL + START_URL,
 };

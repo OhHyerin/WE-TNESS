@@ -52,7 +52,7 @@ export default function RoomCard(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { headcount, workout, title, managerNickname, Locked, isGaming } = props.room;
+  const { headcount, workout, title, managerNickname, locked, isGaming } = props.room;
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   const [password, setPassword] = useState('');
@@ -78,9 +78,16 @@ export default function RoomCard(props) {
       <Card sx={{ maxWidth: 345, minWidth: 300 }}>
         <CardMedia component="img" height="140" image="" alt="" />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {title}
-          </Typography>
+          {locked ? (
+            <Typography gutterBottom variant="h5" component="div">
+              비밀방 {title}
+            </Typography>
+          ) : (
+            <Typography gutterBottom variant="h5" component="div">
+              공개방 {title}
+            </Typography>
+          )}
+
           <>
             <Typography variant="body2" color="text.secondary">
               {workout}
@@ -122,7 +129,7 @@ export default function RoomCard(props) {
               <p>방장 : {managerNickname}</p>
               <p>상태 :{isGaming ? '게임중' : '대기중'}</p>
               <p>인원 : {headcount} / 6 </p>
-              {Locked ? (
+              {locked ? (
                 <InputBox>
                   <TextField label="방 비밀번호" value={password} onChange={onPasswordHandler} />
                 </InputBox>

@@ -6,51 +6,62 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
+import { useSelector } from 'react-redux';
 
 export default function FollowerList({ followerList }) {
   return (
     <div>
-      {followerList}
+      {/* {followerList} */}
       <ColumnGroupingTable></ColumnGroupingTable>
     </div>
   );
 }
 
 const columns = [
-  { id: 'name', label: '' },
-  { id: 'user', label: 'User', minWidth: 50 },
+  { id: 'nickname', label: '닉네임' },
   {
-    id: 'calories',
-    label: 'Calories\u00a0(kcal)',
-    minWidth: 130,
-    align: 'right',
-    format: value => value.toLocaleString('en-US'),
+    id: 'loginState',
+    label: '상태',
+    format: value => {
+      if (value) return '온라인';
+      return '오프라인';
+    },
   },
-  {
-    id: 'state',
-    label: 'State',
-    minWidth: 100,
-    align: 'right',
-    format: value => value.toFixed(2),
-  },
+  // { id: 'name', label: '' },
+  // { id: 'user', label: 'User', minWidth: 50 },
+  // {
+  //   id: 'calories',
+  //   label: 'Calories\u00a0(kcal)',
+  //   minWidth: 130,
+  //   align: 'right',
+  //   format: value => value.toLocaleString('en-US'),
+  // },
+  // {
+  //   id: 'state',
+  //   label: 'State',
+  //   minWidth: 100,
+  //   align: 'right',
+  //   format: value => value.toFixed(2),
+  // },
 ];
 
-function createData(name, user, calories, state) {
-  return { name, user, calories, state };
-}
-
-// const rows = useSelect(state => state.user.followerList.followerList)
-const rows = [
-  createData('avt', 'wdsaf', 1324171354, 'o'),
-  createData('avt', 'wdsaf', 1403500365, 'o'),
-  createData('avt', 'wdsaf', 60483973, 'o'),
-  createData('avt aw', 'wdsaf', 327167434, 'o'),
-  createData('avt', 'wdsaf', 37602103, 'o'),
-  createData('avt', 'wdsaf', 25475400, 'o'),
-  createData('avt', 'wdsaf', 83019200, 'o'),
-];
+// function createData(name, user, calories, state) {
+//   return { name, user, calories, state };
+// }
+//
+// const rows = [
+//   createData('avt', 'wdsaf', 1324171354, 'o'),
+//   createData('avt', 'wdsaf', 1403500365, 'o'),
+//   createData('avt', 'wdsaf', 60483973, 'o'),
+//   createData('avt aw', 'wdsaf', 327167434, 'o'),
+//   createData('avt', 'wdsaf', 37602103, 'o'),
+//   createData('avt', 'wdsaf', 25475400, 'o'),
+//   createData('avt', 'wdsaf', 83019200, 'o'),
+// ];
 
 function ColumnGroupingTable() {
+  const rows = useSelector(state => state.user.followerList);
+
   return (
     <Paper>
       <TableContainer>
@@ -76,7 +87,7 @@ function ColumnGroupingTable() {
                   const value = row[column.id];
                   return (
                     <TableCell key={column.id} align={column.align}>
-                      {column.format && typeof value === 'number' ? column.format(value) : value}
+                      {column.format ? column.format(value) : value}
                     </TableCell>
                   );
                 })}
