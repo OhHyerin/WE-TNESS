@@ -21,7 +21,7 @@ public class MailService {
             'Y', 'Z'};
     private final char[] pwdNumTable = {'1', '2', '3', '4', '5', '6', '7', '8', '9', '0'};
     private final char[] pwdSpecialTable = {'!', '*', '@', '~'};
-//    private JavaMailSender javaMailSender;
+    //    private JavaMailSender javaMailSender;
     private final JavaMailSender javaMailSender;
     private final PasswordEncoder passwordEncoder;
 
@@ -59,6 +59,15 @@ public class MailService {
         //메일 내용
         simpleMessage.setText("임시 비밀번호는 " + tempPwd + " 입니다. \n 로그인 후 반드시 비밀번호를 변경해주세요.");
         //메일 발송
+        javaMailSender.send(simpleMessage);
+    }
+
+    public void sendMail(String emailAddr, String subject, String text) {
+        SimpleMailMessage simpleMessage = new SimpleMailMessage();
+        simpleMessage.setFrom(from);
+        simpleMessage.setTo(emailAddr);
+        simpleMessage.setSubject(subject);
+        simpleMessage.setText(text);
         javaMailSender.send(simpleMessage);
     }
 }

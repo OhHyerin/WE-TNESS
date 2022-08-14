@@ -10,4 +10,6 @@ public interface ReportService {
     ArrayList<ReportDto> getReports(Boolean process);
 
     boolean processReport(Long reportId);
+
+    void sendReportMail(String nickname, String email);
 }
