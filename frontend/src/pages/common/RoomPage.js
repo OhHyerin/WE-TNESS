@@ -25,9 +25,20 @@ const Container = styled.div`
 
 const VideoContainer = styled.div`
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 50px;
+  gap: 10px;
+`;
+
+const SubContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const MainContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
@@ -703,68 +714,89 @@ class RoomClass extends Component {
               </Grid>
             </Box>
 
-            {/* 내 화면 */}
             <VideoContainer>
-              {this.state.publisher !== undefined ? (
-                <div>
-                  <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
-                    <UserVideoComponent streamManager={this.state.publisher} />
-                  </div>
-
-                  <div>
-                    <p>내 닉네임 : {myUserName}</p>
-
-                    {/* 마이크 & 카메라 onOff */}
-                    <MicVideoBtn>
-                      {this.state.audiostate ? (
-                        <IoMicSharp
-                          color="#9FA9D8"
-                          size="24"
-                          onClick={() => {
-                            this.state.publisher.publishAudio(!this.state.audiostate);
-                            this.setState({ audiostate: !this.state.audiostate });
-                          }}
-                        />
-                      ) : (
-                        <IoMicOffSharp
-                          color="#50468c"
-                          size="24"
-                          onClick={() => {
-                            this.state.publisher.publishAudio(!this.state.audiostate);
-                            this.setState({ audiostate: !this.state.audiostate });
-                          }}
-                        />
-                      )}
-                      {this.state.videostate ? (
-                        <IoVideocam
-                          color="#9FA9D8"
-                          size="24"
-                          onClick={() => {
-                            this.state.publisher.publishVideo(!this.state.videostate);
-                            this.setState({ videostate: !this.state.videostate });
-                          }}
-                        />
-                      ) : (
-                        <IoVideocamOff
-                          color="#50468c"
-                          size="24"
-                          onClick={() => {
-                            this.state.publisher.publishVideo(!this.state.videostate);
-                            this.setState({ videostate: !this.state.videostate });
-                          }}
-                        />
-                      )}
-                    </MicVideoBtn>
-                  </div>
-                </div>
-              ) : null}
-
               {/* 친구들 화면 */}
-              {this.state.subscribers.map((sub, i) => (
-                <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
+              <SubContainer>
+                {this.state.subscribers.map((sub, i) => {
+                  if (i % 2 === 0) {
+                    return (
+                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
+                        <UserVideoComponent streamManager={sub} />
+                      </div>
+                    );
+                  }
+                })}
+              </SubContainer>
+
+              {/* 내 화면 */}
+              <MainContainer>
+                {this.state.publisher !== undefined ? (
+                  <div>
+                    <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
+                      <UserVideoComponent streamManager={this.state.publisher} />
+                    </div>
+
+                    <div>
+                      <p>내 닉네임 : {myUserName}</p>
+
+                      {/* 마이크 & 카메라 onOff */}
+                      <MicVideoBtn>
+                        {this.state.audiostate ? (
+                          <IoMicSharp
+                            color="#9FA9D8"
+                            size="24"
+                            onClick={() => {
+                              this.state.publisher.publishAudio(!this.state.audiostate);
+                              this.setState({ audiostate: !this.state.audiostate });
+                            }}
+                          />
+                        ) : (
+                          <IoMicOffSharp
+                            color="#50468c"
+                            size="24"
+                            onClick={() => {
+                              this.state.publisher.publishAudio(!this.state.audiostate);
+                              this.setState({ audiostate: !this.state.audiostate });
+                            }}
+                          />
+                        )}
+                        {this.state.videostate ? (
+                          <IoVideocam
+                            color="#9FA9D8"
+                            size="24"
+                            onClick={() => {
+                              this.state.publisher.publishVideo(!this.state.videostate);
+                              this.setState({ videostate: !this.state.videostate });
+                            }}
+                          />
+                        ) : (
+                          <IoVideocamOff
+                            color="#50468c"
+                            size="24"
+                            onClick={() => {
+                              this.state.publisher.publishVideo(!this.state.videostate);
+                              this.setState({ videostate: !this.state.videostate });
+                            }}
+                          />
+                        )}
+                      </MicVideoBtn>
+                    </div>
+                  </div>
+                ) : null}
+              </MainContainer>
+
+              <SubContainer>
+                {/* 친구들 화면 */}
+                {this.state.subscribers.map((sub, i) => {
+                  if (i % 2) {
+                    return (
+                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
+                        <UserVideoComponent streamManager={sub} />
+                      </div>
+                    );
+                  }
+                })}
+              </SubContainer>
             </VideoContainer>
           </div>
         )}
