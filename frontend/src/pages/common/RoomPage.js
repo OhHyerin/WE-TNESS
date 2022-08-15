@@ -4,7 +4,10 @@ import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
-import { styled as styledC, Box, Paper, Grid, CircularProgress, Modal, Chip } from '@mui/material';
+import { styled as styledC, Box, Paper, Grid, CircularProgress, Modal, Chip, keyframes } from '@mui/material';
+import LooksOneOutlinedIcon from '@mui/icons-material/LooksOneOutlined';
+import LooksTwoOutlinedIcon from '@mui/icons-material/LooksTwoOutlined';
+import Looks3OutlinedIcon from '@mui/icons-material/Looks3Outlined';
 import styled from 'styled-components';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -18,6 +21,11 @@ import api from '../../api';
 
 // 효과음
 import startSound from '../../assets/sound/startSound.wav';
+
+// docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
+// url :
+const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
+const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 const Container = styled.div`
   padding: 0;
@@ -41,11 +49,6 @@ const MainContainer = styled.div`
   justify-content: center;
   align-items: center;
 `;
-
-// docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
-// url :
-const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
-const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 function RoomPage() {
   const navigate = useNavigate();
@@ -84,8 +87,9 @@ class RoomClass extends Component {
       audioState: true,
       videoState: true,
 
-      isStart: undefined,
+      isStart: false,
       countdown: 3,
+      coundtDownIcon: undefined,
 
       isModelError: undefined,
 
@@ -459,6 +463,9 @@ class RoomClass extends Component {
         default:
           break;
       }
+      if (this.state.isFinish) {
+        return;
+      }
       window.requestAnimationFrame(this.loop);
     }
   }
@@ -705,14 +712,14 @@ class RoomClass extends Component {
             {/* 카운트 다운 모달 */}
             <Modal open={isStart}>
               <Box sx={countDownStyle}>
-                <p>{countdown}</p>
+                <CountDownIcon countdown={countdown}></CountDownIcon>
               </Box>
             </Modal>
 
             {/* 화면 위 쪽 UI */}
             <Box sx={{ flexGrow: 1 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
+              <Grid container spacing={2} sx={{ padding: '30px' }}>
+                <Grid item xs={12} sx={{ padding: '30px' }}>
                   {/* 타이머 & 시작버튼 */}
                   <TimeBox>
                     {isGaming ? (
@@ -727,14 +734,18 @@ class RoomClass extends Component {
                   </TimeBox>
                 </Grid>
 
-                {/* 실시간 순위 & 최종 순위 */}
+                {/* 실시간 순위 */}
                 <Grid item xs={4}>
-                  <Item>{isFinish ? <div>게임 끝남요</div> : <LiveRank rankList={rankList}></LiveRank>}</Item>
+                  {isFinish ? null : (
+                    <Item>
+                      <LiveRank rankList={rankList}></LiveRank>
+                    </Item>
+                  )}
                 </Grid>
 
                 {/* 애니매이션 & 결과창 */}
                 <Grid item xs={4}>
-                  <Item>애니매이션</Item>
+                  <Item>{isFinish ? <RankResult rankList={rankList}></RankResult> : '애니매이션'}</Item>
                 </Grid>
 
                 {/* 운동정보 및 내 횟수와 순위 */}
@@ -872,11 +883,11 @@ const countDownStyle = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
-  bgcolor: 'background.paper',
-  border: '2px solid #000',
-  boxShadow: 24,
-  p: 4,
+};
+
+const countDownIconStyle = {
+  color: 'white',
+  fontSize: '200px',
 };
 
 const Item = styledC(Paper)(({ theme }) => ({
@@ -894,9 +905,25 @@ const TimeBox = styled.div`
   justify-content: center;
 `;
 
+function CountDownIcon({ countdown }) {
+  const viewIcon = function () {
+    switch (countdown) {
+      case 1:
+        return <LooksOneOutlinedIcon sx={countDownIconStyle}></LooksOneOutlinedIcon>;
+      case 2:
+        return <LooksTwoOutlinedIcon sx={countDownIconStyle}></LooksTwoOutlinedIcon>;
+      case 3:
+        return <Looks3OutlinedIcon sx={countDownIconStyle}></Looks3OutlinedIcon>;
+      default:
+        return <h1>Go!</h1>;
+    }
+  };
+  return <>{viewIcon()}</>;
+}
+
 // 1분 타이머
 const Timer = ({ setFinish, isFinish }) => {
-  const [value, setValue] = useState(5);
+  const [value, setValue] = useState(60);
   useEffect(() => {
     if (!isFinish) {
       const myInterval = setInterval(() => {
@@ -922,7 +949,7 @@ const Timer = ({ setFinish, isFinish }) => {
 };
 
 const HurryLinearProgress = styledC(LinearProgress)(({ theme }) => ({
-  height: 10,
+  height: 20,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
@@ -930,6 +957,18 @@ const HurryLinearProgress = styledC(LinearProgress)(({ theme }) => ({
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
     backgroundColor: theme.palette.mode === 'light' ? '#f44336' : '#f44336',
+  },
+}));
+
+const WarnLinearProgress = styledC(LinearProgress)(({ theme }) => ({
+  height: 20,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === 'light' ? '#f5e23d' : '#f5e23d',
   },
 }));
 
@@ -944,8 +983,10 @@ const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
 function CustomizedProgressBars(props) {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {props.value <= 30 ? (
+      {props.value <= 10 ? (
         <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      ) : props.value < 30 ? (
+        <WarnLinearProgress variant="determinate" value={(props.value * 100) / 60} />
       ) : (
         <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
       )}
@@ -1027,6 +1068,28 @@ function LiveRank({ rankList }) {
   return (
     <LiveBox>
       <p>실시간 랭킹 !!</p>
+      <ul>{rankListLi}</ul>
+    </LiveBox>
+  );
+}
+
+function RankResult({ rankList }) {
+  const rankListLi = rankList.map((item, i) => {
+    if (i <= 2) {
+      return (
+        <li key={i}>
+          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
+          <p>
+            {item.nickname} {item.count}개
+          </p>
+        </li>
+      );
+    }
+    return null;
+  });
+  return (
+    <LiveBox>
+      <p>결과 !!</p>
       <ul>{rankListLi}</ul>
     </LiveBox>
   );
