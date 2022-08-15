@@ -66,6 +66,7 @@ export const setSessionInfo = info => {
     token: info.token,
     title: info.title,
     managerNickname: info.managerNickname,
+    workoutId: info.workoutId,
   };
   window.localStorage.setItem('sessionInfo', JSON.stringify(sessionInfo));
 };

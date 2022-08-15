@@ -26,7 +26,7 @@ function App() {
       dispatch(checkLogin());
     }
     dispatch(toggleIsLoding());
-  }, []);
+  }, [dispatch]);
 
   const isSearched = useSelector(state => state.room.isSearched);
   const location = useLocation();

@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
-import { joinRoom } from '../../features/room/RoomSlice';
+import { joinRoom, setNowRoom } from '../../features/room/RoomSlice';
 
 const SubmitForm = styled.form`
   display: flex;
@@ -52,7 +52,7 @@ export default function RoomCard(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const { handcount, workout, title, managerNickname, Locked, isGaming } = props.room;
+  const { headcount, workout, title, managerNickname, locked, isGaming } = props.room;
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
   const [password, setPassword] = useState('');
@@ -66,9 +66,15 @@ export default function RoomCard(props) {
 
   // 방 입장
   function onJoinRoom(e) {
+    const roomInfo = {
+      title,
+      locked,
+      workout,
+    };
+    dispatch(setNowRoom(roomInfo));
     e.preventDefault();
     const payload = {
-      sessionName: props.room.title,
+      title: props.room.title,
       password,
     };
     dispatch(joinRoom(payload)).then(res => navigate('/room'));
@@ -78,14 +84,33 @@ export default function RoomCard(props) {
       <Card sx={{ maxWidth: 345, minWidth: 300 }}>
         <CardMedia component="img" height="140" image="" alt="" />
         <CardContent>
-          <Typography gutterBottom variant="h5" component="div">
-            {title}
-          </Typography>
-          <Typography variant="body2" color="text.secondary">
-            <div>{workout}</div>
-            {isGaming ? <div>진행중</div> : <div>대기중</div>}
-            <div>{handcount} / 6 </div>
-          </Typography>
+          {locked ? (
+            <Typography gutterBottom variant="h5" component="div">
+              비밀방 {title}
+            </Typography>
+          ) : (
+            <Typography gutterBottom variant="h5" component="div">
+              공개방 {title}
+            </Typography>
+          )}
+
+          <>
+            <Typography variant="body2" color="text.secondary">
+              {workout}
+            </Typography>
+            {isGaming ? (
+              <Typography variant="body2" color="text.secondary">
+                진행중
+              </Typography>
+            ) : (
+              <Typography variant="body2" color="text.secondary">
+                대기중
+              </Typography>
+            )}
+            <Typography variant="body2" color="text.secondary">
+              {headcount} / 6{' '}
+            </Typography>
+          </>
         </CardContent>
         <CardActions>
           {isAuthenticated ? (
@@ -109,8 +134,8 @@ export default function RoomCard(props) {
               <p>방 제목: {title}</p>
               <p>방장 : {managerNickname}</p>
               <p>상태 :{isGaming ? '게임중' : '대기중'}</p>
-              <p>인원 : {handcount} / 6 </p>
-              {Locked ? (
+              <p>인원 : {headcount} / 6 </p>
+              {locked ? (
                 <InputBox>
                   <TextField label="방 비밀번호" value={password} onChange={onPasswordHandler} />
                 </InputBox>

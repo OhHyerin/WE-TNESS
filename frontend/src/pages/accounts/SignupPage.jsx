@@ -33,6 +33,7 @@ export default function SignupPage() {
   const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
   const isPossibleEmail = useSelector(state => state.signup.isPossibleEmail);
   const [isSignupError, setIsSignupError] = useState(false);
+  const errorMsg = useSelector(state => state.signup.errorMsg);
 
   const [isCheckNN, setIsCheckNN] = useState(false);
   const [isCheckEmail, setIsCheckEmail] = useState(false);
@@ -131,7 +132,15 @@ export default function SignupPage() {
               value={userInfo.email}
               onChange={onEmailHandler}
               helperText={
-                isCheckEmail ? (isPossibleEmail ? '사용 가능한 이메일입니다.' : '사용중인 이메일입니다.') : null
+                isCheckEmail ? (
+                  isPossibleEmail ? (
+                    '사용 가능한 이메일입니다.'
+                  ) : errorMsg ? (
+                    <p>{errorMsg}</p>
+                  ) : (
+                    '사용중인 이메일입니다.'
+                  )
+                ) : null
               }
             />
           </InputBox>

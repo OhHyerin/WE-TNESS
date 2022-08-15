@@ -1,25 +1,66 @@
-import React, { Component, useEffect } from 'react';
-import { Navigate } from 'react-router-dom';
+import React, { Component, useState, useEffect } from 'react';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
+import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
+import { styled as styledC, Box, Paper, Grid, CircularProgress, Modal, Chip, keyframes } from '@mui/material';
+import LooksOneOutlinedIcon from '@mui/icons-material/LooksOneOutlined';
+import LooksTwoOutlinedIcon from '@mui/icons-material/LooksTwoOutlined';
+import Looks3OutlinedIcon from '@mui/icons-material/Looks3Outlined';
+import styled from 'styled-components';
+import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IoMicOutline, IoMicOffOutline, IoVideocamOffOutline, IoVideocamOutline } from 'react-icons/io5';
+import { faMedal } from '@fortawesome/free-solid-svg-icons';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
-import './UserVideo.css';
+import SubmitBtn from '../../components/common/SubmitBtn';
+import setConfig from '../../features/authHeader';
+import api from '../../api';
+
+// 효과음
+import startSound from '../../assets/sound/startSound.wav';
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
 // url :
 const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
 const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
+const Container = styled.div`
+  padding: 0;
+`;
+
+const VideoContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+`;
+
+const SubContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const MainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
 function RoomPage() {
+  const navigate = useNavigate();
+
   const sessionInfo = getSessionInfo();
   const nickname = useSelector(state => state.user.currentUser.nickname);
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+
   if (isAuthenticated) {
     if (sessionInfo) {
-      return <RoomClass sessionInfo={sessionInfo} nickname={nickname}></RoomClass>;
+      return <RoomClass sessionInfo={sessionInfo} nickname={nickname} navigate={navigate}></RoomClass>;
     }
     return <div>세션정보없음</div>;
   }
@@ -33,6 +74,7 @@ class RoomClass extends Component {
     this.state = {
       token: undefined,
       title: undefined,
+      workoutId: undefined,
       managerNickname: undefined,
       myUserName: undefined,
       session: undefined,
@@ -40,50 +82,84 @@ class RoomClass extends Component {
       publisher: undefined,
       subscribers: [],
       currentVideoDevice: undefined,
+      connectionErr: false,
+
+      audioState: true,
+      videoState: true,
+
+      isStart: false,
+      countdown: 3,
+      coundtDownIcon: undefined,
+
+      isModelError: undefined,
+
+      webcam: undefined,
+
+      isGaming: undefined,
+      isFinish: false,
+      isReady: undefined,
+      readyState: new Map(),
+      isPossibleStart: true,
+
+      gameId: undefined,
+      count: 0,
+      check: undefined,
+
+      countList: new Map(), // 유저이름, 개수 저장
+      rankList: [], // 유저이름, 개수 => 1등부터 차례로 저장
     };
 
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
-    this.handleChangeSessionId = this.handleChangeSessionId.bind(this);
-    this.handleChangeUserName = this.handleChangeUserName.bind(this);
     this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
+
+    // 커스텀
+    this.init = this.init.bind(this);
+    this.join = this.join.bind(this);
+    this.startSignal = this.startSignal.bind(this);
+    this.start = this.start.bind(this);
+    this.readySignal = this.readySignal.bind(this);
+    this.checkPossibleStart = this.checkPossibleStart.bind(this);
+    this.setFinish = this.setFinish.bind(this);
+
+    // 모션 인식
+    this.setModel = this.setModel.bind(this);
+    this.loop = this.loop.bind(this);
+    this.countSignal = this.countSignal.bind(this);
+    this.squatPredict = this.squatPredict.bind(this);
   }
 
-  // state 업데이트 & 세션 입장 (sessionId랑 token 따로 빼서? => 백에서 준 토큰으로 입장 )
+  // state 업데이트 => 모델 생성 & 세션 입장 (백에서 받은 token으로 입장)
   componentDidMount() {
     window.addEventListener('beforeunload', this.onbeforeunload);
     const { sessionInfo, nickname } = this.props;
+    this.setState({
+      token: sessionInfo.token,
+      title: sessionInfo.title,
+      count: 0,
+      workoutId: sessionInfo.workoutId,
+      myUserName: nickname,
+      managerNickname: sessionInfo.managerNickname,
+      isGaming: false,
+      isFinish: false,
+    });
     setTimeout(() => {
-      this.setState({
-        token: sessionInfo.token,
-        title: sessionInfo.title,
-        myUserName: nickname,
-        managerNickname: sessionInfo.managerNickname,
-      });
-    }, 300);
-    this.joinSession(sessionInfo.token);
+      this.setModel();
+      this.joinSession(sessionInfo.token);
+    }, 1000);
+    this.init();
   }
 
   componentWillUnmount() {
+    this.leaveSession();
+    console.log('leave Session');
     window.removeEventListener('beforeunload', this.onbeforeunload);
   }
 
   onbeforeunload(event) {
     this.leaveSession();
-  }
-
-  handleChangeSessionId(e) {
-    this.setState({
-      mySessionId: e.target.value,
-    });
-  }
-
-  handleChangeUserName(e) {
-    this.setState({
-      myUserName: e.target.value,
-    });
   }
 
   handleMainVideoStream(stream) {
@@ -145,6 +221,42 @@ class RoomClass extends Component {
           console.warn(exception);
         });
 
+        // 입장 신호 수신
+        mySession.on('signal:join', event => {
+          this.state.readyState.set(event.data, false);
+        });
+
+        // 시작 신호 수신
+        mySession.on('signal:start', event => {
+          this.setState({
+            gameId: event.data,
+          });
+          this.start();
+        });
+
+        // 준비 신호 수신
+        mySession.on('signal:ready', event => {
+          const data = event.data.split(',');
+          this.readyState.set(data[0], data[1]);
+          this.checkPossibleStart();
+        });
+
+        // 모든 유저 1회 추가마다 수신
+        mySession.on('signal:count', event => {
+          const count = event.data.split(',');
+          this.state.countList.set(count[0], count[1]);
+
+          const ranks = new Map([...this.state.countList.entries()].sort((a, b) => b[1] - a[1]));
+          const rankL = [];
+
+          ranks.forEach((item, index) => {
+            rankL.push({ nickname: index, count: item });
+          });
+          this.setState({
+            rankList: rankL,
+          });
+        });
+
         // --- 4) Connect to the session with a valid user token ---
 
         // 'getToken' method is simulating what your server-side should do.
@@ -157,10 +269,10 @@ class RoomClass extends Component {
           .connect(token)
           // , { clientData: this.state.myUserName }
           .then(async () => {
+            this.join();
             const devices = await this.OV.getDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
-            console.log(this.state.session);
             // --- 5) Get your own camera stream ---
 
             // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
@@ -189,11 +301,308 @@ class RoomClass extends Component {
             });
           })
           .catch(error => {
+            this.setState({ session: undefined, connectionErr: true });
             console.log('There was an error connecting to the session:', error.code, error.message);
           });
         // });
       }
     );
+  }
+
+  join() {
+    const mySession = this.state.session;
+    if (this.state.myUserName !== this.state.managerNickname) {
+      mySession.signal({
+        data: this.state.myUserName,
+        type: 'join',
+      });
+    }
+  }
+
+  readySignal() {
+    const mySession = this.state.session;
+
+    this.setState({
+      isReady: !this.state.isReady,
+    });
+
+    mySession.signal({
+      data: `${this.state.myUserName},${this.state.isReady}`,
+      type: 'ready',
+    });
+  }
+
+  // 레디가 다 되었는지 확인
+  checkPossibleStart() {
+    if (this.myUserName === this.managerNickname) {
+      if (this.readyState.every((value, key) => value)) {
+        this.setState({
+          isPossibleStart: true,
+        });
+      }
+    }
+  }
+
+  startSignal() {
+    const mySession = this.state.session;
+
+    const data = new Date();
+    const { title } = this.state;
+    const createDate = [
+      data.getUTCFullYear(),
+      data.getUTCMonth(),
+      data.getUTCDate(),
+      data.getUTCHours(),
+      data.getUTCMinutes(),
+      data.getUTCSeconds(),
+    ];
+    const payload = {
+      title,
+      createDate,
+    };
+    console.log(payload);
+    axios
+      .post(api.start(), payload, setConfig())
+      .then(res => {
+        mySession.signal({
+          data: res.data.gameId,
+          type: 'start',
+        });
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  start() {
+    console.log('게임 시작!');
+    new Audio(startSound).play();
+    this.setState({ isStart: true });
+    const countdown = setInterval(() => {
+      if (this.state.countdown <= 0) {
+        clearInterval(countdown);
+      } else {
+        this.setState({ countdown: this.state.countdown - 1 });
+      }
+    }, 1000);
+    setTimeout(() => {
+      this.setState({
+        isStart: false,
+        isGaming: true,
+        rank: [],
+      });
+      window.requestAnimationFrame(this.loop);
+    }, 3000);
+  }
+
+  // 모션 비디오
+  async init() {
+    console.log('학습 비디오 생성!');
+
+    const size = 200;
+    const flip = true; // whether to flip the webcam
+    // eslint-disable-next-line no-undef
+    const webcam = new tmPose.Webcam(size, size, flip);
+    await this.setState({ webcam }); // width, height, flip
+
+    // Convenience function to setup a webcam
+    await this.state.webcam.setup(); // request access to the webcam
+    this.state.webcam.play();
+  }
+
+  // 모델 생성
+  async setModel() {
+    console.log('모델 생성!');
+    let Url = '1';
+    switch (this.state.workoutId) {
+      case 1: // 스쿼트
+        Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
+        break;
+      case 2: // 푸쉬업
+        Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
+        break;
+      case 3: // 버피
+        Url = 'https://teachablemachine.withgoogle.com/models/759k-ZvHL/';
+        break;
+      case 4: // 런지
+        Url = 'https://teachablemachine.withgoogle.com/models/9drs8J9Nm/';
+        break;
+      default:
+        this.setState({
+          isModelError: true,
+        });
+        break;
+    }
+
+    const modelURL = `${Url}model.json`;
+    const metadataURL = `${Url}metadata.json`;
+    // load the model and metadata
+    // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+    // Note: the pose library adds a tmPose object to your window (window.tmPose)
+    this.setState({
+      model: await tmPose.load(modelURL, metadataURL),
+    });
+  }
+
+  async loop(timestamp) {
+    if (this.state.session && this.state.isGaming) {
+      this.state.webcam.update(); // update the webcam frame
+      switch (this.state.workoutId) {
+        case 1:
+          await this.squatPredict();
+          break;
+        case 2:
+          await this.pushupPredict();
+          break;
+        case 3:
+          await this.burpeePredict();
+          break;
+        case 4:
+          await this.lungePredict();
+          break;
+        default:
+          break;
+      }
+      if (this.state.isFinish) {
+        return;
+      }
+      window.requestAnimationFrame(this.loop);
+    }
+  }
+
+  countSignal() {
+    this.state.session
+      .signal({
+        data: `${this.state.myUserName},${this.state.count}`,
+        type: 'count',
+      })
+      .then(() => {
+        this.setState({ check: false });
+      });
+  }
+
+  // 게임 종료 정보 전달
+  setFinish() {
+    console.log('게임 끝!');
+    this.setState({
+      isFinish: true,
+    });
+
+    const data = new Date();
+    const terminateDate = [
+      data.getUTCFullYear(),
+      data.getUTCMonth(),
+      data.getUTCDate(),
+      data.getUTCHours(),
+      data.getUTCMinutes(),
+      data.getUTCSeconds(),
+    ];
+
+    // 내 랭크정보 전달 수정 필요
+    const rank = 1;
+    const payload = {
+      gameId: this.state.gameId,
+      terminateDate,
+      workoutId: this.state.workoutId,
+      score: this.state.count,
+      rank,
+    };
+    console.log(payload);
+    axios
+      .post(api.end(), payload, setConfig())
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  // 스쿼트
+  async squatPredict() {
+    // Prediction #1: run input through posenet
+    // estimatePose can take in an image, video or canvas html element
+    const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
+    // Prediction 2: run input through teachable machine classification model
+    const prediction = await this.state.model.predict(posenetOutput);
+    // 앉았을 때 check => check 상태에서 일어나면 count + 1 => 내 개수 signal
+    if (prediction[0].probability.toFixed(2) > 0.99) {
+      if (this.state.check) {
+        this.setState({
+          count: this.state.count + 1,
+        });
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
+      }
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
+      this.setState({ check: true });
+    }
+  }
+
+  // 푸쉬업
+  async pushupPredict() {
+    // Prediction #1: run input through posenet
+    // estimatePose can take in an image, video or canvas html element
+    const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
+    // Prediction 2: run input through teachable machine classification model
+    const prediction = await this.state.model.predict(posenetOutput);
+    if (prediction[0].probability.toFixed(2) > 0.99) {
+      console.log('푸쉬업 올라감');
+      if (this.state.check) {
+        this.setState({
+          count: this.state.count + 1,
+        });
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
+      }
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
+      console.log('푸쉬업 내려감');
+      this.setState({ check: true });
+    }
+  }
+
+  // 버피
+  async burpeePredict() {
+    // Prediction #1: run input through posenet
+    // estimatePose can take in an image, video or canvas html element
+    const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
+    // Prediction 2: run input through teachable machine classification model
+    const prediction = await this.state.model.predict(posenetOutput);
+    if (prediction[1].probability.toFixed(2) > 0.99) {
+      if (this.state.check) {
+        this.setState({
+          count: this.state.count + 1,
+        });
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
+      }
+    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+      this.setState({ check: true });
+    }
+  }
+
+  // 런지
+  async lungePredict() {
+    // Prediction #1: run input through posenet
+    // estimatePose can take in an image, video or canvas html element
+    const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
+    // Prediction 2: run input through teachable machine classification model
+    const prediction = await this.state.model.predict(posenetOutput);
+    if (prediction[0].probability.toFixed(2) > 0.99) {
+      if (this.state.check) {
+        this.setState({
+          count: this.state.count + 1,
+        });
+        setTimeout(() => {
+          this.countSignal();
+        }, 10);
+      }
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
+      this.setState({ check: true });
+    }
   }
 
   leaveSession() {
@@ -205,16 +614,31 @@ class RoomClass extends Component {
       mySession.disconnect();
     }
 
-    // Empty all properties...
-    this.OV = null;
-    this.setState({
-      session: undefined,
-      subscribers: [],
-      mySessionId: undefined,
-      myUserName: undefined,
-      mainStreamManager: undefined,
-      publisher: undefined,
-    });
+    axios
+      .patch(
+        api.quit(),
+        {
+          nickname: this.state.myUserName,
+          title: this.state.title,
+        },
+        setConfig()
+      )
+      .then(() => {
+        // Empty all properties...
+        this.OV = null;
+        this.setState({
+          session: undefined,
+          subscribers: [],
+          mySessionId: undefined,
+          myUserName: undefined,
+          mainStreamManager: undefined,
+          publisher: undefined,
+        });
+        this.props.navigate('/');
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
   async switchCamera() {
@@ -254,128 +678,419 @@ class RoomClass extends Component {
   }
 
   render() {
-    const { mySessionId } = this.state;
-    const { myUserName } = this.state;
+    const {
+      isStart,
+      countdown,
+      connectionErr,
+      workoutId,
+      isModelError,
+      title,
+      isFinish,
+      myUserName,
+      isGaming,
+      managerNickname,
+      isPossibleStart,
+      isReady,
+      count,
+      rankList,
+    } = this.state;
 
+    if (isModelError) {
+      return <div>모델 생성 실패요</div>;
+    }
+    if (connectionErr) {
+      return <div>올바르게 방입장했는지 확인좀요 ㅎㅎ</div>;
+    }
     return (
-      <div className="container">
+      <Container>
         {this.state.session === undefined ? (
-          <div>세션정보없어용</div>
+          <Box sx={{ display: 'flex' }}>
+            <CircularProgress />
+          </Box>
         ) : (
-          <div id="session">
-            <div id="session-header">
-              <h1 id="session-title">{mySessionId}</h1>
-              <input
-                className="btn btn-large btn-danger"
-                type="button"
-                id="buttonLeaveSession"
-                onClick={this.leaveSession}
-                value="Leave session"
-              />
-            </div>
+          <div>
+            {/* 카운트 다운 모달 */}
+            <Modal open={isStart}>
+              <Box sx={countDownStyle}>
+                <CountDownIcon countdown={countdown}></CountDownIcon>
+              </Box>
+            </Modal>
 
-            {/* 내 화면 ? */}
-            <div id="video-container" className="col-md-6">
-              {this.state.publisher !== undefined ? (
-                <div
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(this.state.publisher)}>
-                  <UserVideoComponent streamManager={this.state.publisher} />
-                </div>
-              ) : null}
+            {/* 화면 위 쪽 UI */}
+            <Box sx={{ flexGrow: 1 }}>
+              <Grid container spacing={2} sx={{ padding: '30px' }}>
+                <Grid item xs={12} sx={{ padding: '30px' }}>
+                  {/* 타이머 & 시작버튼 */}
+                  <TimeBox>
+                    {isGaming ? (
+                      <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
+                    ) : myUserName === managerNickname ? (
+                      <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
+                        시작!
+                      </SubmitBtn>
+                    ) : (
+                      <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                    )}
+                  </TimeBox>
+                </Grid>
 
-              {/* 친구들 화면? */}
-              {this.state.subscribers.map((sub, i) => (
-                <div
-                  key={i}
-                  className="stream-container col-md-6 col-xs-6"
-                  onClick={() => this.handleMainVideoStream(sub)}>
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
-            </div>
+                {/* 실시간 순위 */}
+                <Grid item xs={4}>
+                  {isFinish ? null : (
+                    <Item>
+                      <LiveRank rankList={rankList}></LiveRank>
+                    </Item>
+                  )}
+                </Grid>
+
+                {/* 애니매이션 & 결과창 */}
+                <Grid item xs={4}>
+                  <Item>{isFinish ? <RankResult rankList={rankList}></RankResult> : '애니매이션'}</Item>
+                </Grid>
+
+                {/* 운동정보 및 내 횟수와 순위 */}
+                <Grid item xs={4}>
+                  <Item>
+                    <MyWorkoutInfo count={count} workoutId={workoutId} rankList={rankList} myUserName={myUserName} />
+                  </Item>
+                </Grid>
+              </Grid>
+            </Box>
+
+            <VideoContainer>
+              {/* 친구들 화면 */}
+              <SubContainer>
+                {this.state.subscribers.map((sub, i) => {
+                  if (i % 2 === 0) {
+                    return (
+                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
+                        <UserVideoComponent streamManager={sub} />
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+              </SubContainer>
+
+              {/* 내 화면 */}
+              <>
+                {this.state.publisher !== undefined ? (
+                  <MainContainer>
+                    <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
+                      <UserVideoComponent streamManager={this.state.publisher} />
+                    </div>
+
+                    <MyInfoBox>
+                      <Chip label={myUserName} variant="outlined" />
+
+                      {/* 마이크 & 카메라 onOff */}
+                      <MicVideoBtn>
+                        <Chip
+                          label={
+                            this.state.audioState ? (
+                              <IoMicOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishAudio(!this.state.audioState);
+                                  this.setState({ audioState: !this.state.audioState });
+                                }}
+                              />
+                            ) : (
+                              <IoMicOffOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishAudio(!this.state.audioState);
+                                  this.setState({ audioState: !this.state.audioState });
+                                }}
+                              />
+                            )
+                          }
+                          variant="outlined"
+                        />
+
+                        <Chip
+                          label={
+                            this.state.videoState ? (
+                              <IoVideocamOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishVideo(!this.state.videoState);
+                                  this.setState({ videoState: !this.state.videoState });
+                                }}
+                              />
+                            ) : (
+                              <IoVideocamOffOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishVideo(!this.state.videoState);
+                                  this.setState({ videoState: !this.state.videoState });
+                                }}
+                              />
+                            )
+                          }
+                          variant="outlined"
+                        />
+                      </MicVideoBtn>
+                    </MyInfoBox>
+                  </MainContainer>
+                ) : null}
+              </>
+
+              <SubContainer>
+                {/* 친구들 화면 */}
+                {this.state.subscribers.map((sub, i) => {
+                  if (i % 2) {
+                    return (
+                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
+                        <UserVideoComponent streamManager={sub} />
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+              </SubContainer>
+            </VideoContainer>
           </div>
         )}
-      </div>
+      </Container>
     );
   }
-
-  /**
-   * --------------------------
-   * SERVER-SIDE RESPONSIBILITY
-   * --------------------------
-   * These methods retrieve the mandatory user token from OpenVidu Server.
-   * This behavior MUST BE IN YOUR SERVER-SIDE IN PRODUCTION (by using
-   * the API REST, openvidu-java-client or openvidu-node-client):
-   *   1) Initialize a Session in OpenVidu Server	(POST /openvidu/api/sessions)
-   *   2) Create a Connection in OpenVidu Server (POST /openvidu/api/sessions/<SESSION_ID>/connection)
-   *   3) The Connection.token must be consumed in Session.connect() method
-   */
-
-  // getToken() {
-  //   return this.createSession(this.state.mySessionId).then(sessionId => {
-  //     console.log(sessionId);
-  //     this.createToken(sessionId);
-  //   });
-  // }
-
-  // // eslint-disable-next-line class-methods-use-this
-  // createSession(sessionId) {
-  //   return new Promise((resolve, reject) => {
-  //     const data = JSON.stringify({ customSessionId: sessionId });
-  //     axios
-  //       .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions', data, {
-  //         headers: {
-  //           Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-  //           'Content-Type': 'application/json',
-  //         },
-  //       })
-  //       .then(response => {
-  //         console.log('CREATE SESION', response);
-  //         resolve(response.data.id);
-  //       })
-  //       .catch(response => {
-  //         const error = { ...response };
-  //         if (error?.response?.status === 409) {
-  //           resolve(sessionId);
-  //         } else {
-  //           console.log(error);
-  //           console.warn('No connection to OpenVidu Server. This may be a certificate error at ' + OPENVIDU_SERVER_URL);
-  //           if (
-  //             window.confirm(
-  //               'No connection to OpenVidu Server. This may be a certificate error at "' +
-  //                 OPENVIDU_SERVER_URL +
-  //                 '"\n\nClick OK to navigate and accept it. ' +
-  //                 'If no certificate warning is shown, then check that your OpenVidu Server is up and running at "' +
-  //                 OPENVIDU_SERVER_URL +
-  //                 '"'
-  //             )
-  //           ) {
-  //             window.location.assign(OPENVIDU_SERVER_URL + '/accept-certificate');
-  //           }
-  //         }
-  //       });
-  //   });
-  // }
-
-  // // eslint-disable-next-line class-methods-use-this
-  // createToken(sessionId) {
-  //   return new Promise((resolve, reject) => {
-  //     const data = {};
-  //     axios
-  //       .post(OPENVIDU_SERVER_URL + '/openvidu/api/sessions/' + sessionId + '/connection', data, {
-  //         headers: {
-  //           Authorization: 'Basic ' + btoa('OPENVIDUAPP:' + OPENVIDU_SERVER_SECRET),
-  //           'Content-Type': 'application/json',
-  //         },
-  //       })
-  //       .then(response => {
-  //         console.log('TOKEN', response);
-  //         resolve(response.data.token);
-  //       })
-  //       .catch(error => reject(error));
-  //   });
-  // }
 }
 
 export default RoomPage;
+
+const MyInfoBox = styled.div`
+  display: flex;
+  width: 100%;
+  padding-top: 5px;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const MicVideoBtn = styled.ul`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+`;
+
+const countDownStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+};
+
+const countDownIconStyle = {
+  color: 'white',
+  fontSize: '200px',
+};
+
+const Item = styledC(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
+const TimeBox = styled.div`
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+`;
+
+function CountDownIcon({ countdown }) {
+  const viewIcon = function () {
+    switch (countdown) {
+      case 1:
+        return <LooksOneOutlinedIcon sx={countDownIconStyle}></LooksOneOutlinedIcon>;
+      case 2:
+        return <LooksTwoOutlinedIcon sx={countDownIconStyle}></LooksTwoOutlinedIcon>;
+      case 3:
+        return <Looks3OutlinedIcon sx={countDownIconStyle}></Looks3OutlinedIcon>;
+      default:
+        return <h1>Go!</h1>;
+    }
+  };
+  return <>{viewIcon()}</>;
+}
+
+// 1분 타이머
+const Timer = ({ setFinish, isFinish }) => {
+  const [value, setValue] = useState(60);
+  useEffect(() => {
+    if (!isFinish) {
+      const myInterval = setInterval(() => {
+        if (value > 0) {
+          setValue(value - 0.1);
+        }
+        if (value <= 0) {
+          setFinish();
+          clearInterval(myInterval);
+        }
+      }, 100);
+      return () => {
+        clearInterval(myInterval);
+      };
+    }
+  });
+
+  return (
+    <>
+      <CustomizedProgressBars value={value}></CustomizedProgressBars>
+    </>
+  );
+};
+
+const HurryLinearProgress = styledC(LinearProgress)(({ theme }) => ({
+  height: 20,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === 'light' ? '#f44336' : '#f44336',
+  },
+}));
+
+const WarnLinearProgress = styledC(LinearProgress)(({ theme }) => ({
+  height: 20,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === 'light' ? '#f5e23d' : '#f5e23d',
+  },
+}));
+
+const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
+  height: 20,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+}));
+
+function CustomizedProgressBars(props) {
+  return (
+    <Box sx={{ flexGrow: 1 }}>
+      {props.value <= 10 ? (
+        <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      ) : props.value < 30 ? (
+        <WarnLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      ) : (
+        <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      )}
+    </Box>
+  );
+}
+
+// 내 운동정보
+
+const MyBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+const MyRank = styled.div`
+  display: flex;
+`;
+function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
+  const workoutName = function () {
+    switch (workoutId) {
+      case 1: {
+        return '스쿼트';
+      }
+      case 2: {
+        return '팔굽혀펴기';
+      }
+      case 3: {
+        return '버피';
+      }
+      case 4: {
+        return '런지';
+      }
+      default: {
+        return '운동 정보 없음';
+      }
+    }
+  };
+
+  const myRank = function () {
+    return rankList.findIndex(item => item.nickname === myUserName) + 1;
+  };
+
+  return (
+    <MyBox>
+      <p>1분 {workoutName()}!!!</p>
+      <p>나의 운동 횟수 {count}개</p>
+      <MyRank>
+        <p>나의 순위</p> {myRank()} <p>등!</p>
+      </MyRank>
+    </MyBox>
+  );
+}
+
+// 실시간 랭킹
+
+const LiveBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+
+function LiveRank({ rankList }) {
+  const rankListLi = rankList.map((item, i) => {
+    if (i <= 2) {
+      return (
+        <li key={i}>
+          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
+          <p>
+            {item.nickname} {item.count}개
+          </p>
+        </li>
+      );
+    }
+    return null;
+  });
+  return (
+    <LiveBox>
+      <p>실시간 랭킹 !!</p>
+      <ul>{rankListLi}</ul>
+    </LiveBox>
+  );
+}
+
+function RankResult({ rankList }) {
+  const rankListLi = rankList.map((item, i) => {
+    if (i <= 2) {
+      return (
+        <li key={i}>
+          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
+          <p>
+            {item.nickname} {item.count}개
+          </p>
+        </li>
+      );
+    }
+    return null;
+  });
+  return (
+    <LiveBox>
+      <p>결과 !!</p>
+      <ul>{rankListLi}</ul>
+    </LiveBox>
+  );
+}
