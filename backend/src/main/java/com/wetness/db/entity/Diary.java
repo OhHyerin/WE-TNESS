@@ -26,8 +26,15 @@ public class Diary {
     private LocalDateTime date;
 
     @ManyToOne
-    @JoinColumn(name="user_game_id")
+    @JoinColumn(name="game_record_id")
     private GameRecord gameRecord;
+
+    @Column(name="is_valid")
+    private boolean isValid;
+
+    public void setValid(Boolean isValid){
+        this.isValid = isValid;
+    }
 
     private Diary(DiaryBuilder builder){
         this.id = builder.id;
@@ -35,6 +42,7 @@ public class Diary {
         this.fileName = builder.fileName;
         this.date = builder.date;
         this.gameRecord = builder.gameRecord;
+        this.isValid = builder.isValid;
     }
 
     public static class DiaryBuilder{
@@ -43,6 +51,7 @@ public class Diary {
         private String fileName;
         private LocalDateTime date;
         private GameRecord gameRecord;
+        private Boolean isValid;
 
         public DiaryBuilder(){}
 
@@ -54,12 +63,17 @@ public class Diary {
             this.fileName = file;
             return this;
         }
-        public DiaryBuilder buildDate(int[] date){
-            this.date = LocalDateTime.of(date[0],date[1],date[2],date[3],date[4],date[5]);
+        public DiaryBuilder buildDate(LocalDateTime date){
+            this.date = date;
             return this;
         }
         public DiaryBuilder buildRecord(GameRecord record){
             this.gameRecord = record;
+            return this;
+        }
+
+        public DiaryBuilder buildValidation(Boolean isValid){
+            this.isValid = isValid;
             return this;
         }
         public Diary getDiary(){

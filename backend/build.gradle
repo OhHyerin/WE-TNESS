@@ -48,8 +48,16 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	// 오픈비두
 	implementation 'io.openvidu:openvidu-java-client:2.20.0'
+
+	// https://mvnrepository.com/artifact/org.springframework.cloud/spring-cloud-starter-aws
+	implementation group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.2.6.RELEASE'
+
+// https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-s3
+	implementation group: 'com.amazonaws', name: 'aws-java-sdk-s3', version: '1.12.279'
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
 }
+

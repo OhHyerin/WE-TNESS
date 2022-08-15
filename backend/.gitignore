@@ -27,6 +27,8 @@ out/
 !**/src/test/**/out/
 *.xml
 
+application-aws.yml
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
@@ -36,3 +38,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### mail password ###
+src/main/resources/application-mail.yml

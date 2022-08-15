@@ -31,4 +31,5 @@ public class Medal {
     private int silver;
     private int bronze;
 
+    private int totalCnt;
 }

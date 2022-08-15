@@ -5,11 +5,13 @@ import com.wetness.db.repository.*;
 import com.wetness.model.dto.request.DiaryReqDto;
 import com.wetness.model.dto.request.GameReqDto;
 import com.wetness.model.dto.request.GameResultReqDto;
+import com.wetness.model.dto.response.DiaryRespDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,8 @@ public class GameServiceImpl implements GameService{
     @Autowired
     RoomRepository roomRepo;
 
+    @Autowired
+    FitnessRecordRepository fitRepo;
 
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
@@ -52,6 +56,46 @@ public class GameServiceImpl implements GameService{
         Long gameId = gameRepo.save(game).getId();
         return gameId;
     }
+
+
+    @Override
+    public void insertDiary(Long gameRecordId, String fileName,UserDetailsImpl user) {
+
+        User writer = userRepo.findById(user.id()).get();
+        GameRecord gameRecord = gameRecordRepo.findById(gameRecordId).get();
+
+        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(fileName).
+                buildDate(LocalDateTime.now()).buildRecord(gameRecord).buildValidation(true).getDiary();
+
+        diaryRepo.save(diary);
+        return;
+    }
+
+    @Override
+    public void invalidateDiary(String filename, UserDetailsImpl user) {
+        Diary diary = diaryRepo.findByFileName(filename).get(0); //UUID 추가하므로 unique
+
+        if(diary.getUser().getId()!= user.id()) return;
+
+        diary.setValid(false);
+        diaryRepo.save(diary);
+    }
+
+    @Override
+    public List<DiaryRespDto> readDiary(String nickname) {
+
+        User user = userRepo.findByNickname(nickname);
+        List<Diary> diaryList = diaryRepo.findByUser(user);
+        List<DiaryRespDto> diaryRespList = new ArrayList<>();
+        for(int i=0; i<diaryList.size(); i++){
+            Diary diary = diaryList.get(i);
+            if(!diary.isValid()) continue;
+            String regDate = diary.getDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            diaryRespList.add(new DiaryRespDto( diary.getFileName(), regDate ) );
+        }
+        return diaryRespList;
+    }
+
 
     @Override
     public void terminateGame(GameResultReqDto result, Long userId) {
@@ -77,14 +121,31 @@ public class GameServiceImpl implements GameService{
 //ranking 저장
         this.insertRank(gameResult);
 //medal 저장
-        if(gameResult.getRank()<=3){
-            this.insertMedal(gameResult);
-        }
-
+        this.insertMedal(gameResult);
+//fitness record 저장
+        this.insertFitnessRecord(gameResult);
 
         return userGameId;
     }
 
+    void insertFitnessRecord(GameRecord gameRecord){
+        LocalDate regDate = LocalDate.now();
+        User user = gameRecord.getUser();
+        Double weight = (user.getWeight()!=null)? user.getWeight():0;
+        Double calorie = weight * gameRecord.getWorkout().getMet() * gameRecord.getScore();
+
+        if(!fitRepo.findByUserAndRegDate(user, regDate).isPresent()){
+            FitnessRecord fitness = new FitnessRecord(0, user, 1, calorie, regDate);
+            fitRepo.save(fitness);
+        }else{
+            FitnessRecord fitness = fitRepo.findByUserAndRegDate(user, regDate).get();
+            fitness.setGameCnt(fitness.getGameCnt()+1);
+            fitness.setCalorie(fitness.getCalorie()+calorie);
+            fitRepo.save(fitness);
+        }
+
+        return;
+    }
 
 
     void insertMedal(GameRecord gameRecord){
@@ -97,6 +158,8 @@ public class GameServiceImpl implements GameService{
         }else{
             medal.setUserId(user.getId());
         }
+
+        medal.setTotalCnt(medal.getTotalCnt()+1);
 
         if(gameRecord.getRank()==1){
             medal.setGold(medal.getGold()+1);
@@ -115,6 +178,9 @@ public class GameServiceImpl implements GameService{
 
     void insertRank(GameRecord gameRecord){
 
+        if(gameRecord.getUser().getWeight()==null) return; //weight 정보 없음
+
+        //칼로리 계산식 리팩토링 필요
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore();
 
@@ -152,17 +218,7 @@ public class GameServiceImpl implements GameService{
 
 
 
-    @Override
-    public void insertDiary(DiaryReqDto diaryReq, UserDetailsImpl user) {
-        User writer = userRepo.findById(user.id()).get();
-        GameRecord gameRecord = gameRecordRepo.findById(diaryReq.getUserGameId()).get();
 
-        Diary diary = new Diary.DiaryBuilder().buildUser(writer).buildFileName(diaryReq.getFileName()).
-                buildDate(diaryReq.getDate()).buildRecord(gameRecord).getDiary();
-
-        diaryRepo.save(diary);
-        return;
-    }
 
 }
 

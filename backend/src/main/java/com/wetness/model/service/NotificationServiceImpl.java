@@ -41,9 +41,9 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     @Transactional
-    public boolean registerFollowMessage(NotificationReqDto notificationReqDto, String nickname) {
-        User user = userRepository.findByNickname(nickname);
-        User target = userRepository.findByNickname(notificationReqDto.getNickname());
+    public boolean registerFollowMessage(String followerNickname, String followingNickname) {
+        User user = userRepository.findByNickname(followerNickname);
+        User target = userRepository.findByNickname(followingNickname);
 
         Notification notification = new Notification();
         notification.setReceiver(target);

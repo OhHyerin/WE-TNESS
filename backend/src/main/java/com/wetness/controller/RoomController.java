@@ -25,7 +25,7 @@ import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/room")
+@RequestMapping("/api/room")
 public class RoomController {
 
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
