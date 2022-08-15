@@ -5,9 +5,8 @@ import api from '../../api/index';
 const signup = createAsyncThunk('signup', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.signup(), payload);
-    return res;
+    return res.data;
   } catch (err) {
-    console.log(err);
     return rejectWithValue(err.response);
   }
 });
@@ -29,8 +28,7 @@ const checkEmail = createAsyncThunk('checkEmail', async (payload, { rejectWithVa
     const res = await axios.get(api.checkEmail(email));
     return res.data;
   } catch (err) {
-    console.log(err);
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -55,6 +53,7 @@ const initialState = {
   isModal: false,
   isPossibleNickname: false,
   isPossibleEmail: false,
+  errorMsg: '',
 };
 
 export const SignupSlice = createSlice({
@@ -92,6 +91,11 @@ export const SignupSlice = createSlice({
     },
     [checkEmail.fulfilled]: (state, action) => {
       state.isPossibleEmail = !action.payload.exist;
+      state.errorMsg = '';
+    },
+    [checkEmail.rejected]: state => {
+      state.isPossibleEmail = false;
+      state.errorMsg = '올바른 이메일 형식으로 입력해주세요.';
     },
     [addInfo.fulfilled]: state => {
       state.isModal = false;

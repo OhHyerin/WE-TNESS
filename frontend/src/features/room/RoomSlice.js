@@ -25,6 +25,10 @@ const initialState = {
   // 방 생성 입장 관련
   sessionInfo: {},
   keyword: '',
+  isRoom: false,
+
+  // 네비바 방 정보 표시
+  nowRoom: {},
 };
 
 const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWithValue }) => {
@@ -34,7 +38,7 @@ const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWith
     console.log(res.data);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -48,39 +52,34 @@ const getWorksouts = createAsyncThunk('getWorkouts', async (state, { rejectWithV
   }
 });
 
-const searchRooms = createAsyncThunk('searchRooms', async (payload, { rejectWithValue }) => {
-  console.log('searchRooms : ' + payload);
+const searchRooms = createAsyncThunk('searchRooms', async (arg, { rejectWithValue }) => {
+  console.log(arg);
   try {
-    const { scope, workout } = payload;
-    const response = await axios.get(`/search?scope=${scope}&workout=${workout}`);
-    console.log('response : ' + response);
-    return response;
+    const res = await axios.get(api.searchRooms(arg.keyword), setConfig());
+    console.log(res.data);
+    return res.data;
   } catch (error) {
-    return rejectWithValue(error.response);
+    return rejectWithValue(error.response.data);
   }
 });
 
 const createRoom = createAsyncThunk('createRoom', async (payload, { rejectWithValue }) => {
-  console.log(payload);
   try {
     const res = await axios.post(api.createRoom(), payload, setConfig());
-    console.log(res.data);
     setSessionInfo(res.data);
     return res.data;
   } catch (error) {
-    return rejectWithValue(error.response);
+    return rejectWithValue(error.response.data);
   }
 });
 
 const joinRoom = createAsyncThunk('joinRoom', async (payload, { rejectWithValue }) => {
-  console.log(payload);
   try {
     const res = await axios.post(api.joinRoom(), payload, setConfig());
-    console.log(res.data);
     setSessionInfo(res.data);
     return res.data;
   } catch (error) {
-    return rejectWithValue(error.response);
+    return rejectWithValue(error.response.data);
   }
 });
 
@@ -116,6 +115,13 @@ export const RoomSlice = createSlice({
     setIsSearch: (state, action) => {
       state.isSearched = action.payload;
     },
+    setIsRoom: (state, action) => {
+      console.log(action.payload);
+      state.isRoom = action.payload;
+    },
+    setNowRoom: (state, action) => {
+      state.nowRoom = action.payload;
+    },
   },
   extraReducers: {
     [fetchRoomList.pending]: state => {
@@ -143,6 +149,9 @@ export const RoomSlice = createSlice({
     [joinRoom.fulfilled]: state => {
       state.sessionInfo = getSessionInfo();
     },
+    [searchRooms.fulfilled]: (state, action) => {
+      state.searchRoomResult = action.payload;
+    },
   },
 });
 
@@ -155,6 +164,8 @@ export const {
   testRoomList,
   setKeyword,
   setIsSearch,
+  setIsRoom,
+  setNowRoom,
   fetchWorkoutId,
   fetchTitle,
   fetchPassword,

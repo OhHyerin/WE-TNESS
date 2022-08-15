@@ -3,48 +3,62 @@ import axios from 'axios';
 import api from '../../api/index';
 import setConfig from '../authHeader';
 
-const fetchHistory = createAsyncThunk('fetchHistory', async (arg, { rejectWithValue }) => {
+const fetchHistory = createAsyncThunk('fetchHistory', async (payload, { rejectWithValue }) => {
+  const { nickname } = payload;
   try {
-    const response = await axios.get(api.fetchHistory(), {}, setConfig());
-    return response;
+    const res = await axios.get(api.fetchHistory(nickname), setConfig());
+    console.log(res);
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
   }
 });
 
 const initialState = {
-  achieveAwards: [1, 3],
+  achieveAwards: [{ award: 'login_1', receiveDate: '2022-08-10T11:43:17' }],
   heatMapList: [],
-  matches: {},
+  matches: {
+    bronze: 0,
+    gold: 0,
+    silver: 0,
+    totalCnt: 0,
+  },
   todayCalories: '',
   weeklyCalories: [
     {
       date: 'mon',
       value: '',
+      login: false,
     },
     {
       date: 'tue',
       value: '',
+      login: false,
     },
     {
       date: 'wed',
       value: '',
+      login: false,
     },
     {
       date: 'thu',
       value: '',
+      login: false,
     },
     {
       date: 'fri',
       value: '',
+      login: false,
     },
     {
       date: 'sat',
       value: '',
+      login: false,
     },
     {
       date: 'sun',
       value: '',
+      login: false,
     },
   ],
   diaryPhotos: [],
@@ -53,14 +67,19 @@ const initialState = {
 export const HistorySlice = createSlice({
   name: 'history',
   initialState,
-  reducers: {
-    fetchInfo: (state, action) => {
-      state.achieveAwards = action.payload.achieveAwards;
+  reducers: {},
+  extraReducers: {
+    [fetchHistory.fulfilled]: (state, action) => {
+      state.achieveAwards = action.payload.award;
+      state.heatMapList = action.payload.heatMapList;
+      state.matches = action.payload.medal;
+      state.todayCalorie = action.payload.todayCalorie;
+      state.weeklyCalories = action.payload.weeklyRecords;
     },
   },
-  extraReducers: {},
 });
 
 export { fetchHistory };
+export const {} = HistorySlice.actions;
 
 export default HistorySlice.reducer;

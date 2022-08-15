@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
@@ -19,7 +19,8 @@ import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
-import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId } from '../../features/room/RoomSlice';
+import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId, setNowRoom } from '../../features/room/RoomSlice';
+import { removeSessionInfo } from '../../features/Token';
 
 const style = {
   position: 'absolute',
@@ -85,7 +86,17 @@ export default function Home() {
 
   const isAuthenticated = useSelector(state => state.user.isAuthenticated);
 
+  useEffect(() => {
+    removeSessionInfo();
+  }, []);
+
   function onCreate(e) {
+    const arg = {
+      title: roomInfo.title,
+      locked: !!roomInfo.password,
+      workout: roomInfo.workoutId,
+    };
+    dispatch(setNowRoom(arg));
     e.preventDefault();
     const payload = {
       workoutId: roomInfo.workoutId,
