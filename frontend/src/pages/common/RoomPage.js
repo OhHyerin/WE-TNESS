@@ -20,6 +20,8 @@ import {
 import LooksOneOutlinedIcon from '@mui/icons-material/LooksOneOutlined';
 import LooksTwoOutlinedIcon from '@mui/icons-material/LooksTwoOutlined';
 import Looks3OutlinedIcon from '@mui/icons-material/Looks3Outlined';
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
+import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
 import styled from 'styled-components';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -30,6 +32,7 @@ import { getSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import setConfig from '../../features/authHeader';
 import api from '../../api';
+import './RoomPage.css';
 
 // 효과음
 import startSound from '../../assets/sound/startSound.wav';
@@ -771,7 +774,7 @@ class RoomClass extends Component {
                         isRankView={this.state.isRankView}
                         setIsRankView={this.setIsRankView}></RankResult>
                     ) : (
-                      '애니매이션'
+                      <Animation check={this.state.check}></Animation>
                     )}
                   </Item>
                 </Grid>
@@ -959,7 +962,7 @@ function CountDownIcon({ countdown }) {
 
 // 1분 타이머
 const Timer = ({ setFinish, isFinish }) => {
-  const [value, setValue] = useState(3);
+  const [value, setValue] = useState(30);
   useEffect(() => {
     if (!isFinish) {
       const myInterval = setInterval(() => {
@@ -1019,9 +1022,9 @@ const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
 function CustomizedProgressBars(props) {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {props.value <= 10 ? (
+      {props.value <= 5 ? (
         <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
-      ) : props.value < 30 ? (
+      ) : props.value < 20 ? (
         <WarnLinearProgress variant="determinate" value={(props.value * 100) / 60} />
       ) : (
         <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
@@ -1116,6 +1119,40 @@ function LiveRank({ rankList }) {
     </LiveBox>
   );
 }
+
+// 애니매이션
+const ArrowsBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+function Animation({ check }) {
+  return (
+    <Grid container>
+      <Grid item xs={6}>
+        <p>애니매이션</p>
+      </Grid>
+      <Grid item xs={6}>
+        {check ? (
+          <ArrowsBox className="arrows">
+            <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
+            <KeyboardArrowUpRoundedIcon fontSize="large" className="a2" />
+            <KeyboardArrowUpRoundedIcon fontSize="large" className="a1" />
+          </ArrowsBox>
+        ) : (
+          <ArrowsBox className="arrows">
+            <KeyboardArrowDownRoundedIcon fontSize="large" className="a1" />
+            <KeyboardArrowDownRoundedIcon fontSize="large" className="a2" />
+            <KeyboardArrowDownRoundedIcon fontSize="large" className="a3" />
+          </ArrowsBox>
+        )}
+      </Grid>
+    </Grid>
+  );
+}
+
+// 최종 랭킹
 
 const isRankViewstyle = {
   position: 'absolute',
