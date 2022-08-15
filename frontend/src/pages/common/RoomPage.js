@@ -54,8 +54,11 @@ const Container = styled.div`
 
 const SubContainer = styled.div`
   padding: 30px;
+  width: 80%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
 `;
 
@@ -773,16 +776,29 @@ class RoomClass extends Component {
                 </Grid>
 
                 {/* 실시간 순위 */}
-                <Grid item xs={3}>
+                <Grid item xs={4} sx={SubContainerStyle}>
                   {isFinish ? null : (
-                    <Item>
+                    <Item sx={{ width: '100%' }}>
                       <LiveRank rankList={rankList}></LiveRank>
                     </Item>
                   )}
+                  {/* 친구 화면 */}
+                  <SubContainer>
+                    {this.state.subscribers.map((sub, i) => {
+                      if (i % 2 === 0) {
+                        return (
+                          <div key={i} className="stream-container">
+                            <UserVideoComponent streamManager={sub} />
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
+                  </SubContainer>
                 </Grid>
 
                 {/* 애니매이션 & 결과창 */}
-                <Grid item xs={6}>
+                <Grid item xs={4}>
                   <Item>
                     {isFinish ? (
                       <RankResult
@@ -793,125 +809,102 @@ class RoomClass extends Component {
                       <Animation isGaming={this.state.isGaming} check={this.state.check}></Animation>
                     )}
                   </Item>
-                </Grid>
-                <Modal open={this.state.isRankView} onClose={this.setIsRankView}>
-                  <Box sx={isRankViewstyle}>
-                    <RankResult
-                      rankList={rankList}
-                      isRankView={this.state.isRankView}
-                      setIsRankView={this.setIsRankView}></RankResult>
-                  </Box>
-                </Modal>
 
+                  {/* 내 화면 */}
+                  {this.state.publisher !== undefined ? (
+                    <MainContainer>
+                      <OpenViduVideoComponent streamManager={this.state.publisher} />
+                      <MyInfoBox>
+                        <Chip label={myUserName} variant="outlined" />
+
+                        {/* 마이크 & 카메라 onOff */}
+                        <MicVideoBtn>
+                          <Chip
+                            label={
+                              this.state.audioState ? (
+                                <IoMicOutline
+                                  color="#009688"
+                                  size="24"
+                                  onClick={() => {
+                                    this.state.publisher.publishAudio(!this.state.audioState);
+                                    this.setState({ audioState: !this.state.audioState });
+                                  }}
+                                />
+                              ) : (
+                                <IoMicOffOutline
+                                  color="#009688"
+                                  size="24"
+                                  onClick={() => {
+                                    this.state.publisher.publishAudio(!this.state.audioState);
+                                    this.setState({ audioState: !this.state.audioState });
+                                  }}
+                                />
+                              )
+                            }
+                            variant="outlined"
+                          />
+                          <Chip
+                            label={
+                              this.state.videoState ? (
+                                <IoVideocamOutline
+                                  color="#009688"
+                                  size="24"
+                                  onClick={() => {
+                                    this.state.publisher.publishVideo(!this.state.videoState);
+                                    this.setState({ videoState: !this.state.videoState });
+                                  }}
+                                />
+                              ) : (
+                                <IoVideocamOffOutline
+                                  color="#009688"
+                                  size="24"
+                                  onClick={() => {
+                                    this.state.publisher.publishVideo(!this.state.videoState);
+                                    this.setState({ videoState: !this.state.videoState });
+                                  }}
+                                />
+                              )
+                            }
+                            variant="outlined"
+                          />
+                        </MicVideoBtn>
+                      </MyInfoBox>
+                    </MainContainer>
+                  ) : (
+                    <div></div>
+                  )}
+                </Grid>
                 {/* 운동정보 및 내 횟수와 순위 */}
-                <Grid item xs={3}>
-                  <Item>
+                <Grid item xs={4} sx={SubContainerStyle}>
+                  <Item sx={{ width: '100%' }}>
                     <MyWorkoutInfo count={count} workoutId={workoutId} rankList={rankList} myUserName={myUserName} />
                   </Item>
+                  <SubContainer>
+                    {/* 친구들 화면 */}
+                    {this.state.subscribers.map((sub, i) => {
+                      if (i % 2) {
+                        return (
+                          <div key={i}>
+                            <UserVideoComponent streamManager={sub} />
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
+                  </SubContainer>
                 </Grid>
               </Grid>
             </div>
 
-            <Grid container spacing={2} sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
-              {/* 친구들 화면 */}
-              <Grid item xs={3}>
-                <SubContainer>
-                  {this.state.subscribers.map((sub, i) => {
-                    if (i % 2 === 0) {
-                      return (
-                        <div key={i} className="stream-container">
-                          <UserVideoComponent streamManager={sub} />
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
-                </SubContainer>
-              </Grid>
-
-              {/* 내 화면 */}
-              <Grid item xs={4}>
-                {this.state.publisher !== undefined ? (
-                  <MainContainer>
-                    <OpenViduVideoComponent streamManager={this.state.publisher} />
-                    <MyInfoBox>
-                      <Chip label={myUserName} variant="outlined" />
-
-                      {/* 마이크 & 카메라 onOff */}
-                      <MicVideoBtn>
-                        <Chip
-                          label={
-                            this.state.audioState ? (
-                              <IoMicOutline
-                                color="#009688"
-                                size="24"
-                                onClick={() => {
-                                  this.state.publisher.publishAudio(!this.state.audioState);
-                                  this.setState({ audioState: !this.state.audioState });
-                                }}
-                              />
-                            ) : (
-                              <IoMicOffOutline
-                                color="#009688"
-                                size="24"
-                                onClick={() => {
-                                  this.state.publisher.publishAudio(!this.state.audioState);
-                                  this.setState({ audioState: !this.state.audioState });
-                                }}
-                              />
-                            )
-                          }
-                          variant="outlined"
-                        />
-
-                        <Chip
-                          label={
-                            this.state.videoState ? (
-                              <IoVideocamOutline
-                                color="#009688"
-                                size="24"
-                                onClick={() => {
-                                  this.state.publisher.publishVideo(!this.state.videoState);
-                                  this.setState({ videoState: !this.state.videoState });
-                                }}
-                              />
-                            ) : (
-                              <IoVideocamOffOutline
-                                color="#009688"
-                                size="24"
-                                onClick={() => {
-                                  this.state.publisher.publishVideo(!this.state.videoState);
-                                  this.setState({ videoState: !this.state.videoState });
-                                }}
-                              />
-                            )
-                          }
-                          variant="outlined"
-                        />
-                      </MicVideoBtn>
-                    </MyInfoBox>
-                  </MainContainer>
-                ) : (
-                  <div></div>
-                )}
-              </Grid>
-
-              <Grid item xs={3}>
-                <SubContainer>
-                  {/* 친구들 화면 */}
-                  {this.state.subscribers.map((sub, i) => {
-                    if (i % 2) {
-                      return (
-                        <div key={i}>
-                          <UserVideoComponent streamManager={sub} />
-                        </div>
-                      );
-                    }
-                    return null;
-                  })}
-                </SubContainer>
-              </Grid>
-            </Grid>
+            {/* 전체 결과 모달 */}
+            <Modal open={this.state.isRankView} onClose={this.setIsRankView}>
+              <Box sx={isRankViewstyle}>
+                <RankResult
+                  rankList={rankList}
+                  isRankView={this.state.isRankView}
+                  setIsRankView={this.setIsRankView}></RankResult>
+              </Box>
+            </Modal>
           </div>
         )}
       </Container>
@@ -920,6 +913,12 @@ class RoomClass extends Component {
 }
 
 export default RoomPage;
+
+const SubContainerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+};
 
 const HeaderBoxStyle = {
   flexGrow: 1,

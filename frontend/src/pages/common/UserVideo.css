@@ -4,3 +4,8 @@ video {
   float: left;
   border-radius: 5px;
 }
+
+.streamcomponent {
+  position: relative;
+  width: 100%;
+}
