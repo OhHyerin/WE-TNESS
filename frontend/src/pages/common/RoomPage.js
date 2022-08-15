@@ -4,7 +4,19 @@ import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
-import { styled as styledC, Box, Paper, Grid, CircularProgress, Modal, Chip, keyframes } from '@mui/material';
+import {
+  styled as styledC,
+  Box,
+  Paper,
+  Grid,
+  CircularProgress,
+  Modal,
+  Chip,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+} from '@mui/material';
 import LooksOneOutlinedIcon from '@mui/icons-material/LooksOneOutlined';
 import LooksTwoOutlinedIcon from '@mui/icons-material/LooksTwoOutlined';
 import Looks3OutlinedIcon from '@mui/icons-material/Looks3Outlined';
@@ -83,6 +95,7 @@ class RoomClass extends Component {
       subscribers: [],
       currentVideoDevice: undefined,
       connectionErr: false,
+      isRankView: false,
 
       audioState: true,
       videoState: true,
@@ -123,6 +136,7 @@ class RoomClass extends Component {
     this.readySignal = this.readySignal.bind(this);
     this.checkPossibleStart = this.checkPossibleStart.bind(this);
     this.setFinish = this.setFinish.bind(this);
+    this.setIsRankView = this.setIsRankView.bind(this);
 
     // 모션 인식
     this.setModel = this.setModel.bind(this);
@@ -416,7 +430,8 @@ class RoomClass extends Component {
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
-        Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
+        Url = 'https://teachablemachine.withgoogle.com/models/TPlEwiz6u/';
+        // Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
         break;
       case 2: // 푸쉬업
         Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
@@ -518,6 +533,12 @@ class RoomClass extends Component {
       });
   }
 
+  setIsRankView() {
+    this.setState({
+      isRankView: !this.state.isRankView,
+    });
+  }
+
   // 스쿼트
   async squatPredict() {
     // Prediction #1: run input through posenet
@@ -548,7 +569,6 @@ class RoomClass extends Component {
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
     if (prediction[0].probability.toFixed(2) > 0.99) {
-      console.log('푸쉬업 올라감');
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -558,7 +578,6 @@ class RoomClass extends Component {
         }, 10);
       }
     } else if (prediction[1].probability.toFixed(2) > 0.99) {
-      console.log('푸쉬업 내려감');
       this.setState({ check: true });
     }
   }
@@ -745,8 +764,25 @@ class RoomClass extends Component {
 
                 {/* 애니매이션 & 결과창 */}
                 <Grid item xs={4}>
-                  <Item>{isFinish ? <RankResult rankList={rankList}></RankResult> : '애니매이션'}</Item>
+                  <Item>
+                    {isFinish ? (
+                      <RankResult
+                        rankList={rankList}
+                        isRankView={this.state.isRankView}
+                        setIsRankView={this.setIsRankView}></RankResult>
+                    ) : (
+                      '애니매이션'
+                    )}
+                  </Item>
                 </Grid>
+                <Modal open={this.state.isRankView} onClose={this.setIsRankView}>
+                  <Box sx={isRankViewstyle}>
+                    <RankResult
+                      rankList={rankList}
+                      isRankView={this.state.isRankView}
+                      setIsRankView={this.setIsRankView}></RankResult>
+                  </Box>
+                </Modal>
 
                 {/* 운동정보 및 내 횟수와 순위 */}
                 <Grid item xs={4}>
@@ -923,7 +959,7 @@ function CountDownIcon({ countdown }) {
 
 // 1분 타이머
 const Timer = ({ setFinish, isFinish }) => {
-  const [value, setValue] = useState(60);
+  const [value, setValue] = useState(3);
   useEffect(() => {
     if (!isFinish) {
       const myInterval = setInterval(() => {
@@ -1055,12 +1091,20 @@ function LiveRank({ rankList }) {
   const rankListLi = rankList.map((item, i) => {
     if (i <= 2) {
       return (
-        <li key={i}>
-          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
-          <p>
-            {item.nickname} {item.count}개
-          </p>
-        </li>
+        <ListItem key={i}>
+          <ListItemAvatar>
+            {i === 0 ? (
+              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'gold' }} />
+            ) : i === 1 ? (
+              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'silver' }} />
+            ) : i === 2 ? (
+              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'bronze' }} />
+            ) : (
+              <p>{i + 1}</p>
+            )}
+          </ListItemAvatar>
+          <ListItemText primary={`${item.nickname}`} secondary={`${item.count}개`} />
+        </ListItem>
       );
     }
     return null;
@@ -1068,29 +1112,52 @@ function LiveRank({ rankList }) {
   return (
     <LiveBox>
       <p>실시간 랭킹 !!</p>
-      <ul>{rankListLi}</ul>
+      <List>{rankListLi}</List>
     </LiveBox>
   );
 }
 
-function RankResult({ rankList }) {
+const isRankViewstyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 800,
+  bgcolor: 'background.paper',
+  border: '1px solid var(--primary-color)',
+  borderRadius: '10px',
+  boxShadow: 24,
+  p: 4,
+};
+
+function RankResult({ rankList, isRankView, setIsRankView }) {
   const rankListLi = rankList.map((item, i) => {
-    if (i <= 2) {
-      return (
-        <li key={i}>
-          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
-          <p>
-            {item.nickname} {item.count}개
-          </p>
-        </li>
-      );
+    if (!isRankView && i > 2) {
+      return null;
     }
-    return null;
+
+    return (
+      <ListItem key={i}>
+        <ListItemAvatar>
+          {i === 0 ? (
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'gold' }} />
+          ) : i === 1 ? (
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'silver' }} />
+          ) : i === 2 ? (
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'bronze' }} />
+          ) : (
+            <p>{i + 1}</p>
+          )}
+        </ListItemAvatar>
+        <ListItemText primary={`${item.nickname}`} secondary={`${item.count}개`} />
+      </ListItem>
+    );
   });
   return (
     <LiveBox>
-      <p>결과 !!</p>
-      <ul>{rankListLi}</ul>
+      <h2>최종 순위</h2>
+      {!isRankView ? <button onClick={setIsRankView}>전체 순위 보기</button> : null}
+      <List>{rankListLi}</List>
     </LiveBox>
   );
 }
