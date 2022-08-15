@@ -71,5 +71,5 @@
     "eslint-plugin-html": "^7.0.0",
     "eslint-plugin-import": "^2.26.0"
   },
-  "proxy": "https://localhost:5000"
+  "proxy": "http://localhost:5000"
 }
