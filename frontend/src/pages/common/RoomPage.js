@@ -4,16 +4,28 @@ import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
-import { styled as styledC, Box, Paper, Grid, CircularProgress } from '@mui/material';
+import { styled as styledC, Box, Paper, Grid, CircularProgress, Modal, Chip, keyframes } from '@mui/material';
+import LooksOneOutlinedIcon from '@mui/icons-material/LooksOneOutlined';
+import LooksTwoOutlinedIcon from '@mui/icons-material/LooksTwoOutlined';
+import Looks3OutlinedIcon from '@mui/icons-material/Looks3Outlined';
 import styled from 'styled-components';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { IoMicOutline, IoMicOffOutline, IoVideocamOffOutline, IoVideocamOutline } from 'react-icons/io5';
 import { faMedal } from '@fortawesome/free-solid-svg-icons';
 import UserVideoComponent from './UserVideoComponent';
-import { getSessionInfo, removeSessionInfo } from '../../features/Token';
+import { getSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import setConfig from '../../features/authHeader';
 import api from '../../api';
+
+// 효과음
+import startSound from '../../assets/sound/startSound.wav';
+
+// docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
+// url :
+const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
+const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 const Container = styled.div`
   padding: 0;
@@ -21,15 +33,22 @@ const Container = styled.div`
 
 const VideoContainer = styled.div`
   display: flex;
-  flex-wrap: wrap;
   justify-content: center;
-  margin-bottom: 50px;
+  gap: 10px;
 `;
 
-// docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
-// url :
-const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
-const OPENVIDU_SERVER_SECRET = 'WETNESS';
+const SubContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
+const MainContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
 
 function RoomPage() {
   const navigate = useNavigate();
@@ -65,16 +84,24 @@ class RoomClass extends Component {
       currentVideoDevice: undefined,
       connectionErr: false,
 
+      audioState: true,
+      videoState: true,
+
+      isStart: false,
+      countdown: 3,
+      coundtDownIcon: undefined,
+
       isModelError: undefined,
 
       webcam: undefined,
 
       isGaming: undefined,
-      isFinish: undefined,
+      isFinish: false,
       isReady: undefined,
       readyState: new Map(),
       isPossibleStart: true,
 
+      gameId: undefined,
       count: 0,
       check: undefined,
 
@@ -95,6 +122,7 @@ class RoomClass extends Component {
     this.start = this.start.bind(this);
     this.readySignal = this.readySignal.bind(this);
     this.checkPossibleStart = this.checkPossibleStart.bind(this);
+    this.setFinish = this.setFinish.bind(this);
 
     // 모션 인식
     this.setModel = this.setModel.bind(this);
@@ -110,9 +138,8 @@ class RoomClass extends Component {
     this.setState({
       token: sessionInfo.token,
       title: sessionInfo.title,
-      workoutId: 1,
       count: 0,
-      // workoutId: sessionInfo.workoutId,
+      workoutId: sessionInfo.workoutId,
       myUserName: nickname,
       managerNickname: sessionInfo.managerNickname,
       isGaming: false,
@@ -349,13 +376,23 @@ class RoomClass extends Component {
 
   start() {
     console.log('게임 시작!');
-    this.setState({
-      isGaming: true,
-      rank: [],
-    });
+    new Audio(startSound).play();
+    this.setState({ isStart: true });
+    const countdown = setInterval(() => {
+      if (this.state.countdown <= 0) {
+        clearInterval(countdown);
+      } else {
+        this.setState({ countdown: this.state.countdown - 1 });
+      }
+    }, 1000);
     setTimeout(() => {
+      this.setState({
+        isStart: false,
+        isGaming: true,
+        rank: [],
+      });
       window.requestAnimationFrame(this.loop);
-    }, 100);
+    }, 3000);
   }
 
   // 모션 비디오
@@ -379,10 +416,10 @@ class RoomClass extends Component {
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
-        Url = 'https://teachablemachine.withgoogle.com/models/TPlEwiz6u/';
+        Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
         break;
       case 2: // 푸쉬업
-        Url = 'https://teachablemachine.withgoogle.com/models/rlT_xgNAW/';
+        Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
         break;
       case 3: // 버피
         Url = 'https://teachablemachine.withgoogle.com/models/759k-ZvHL/';
@@ -426,6 +463,9 @@ class RoomClass extends Component {
         default:
           break;
       }
+      if (this.state.isFinish) {
+        return;
+      }
       window.requestAnimationFrame(this.loop);
     }
   }
@@ -441,6 +481,43 @@ class RoomClass extends Component {
       });
   }
 
+  // 게임 종료 정보 전달
+  setFinish() {
+    console.log('게임 끝!');
+    this.setState({
+      isFinish: true,
+    });
+
+    const data = new Date();
+    const terminateDate = [
+      data.getUTCFullYear(),
+      data.getUTCMonth(),
+      data.getUTCDate(),
+      data.getUTCHours(),
+      data.getUTCMinutes(),
+      data.getUTCSeconds(),
+    ];
+
+    // 내 랭크정보 전달 수정 필요
+    const rank = 1;
+    const payload = {
+      gameId: this.state.gameId,
+      terminateDate,
+      workoutId: this.state.workoutId,
+      score: this.state.count,
+      rank,
+    };
+    console.log(payload);
+    axios
+      .post(api.end(), payload, setConfig())
+      .then(res => {
+        console.log(res);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
   // 스쿼트
   async squatPredict() {
     // Prediction #1: run input through posenet
@@ -449,7 +526,7 @@ class RoomClass extends Component {
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
     // 앉았을 때 check => check 상태에서 일어나면 count + 1 => 내 개수 signal
-    if (prediction[1].probability.toFixed(2) > 0.99) {
+    if (prediction[0].probability.toFixed(2) > 0.99) {
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -458,7 +535,7 @@ class RoomClass extends Component {
           this.countSignal();
         }, 10);
       }
-    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
     }
   }
@@ -470,7 +547,8 @@ class RoomClass extends Component {
     const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
-    if (prediction[1].probability.toFixed(2) > 0.99) {
+    if (prediction[0].probability.toFixed(2) > 0.99) {
+      console.log('푸쉬업 올라감');
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -479,7 +557,8 @@ class RoomClass extends Component {
           this.countSignal();
         }, 10);
       }
-    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
+      console.log('푸쉬업 내려감');
       this.setState({ check: true });
     }
   }
@@ -600,10 +679,13 @@ class RoomClass extends Component {
 
   render() {
     const {
+      isStart,
+      countdown,
       connectionErr,
       workoutId,
       isModelError,
       title,
+      isFinish,
       myUserName,
       isGaming,
       managerNickname,
@@ -626,25 +708,22 @@ class RoomClass extends Component {
             <CircularProgress />
           </Box>
         ) : (
-          // 방 제목 & 나가기 버튼 => navbar로 이동해야 함
-          <div id="session">
-            <div id="session-header">
-              <h1 id="session-title">방 제목 :{title}</h1>
-              <input
-                className="btn btn-large btn-danger"
-                type="button"
-                id="buttonLeaveSession"
-                onClick={this.leaveSession}
-                value="Leave session"
-              />
-            </div>
+          <div>
+            {/* 카운트 다운 모달 */}
+            <Modal open={isStart}>
+              <Box sx={countDownStyle}>
+                <CountDownIcon countdown={countdown}></CountDownIcon>
+              </Box>
+            </Modal>
+
+            {/* 화면 위 쪽 UI */}
             <Box sx={{ flexGrow: 1 }}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
+              <Grid container spacing={2} sx={{ padding: '30px' }}>
+                <Grid item xs={12} sx={{ padding: '30px' }}>
                   {/* 타이머 & 시작버튼 */}
                   <TimeBox>
                     {isGaming ? (
-                      <Timer></Timer>
+                      <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
                     ) : myUserName === managerNickname ? (
                       <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
                         시작!
@@ -655,16 +734,18 @@ class RoomClass extends Component {
                   </TimeBox>
                 </Grid>
 
-                {/* 실시간 순위 & 최종 순위 */}
+                {/* 실시간 순위 */}
                 <Grid item xs={4}>
-                  <Item>
-                    <LiveRank rankList={rankList}></LiveRank>
-                  </Item>
+                  {isFinish ? null : (
+                    <Item>
+                      <LiveRank rankList={rankList}></LiveRank>
+                    </Item>
+                  )}
                 </Grid>
 
                 {/* 애니매이션 & 결과창 */}
                 <Grid item xs={4}>
-                  <Item>애니매이션</Item>
+                  <Item>{isFinish ? <RankResult rankList={rankList}></RankResult> : '애니매이션'}</Item>
                 </Grid>
 
                 {/* 운동정보 및 내 횟수와 순위 */}
@@ -676,23 +757,102 @@ class RoomClass extends Component {
               </Grid>
             </Box>
 
-            {/* 내 화면 */}
             <VideoContainer>
-              {this.state.publisher !== undefined ? (
-                <div>
-                  <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
-                    <UserVideoComponent streamManager={this.state.publisher} />
-                  </div>
-                  <p>내 닉네임 : {myUserName}</p>
-                </div>
-              ) : null}
-
               {/* 친구들 화면 */}
-              {this.state.subscribers.map((sub, i) => (
-                <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
-                  <UserVideoComponent streamManager={sub} />
-                </div>
-              ))}
+              <SubContainer>
+                {this.state.subscribers.map((sub, i) => {
+                  if (i % 2 === 0) {
+                    return (
+                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
+                        <UserVideoComponent streamManager={sub} />
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+              </SubContainer>
+
+              {/* 내 화면 */}
+              <>
+                {this.state.publisher !== undefined ? (
+                  <MainContainer>
+                    <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
+                      <UserVideoComponent streamManager={this.state.publisher} />
+                    </div>
+
+                    <MyInfoBox>
+                      <Chip label={myUserName} variant="outlined" />
+
+                      {/* 마이크 & 카메라 onOff */}
+                      <MicVideoBtn>
+                        <Chip
+                          label={
+                            this.state.audioState ? (
+                              <IoMicOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishAudio(!this.state.audioState);
+                                  this.setState({ audioState: !this.state.audioState });
+                                }}
+                              />
+                            ) : (
+                              <IoMicOffOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishAudio(!this.state.audioState);
+                                  this.setState({ audioState: !this.state.audioState });
+                                }}
+                              />
+                            )
+                          }
+                          variant="outlined"
+                        />
+
+                        <Chip
+                          label={
+                            this.state.videoState ? (
+                              <IoVideocamOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishVideo(!this.state.videoState);
+                                  this.setState({ videoState: !this.state.videoState });
+                                }}
+                              />
+                            ) : (
+                              <IoVideocamOffOutline
+                                color="#009688"
+                                size="24"
+                                onClick={() => {
+                                  this.state.publisher.publishVideo(!this.state.videoState);
+                                  this.setState({ videoState: !this.state.videoState });
+                                }}
+                              />
+                            )
+                          }
+                          variant="outlined"
+                        />
+                      </MicVideoBtn>
+                    </MyInfoBox>
+                  </MainContainer>
+                ) : null}
+              </>
+
+              <SubContainer>
+                {/* 친구들 화면 */}
+                {this.state.subscribers.map((sub, i) => {
+                  if (i % 2) {
+                    return (
+                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
+                        <UserVideoComponent streamManager={sub} />
+                      </div>
+                    );
+                  }
+                  return null;
+                })}
+              </SubContainer>
             </VideoContainer>
           </div>
         )}
@@ -702,6 +862,33 @@ class RoomClass extends Component {
 }
 
 export default RoomPage;
+
+const MyInfoBox = styled.div`
+  display: flex;
+  width: 100%;
+  padding-top: 5px;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const MicVideoBtn = styled.ul`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+`;
+
+const countDownStyle = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+};
+
+const countDownIconStyle = {
+  color: 'white',
+  fontSize: '200px',
+};
 
 const Item = styledC(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -718,21 +905,40 @@ const TimeBox = styled.div`
   justify-content: center;
 `;
 
+function CountDownIcon({ countdown }) {
+  const viewIcon = function () {
+    switch (countdown) {
+      case 1:
+        return <LooksOneOutlinedIcon sx={countDownIconStyle}></LooksOneOutlinedIcon>;
+      case 2:
+        return <LooksTwoOutlinedIcon sx={countDownIconStyle}></LooksTwoOutlinedIcon>;
+      case 3:
+        return <Looks3OutlinedIcon sx={countDownIconStyle}></Looks3OutlinedIcon>;
+      default:
+        return <h1>Go!</h1>;
+    }
+  };
+  return <>{viewIcon()}</>;
+}
+
 // 1분 타이머
-const Timer = () => {
+const Timer = ({ setFinish, isFinish }) => {
   const [value, setValue] = useState(60);
   useEffect(() => {
-    const myInterval = setInterval(() => {
-      if (value > 0) {
-        setValue(value - 0.1);
-      }
-      if (value <= 0) {
+    if (!isFinish) {
+      const myInterval = setInterval(() => {
+        if (value > 0) {
+          setValue(value - 0.1);
+        }
+        if (value <= 0) {
+          setFinish();
+          clearInterval(myInterval);
+        }
+      }, 100);
+      return () => {
         clearInterval(myInterval);
-      }
-    }, 100);
-    return () => {
-      clearInterval(myInterval);
-    };
+      };
+    }
   });
 
   return (
@@ -743,7 +949,7 @@ const Timer = () => {
 };
 
 const HurryLinearProgress = styledC(LinearProgress)(({ theme }) => ({
-  height: 10,
+  height: 20,
   borderRadius: 5,
   [`&.${linearProgressClasses.colorPrimary}`]: {
     backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
@@ -751,6 +957,18 @@ const HurryLinearProgress = styledC(LinearProgress)(({ theme }) => ({
   [`& .${linearProgressClasses.bar}`]: {
     borderRadius: 5,
     backgroundColor: theme.palette.mode === 'light' ? '#f44336' : '#f44336',
+  },
+}));
+
+const WarnLinearProgress = styledC(LinearProgress)(({ theme }) => ({
+  height: 20,
+  borderRadius: 5,
+  [`&.${linearProgressClasses.colorPrimary}`]: {
+    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
+  },
+  [`& .${linearProgressClasses.bar}`]: {
+    borderRadius: 5,
+    backgroundColor: theme.palette.mode === 'light' ? '#f5e23d' : '#f5e23d',
   },
 }));
 
@@ -765,8 +983,10 @@ const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
 function CustomizedProgressBars(props) {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {props.value <= 30 ? (
+      {props.value <= 10 ? (
         <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      ) : props.value < 30 ? (
+        <WarnLinearProgress variant="determinate" value={(props.value * 100) / 60} />
       ) : (
         <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
       )}
@@ -848,6 +1068,28 @@ function LiveRank({ rankList }) {
   return (
     <LiveBox>
       <p>실시간 랭킹 !!</p>
+      <ul>{rankListLi}</ul>
+    </LiveBox>
+  );
+}
+
+function RankResult({ rankList }) {
+  const rankListLi = rankList.map((item, i) => {
+    if (i <= 2) {
+      return (
+        <li key={i}>
+          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
+          <p>
+            {item.nickname} {item.count}개
+          </p>
+        </li>
+      );
+    }
+    return null;
+  });
+  return (
+    <LiveBox>
+      <p>결과 !!</p>
       <ul>{rankListLi}</ul>
     </LiveBox>
   );
