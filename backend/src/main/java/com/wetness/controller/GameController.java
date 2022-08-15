@@ -1,23 +1,25 @@
 package com.wetness.controller;
 
-import com.wetness.model.dto.request.DiaryReqDto;
-import com.wetness.model.dto.request.GameReqDto;
-import com.wetness.model.dto.request.GameResultReqDto;
-import com.wetness.model.dto.request.TerminateGameDto;
+import com.wetness.model.dto.request.*;
+import com.wetness.model.dto.response.DiaryRespDto;
 import com.wetness.model.service.GameService;
 import com.wetness.model.service.UserDetailsImpl;
 import com.wetness.model.service.UserService;
+import com.wetness.util.AwsS3Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/game")
+@RequestMapping("/api/game")
 public class GameController {
     private static final String SUCCESS = "success";
     private static final String FAIL = "fail";
@@ -26,6 +28,9 @@ public class GameController {
     GameService gameService;
     @Autowired
     UserService userService;
+
+    @Autowired
+    private AwsS3Util awsS3Util;
 
     @PostMapping("/start")
     public ResponseEntity<Map<String,Long>> startGame(@RequestBody GameReqDto gameReqDto,
@@ -39,16 +44,6 @@ public class GameController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-//    @PostMapping("/end")
-//    public ResponseEntity<String> terminateGame(@RequestBody TerminateGameReqDto terminateDto,
-//                                                          @AuthenticationPrincipal UserDetailsImpl user){
-//
-//        gameService.terminateGame(terminateDto,user.id()); //exception 처리 필요
-//
-//        return new ResponseEntity<>(SUCCESS, HttpStatus.OK);
-//    }
-
-
     @PostMapping("/end")
     public ResponseEntity<Map<String,Long>> terminateGame(@RequestBody GameResultReqDto gameResult,
                                                        @AuthenticationPrincipal UserDetailsImpl user){
@@ -58,14 +53,31 @@ public class GameController {
         Long userGameId = gameService.insertResult(gameResult,user);
 
         Map<String,Long> result = new HashMap<>();
-        result.put("userGameId",userGameId);
+        result.put("game_record_id",userGameId);
         return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
-    @PostMapping("/diary")
-    public ResponseEntity<String> writeDiary(@RequestBody DiaryReqDto diary, @AuthenticationPrincipal UserDetailsImpl user){
-        gameService.insertDiary(diary,user);
+    @PostMapping("/diary/{gameRecordId}")
+    public ResponseEntity<String> writeDiary( @RequestParam("data") MultipartFile multipartFile,@PathVariable("gameRecordId") long userGameId,
+                                             @AuthenticationPrincipal UserDetailsImpl user) throws IOException {
+
+        String fileName = awsS3Util.upload(multipartFile,"diary");
+        gameService.insertDiary(userGameId, fileName, user);
         return new ResponseEntity<>(SUCCESS,HttpStatus.OK);
+    }
+
+    @PostMapping("/diary/delete")
+    public ResponseEntity<String> deleteDiary(@RequestBody DeleteDiaryReqDto DeleteThis,
+                                              @AuthenticationPrincipal UserDetailsImpl user ){
+        gameService.invalidateDiary(DeleteThis.filename, user);
+        return new ResponseEntity<>(SUCCESS,HttpStatus.OK);
+    }
+
+    @GetMapping("/diary/{nickname}")
+    public ResponseEntity<List<DiaryRespDto>> readDiary(@PathVariable("nickname") String nickname){
+        List<DiaryRespDto> results = gameService.readDiary(nickname);
+
+        return new ResponseEntity<>(results, HttpStatus.OK);
     }
 
 }

@@ -18,6 +18,7 @@ import java.util.ArrayList;
 public class FollowServiceImpl implements FollowService {
 
     private final AwardService awardService;
+    private final NotificationService notificationService;
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
@@ -44,7 +45,10 @@ public class FollowServiceImpl implements FollowService {
             Follow follow = followRepository.findByFollowerIdAndFollowingId(follower.getId(), following.getId());
             if (follow == null) {
                 followRepository.saveAndFlush(new Follow(follower, following, LocalDateTime.now()));
+
                 awardService.awardCheckFollow(following.getId());
+                notificationService.registerFollowMessage(followerNickname, followingNickname);
+
                 return true;
             }
         }

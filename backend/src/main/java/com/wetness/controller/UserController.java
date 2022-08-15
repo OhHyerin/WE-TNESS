@@ -38,7 +38,7 @@ import static com.wetness.util.InputUtil.EMAIL_REGEX;
 
 
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 @RequiredArgsConstructor
 @Validated
 public class UserController {

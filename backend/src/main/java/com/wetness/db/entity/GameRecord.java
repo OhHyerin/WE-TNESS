@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -28,6 +29,9 @@ public class GameRecord {
     private double score;  //몇 분
     @Column(name="`rank`")
     private int rank;
+
+
+
 
 //여기
     public void setId(long id) {
