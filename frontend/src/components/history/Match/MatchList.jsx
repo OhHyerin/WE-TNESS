@@ -14,18 +14,22 @@ const Profile = styled.div`
 const MatchTile = styled.div`
   display: flex;
   flex-direction: column;
-  > * {
+  .tile {
+    flex-grow: 1;
     border-radius: 4px;
     box-shadow: 0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%);
-    margin: 0px 5px;
+    margin: 5px 5px;
   }
 `;
 const TotalMatch = styled.div`
   display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
+  width: 400px;
   > * {
     padding: 10px;
-    font-size: 20px;
+    font-size: 30px;
   }
 `;
 const Match = styled.div`
@@ -38,6 +42,8 @@ const Match = styled.div`
 `;
 const List = styled.div`
   display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
 `;
 
 // 차트 관련
@@ -45,7 +51,6 @@ const List = styled.div`
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 const renderActiveShape = props => {
-  console.log('active');
   const RADIAN = Math.PI / 180;
   const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
   const sin = Math.sin(-RADIAN * midAngle);
@@ -115,48 +120,50 @@ export default function MatchList() {
   return (
     <div>
       <h2>내 전적</h2>
-      <Profile>
-        <MatchTile>
-          <TotalMatch>
-            <div>총 경기 수</div>
-            <div>{matches.totalCnt}</div>
-          </TotalMatch>
-          <List>
-            <Match>
-              <div>1등</div>
-              <div>{matches.gold}</div>
-            </Match>
-            <Match>
-              <div>2등</div>
-              <div>{matches.silver}</div>
-            </Match>
-            <Match>
-              <div>3등</div>
-              <div>{matches.bronze}</div>
-            </Match>
-          </List>
-        </MatchTile>
-      </Profile>
-      <div>
-        {/* 원형 그래프 */}
-        <PieChart width={400} height={400}>
-          <Pie
-            activeIndex={charState.activeIndex}
-            activeShape={renderActiveShape}
-            data={data}
-            cx="50%"
-            cy="50%"
-            innerRadius={70}
-            outerRadius={100}
-            fill="#8884d8"
-            dataKey="value"
-            onMouseEnter={onPieEnter}>
-            {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-            ))}
-          </Pie>
-        </PieChart>
-      </div>
+      <List>
+        <Profile>
+          <MatchTile>
+            <TotalMatch className="tile">
+              <div>총 경기 수</div>
+              <div>{matches.totalCnt}</div>
+            </TotalMatch>
+            <List>
+              <Match className="tile">
+                <div>1등</div>
+                <div>{matches.gold}</div>
+              </Match>
+              <Match className="tile">
+                <div>2등</div>
+                <div>{matches.silver}</div>
+              </Match>
+              <Match className="tile">
+                <div>3등</div>
+                <div>{matches.bronze}</div>
+              </Match>
+            </List>
+          </MatchTile>
+        </Profile>
+        <div>
+          {/* 원형 그래프 */}
+          <PieChart width={500} height={400}>
+            <Pie
+              activeIndex={charState.activeIndex}
+              activeShape={renderActiveShape}
+              data={data}
+              cx="50%"
+              cy="50%"
+              innerRadius={70}
+              outerRadius={100}
+              fill="#8884d8"
+              dataKey="value"
+              onMouseEnter={onPieEnter}>
+              {data.map((entry, index) => (
+                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              ))}
+            </Pie>
+          </PieChart>
+        </div>
+      </List>
     </div>
   );
 }
