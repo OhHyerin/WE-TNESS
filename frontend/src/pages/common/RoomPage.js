@@ -45,6 +45,10 @@ const OPENVIDU_SERVER_SECRET = 'WETNESS';
 const Container = styled.div`
   padding: 0;
   width: 100%;
+  max-width: 100%;
+  > * {
+    max-width: 100%;
+  }
 `;
 
 const VideoContainer = styled.div`
@@ -76,7 +80,7 @@ function RoomPage() {
 
   if (isAuthenticated) {
     if (sessionInfo) {
-      return <RoomClass sessionInfo={sessionInfo} nickname={nickname} navigate={navigate}></RoomClass>;
+      return <RoomClass sessionInfo={sessionInfo} nickname={nickname} navigate={navigate} />;
     }
     return <div>세션정보없음</div>;
   }
@@ -721,7 +725,7 @@ class RoomClass extends Component {
       return <div>올바르게 방입장했는지 확인좀요 ㅎㅎ</div>;
     }
     return (
-      <Container>
+      <Container id="roomContainer">
         {this.state.session === undefined ? (
           <Box
             sx={{
@@ -743,19 +747,27 @@ class RoomClass extends Component {
             </Modal>
 
             {/* 화면 위 쪽 UI */}
-            <Box sx={{ flexGrow: 1 }}>
-              <Grid container spacing={2} sx={{ padding: '30px' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Grid container spacing={2} sx={HeaderBoxStyle}>
                 <Grid item xs={12} sx={{ padding: '30px' }}>
-                  {/* 타이머 & 시작버튼 */}
+                  {/* 타이머 & 시작 준비 종료 버튼 */}
                   <TimeBox>
-                    {isGaming ? (
-                      <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
-                    ) : myUserName === managerNickname ? (
-                      <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
-                        시작!
+                    {isFinish ? (
+                      <SubmitBtn disabled={true} deactive={true}>
+                        게임 종료!
                       </SubmitBtn>
                     ) : (
-                      <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                      <>
+                        {isGaming ? (
+                          <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
+                        ) : myUserName === managerNickname ? (
+                          <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
+                            시작!
+                          </SubmitBtn>
+                        ) : (
+                          <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                        )}
+                      </>
                     )}
                   </TimeBox>
                 </Grid>
@@ -798,7 +810,7 @@ class RoomClass extends Component {
                   </Item>
                 </Grid>
               </Grid>
-            </Box>
+            </div>
 
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
               {/* 친구들 화면 */}
@@ -912,6 +924,13 @@ class RoomClass extends Component {
 
 export default RoomPage;
 
+const HeaderBoxStyle = {
+  flexGrow: 1,
+  maxWidth: '1190px',
+  justifySelf: 'center',
+  padding: '30px',
+};
+
 const MyInfoBox = styled.div`
   display: flex;
   width: 100%;
@@ -931,7 +950,7 @@ const countDownStyle = {
   position: 'absolute',
   top: '50%',
   left: '50%',
-  transform: 'translate(-50%, -50%)',
+  transform: 'translate(-30%, -30%)',
 };
 
 const countDownIconStyle = {
@@ -972,7 +991,7 @@ function CountDownIcon({ countdown }) {
 
 // 1분 타이머
 const Timer = ({ setFinish, isFinish }) => {
-  const [value, setValue] = useState(60);
+  const [value, setValue] = useState(5);
   useEffect(() => {
     if (!isFinish) {
       const myInterval = setInterval(() => {
@@ -1052,9 +1071,17 @@ const MyBox = styled.div`
   align-items: center;
 `;
 
+const WorkoutTitle = styled.div`
+  padding: 10px;
+`;
+
 const MyRank = styled.div`
   display: flex;
+  width: 80%;
+  justify-content: space-between;
+  padding: 10px;
 `;
+
 function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
   const workoutName = function () {
     switch (workoutId) {
@@ -1082,10 +1109,14 @@ function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
 
   return (
     <MyBox>
-      <p>1분 {workoutName()}!!!</p>
-      <p>나의 운동 횟수 {count}개</p>
+      <WorkoutTitle>{workoutName()} - 1분</WorkoutTitle>
       <MyRank>
-        <p>나의 순위</p> {myRank()} <p>등!</p>
+        <div>나의 운동 횟수</div>
+        <div>{count}개</div>
+      </MyRank>
+      <MyRank>
+        <div>나의 순위</div>
+        <div>{myRank()}등!</div>
       </MyRank>
     </MyBox>
   );
@@ -1174,7 +1205,7 @@ function Animation({ check, isGaming }) {
 
 const isRankViewstyle = {
   position: 'absolute',
-  top: '50%',
+  top: '20%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
   width: 800,

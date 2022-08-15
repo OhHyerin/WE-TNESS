@@ -44,18 +44,16 @@ function App() {
           <NavBar></NavBar>
 
           <Resolution>
-            <div>
-              {isSearched ? (
-                <>
-                  <SearchUser />
-                  <RoomFilter1 />
-                  <RoomFilter2 />
-                  <SearchRoomList />
-                </>
-              ) : (
-                <Outlet></Outlet>
-              )}
-            </div>
+            {isSearched ? (
+              <div>
+                <SearchUser />
+                <RoomFilter1 />
+                <RoomFilter2 />
+                <SearchRoomList />
+              </div>
+            ) : (
+              <Outlet id="outlet" />
+            )}
           </Resolution>
         </ThemeProvider>
       </div>
