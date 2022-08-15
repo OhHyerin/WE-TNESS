@@ -140,6 +140,7 @@ class RoomClass extends Component {
     this.checkPossibleStart = this.checkPossibleStart.bind(this);
     this.setFinish = this.setFinish.bind(this);
     this.setIsRankView = this.setIsRankView.bind(this);
+    this.getMyRank = this.getMyRank.bind(this);
 
     // 모션 인식
     this.setModel = this.setModel.bind(this);
@@ -499,6 +500,10 @@ class RoomClass extends Component {
       });
   }
 
+  getMyRank() {
+    return this.state.rankList.findIndex(item => item.nickname === this.state.myUserName) + 1;
+  }
+
   // 게임 종료 정보 전달
   setFinish() {
     console.log('게임 끝!');
@@ -516,8 +521,7 @@ class RoomClass extends Component {
       data.getUTCSeconds(),
     ];
 
-    // 내 랭크정보 전달 수정 필요
-    const rank = 1;
+    const rank = this.getMyRank();
     const payload = {
       gameId: this.state.gameId,
       terminateDate,
@@ -757,7 +761,7 @@ class RoomClass extends Component {
                 </Grid>
 
                 {/* 실시간 순위 */}
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   {isFinish ? null : (
                     <Item>
                       <LiveRank rankList={rankList}></LiveRank>
@@ -766,7 +770,7 @@ class RoomClass extends Component {
                 </Grid>
 
                 {/* 애니매이션 & 결과창 */}
-                <Grid item xs={4}>
+                <Grid item xs={6}>
                   <Item>
                     {isFinish ? (
                       <RankResult
@@ -788,7 +792,7 @@ class RoomClass extends Component {
                 </Modal>
 
                 {/* 운동정보 및 내 횟수와 순위 */}
-                <Grid item xs={4}>
+                <Grid item xs={3}>
                   <Item>
                     <MyWorkoutInfo count={count} workoutId={workoutId} rankList={rankList} myUserName={myUserName} />
                   </Item>
@@ -962,7 +966,7 @@ function CountDownIcon({ countdown }) {
 
 // 1분 타이머
 const Timer = ({ setFinish, isFinish }) => {
-  const [value, setValue] = useState(30);
+  const [value, setValue] = useState(60);
   useEffect(() => {
     if (!isFinish) {
       const myInterval = setInterval(() => {
