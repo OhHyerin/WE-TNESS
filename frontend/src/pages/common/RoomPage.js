@@ -44,6 +44,7 @@ const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 const Container = styled.div`
   padding: 0;
+  width: 100%;
 `;
 
 const VideoContainer = styled.div`
@@ -730,7 +731,14 @@ class RoomClass extends Component {
     return (
       <Container>
         {this.state.session === undefined ? (
-          <Box sx={{ display: 'flex' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingTop: '100px',
+            }}>
             <CircularProgress />
           </Box>
         ) : (
