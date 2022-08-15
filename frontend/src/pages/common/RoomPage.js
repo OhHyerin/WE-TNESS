@@ -129,7 +129,6 @@ class RoomClass extends Component {
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
-    this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
 
     // 커스텀
@@ -179,14 +178,6 @@ class RoomClass extends Component {
 
   onbeforeunload(event) {
     this.leaveSession();
-  }
-
-  handleMainVideoStream(stream) {
-    if (this.state.mainStreamManager !== stream) {
-      this.setState({
-        mainStreamManager: stream,
-      });
-    }
   }
 
   deleteSubscriber(streamManager) {
@@ -297,6 +288,7 @@ class RoomClass extends Component {
             // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
             // element: we will manage it on our own) and with the desired properties
             const publisher = this.OV.initPublisher(undefined, {
+              nickname: this.state.myUserName,
               audioSource: undefined, // The source of audio. If undefined default microphone
               videoSource: undefined, // The source of video. If undefined default webcam
               // videoDevices[0].deviceId,
@@ -786,7 +778,7 @@ class RoomClass extends Component {
                         isRankView={this.state.isRankView}
                         setIsRankView={this.setIsRankView}></RankResult>
                     ) : (
-                      <Animation check={this.state.check}></Animation>
+                      <Animation isGaming={this.state.isGaming} check={this.state.check}></Animation>
                     )}
                   </Item>
                 </Grid>
@@ -808,27 +800,29 @@ class RoomClass extends Component {
               </Grid>
             </Box>
 
-            <VideoContainer>
+            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
               {/* 친구들 화면 */}
-              <SubContainer>
-                {this.state.subscribers.map((sub, i) => {
-                  if (i % 2 === 0) {
-                    return (
-                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
-                        <UserVideoComponent streamManager={sub} />
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </SubContainer>
+              <Grid item xs={3}>
+                <SubContainer>
+                  {this.state.subscribers.map((sub, i) => {
+                    if (i % 2 === 0) {
+                      return (
+                        <div key={i} className="stream-container">
+                          <UserVideoComponent streamManager={sub} />
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                </SubContainer>
+              </Grid>
 
               {/* 내 화면 */}
-              <>
+              <Grid item xs={6}>
                 {this.state.publisher !== undefined ? (
                   <MainContainer>
-                    <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
-                      <UserVideoComponent streamManager={this.state.publisher} />
+                    <div className="stream-container">
+                      <UserVideoComponent isMe={true} streamManager={this.state.publisher} />
                     </div>
 
                     <MyInfoBox>
@@ -888,23 +882,27 @@ class RoomClass extends Component {
                       </MicVideoBtn>
                     </MyInfoBox>
                   </MainContainer>
-                ) : null}
-              </>
+                ) : (
+                  <div></div>
+                )}
+              </Grid>
 
-              <SubContainer>
-                {/* 친구들 화면 */}
-                {this.state.subscribers.map((sub, i) => {
-                  if (i % 2) {
-                    return (
-                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
-                        <UserVideoComponent streamManager={sub} />
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </SubContainer>
-            </VideoContainer>
+              <Grid item xs={3}>
+                <SubContainer>
+                  {/* 친구들 화면 */}
+                  {this.state.subscribers.map((sub, i) => {
+                    if (i % 2) {
+                      return (
+                        <div key={i} className="stream-container">
+                          <UserVideoComponent streamManager={sub} />
+                        </div>
+                      );
+                    }
+                    return null;
+                  })}
+                </SubContainer>
+              </Grid>
+            </Grid>
           </div>
         )}
       </Container>
@@ -1139,27 +1137,35 @@ const ArrowsBox = styled.div`
   justify-content: center;
   align-items: center;
 `;
-function Animation({ check }) {
+function Animation({ check, isGaming }) {
   return (
     <Grid container>
-      <Grid item xs={6}>
-        <p>애니매이션</p>
-      </Grid>
-      <Grid item xs={6}>
-        {check ? (
-          <ArrowsBox className="arrows">
-            <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
-            <KeyboardArrowUpRoundedIcon fontSize="large" className="a2" />
-            <KeyboardArrowUpRoundedIcon fontSize="large" className="a1" />
-          </ArrowsBox>
-        ) : (
-          <ArrowsBox className="arrows">
-            <KeyboardArrowDownRoundedIcon fontSize="large" className="a1" />
-            <KeyboardArrowDownRoundedIcon fontSize="large" className="a2" />
-            <KeyboardArrowDownRoundedIcon fontSize="large" className="a3" />
-          </ArrowsBox>
-        )}
-      </Grid>
+      {isGaming ? (
+        <>
+          <Grid item xs={6}>
+            <p>애니메이션</p>
+          </Grid>
+          <Grid item xs={6}>
+            {check ? (
+              <ArrowsBox className="arrows">
+                <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
+                <KeyboardArrowUpRoundedIcon fontSize="large" className="a2" />
+                <KeyboardArrowUpRoundedIcon fontSize="large" className="a1" />
+              </ArrowsBox>
+            ) : (
+              <ArrowsBox className="arrows">
+                <KeyboardArrowDownRoundedIcon fontSize="large" className="a1" />
+                <KeyboardArrowDownRoundedIcon fontSize="large" className="a2" />
+                <KeyboardArrowDownRoundedIcon fontSize="large" className="a3" />
+              </ArrowsBox>
+            )}
+          </Grid>
+        </>
+      ) : (
+        <Grid item xs={12}>
+          <p>애니메이션</p>
+        </Grid>
+      )}
     </Grid>
   );
 }
