@@ -27,6 +27,7 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IoMicOutline, IoMicOffOutline, IoVideocamOffOutline, IoVideocamOutline } from 'react-icons/io5';
 import { faMedal } from '@fortawesome/free-solid-svg-icons';
+import OpenViduVideoComponent from './OvVideo';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
@@ -51,13 +52,8 @@ const Container = styled.div`
   }
 `;
 
-const VideoContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-`;
-
 const SubContainer = styled.div`
+  padding: 30px;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -65,6 +61,8 @@ const SubContainer = styled.div`
 
 const MainContainer = styled.div`
   display: flex;
+  padding: 30px;
+  width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -707,7 +705,6 @@ class RoomClass extends Component {
       connectionErr,
       workoutId,
       isModelError,
-      title,
       isFinish,
       myUserName,
       isGaming,
@@ -725,7 +722,7 @@ class RoomClass extends Component {
       return <div>올바르게 방입장했는지 확인좀요 ㅎㅎ</div>;
     }
     return (
-      <Container id="roomContainer">
+      <Container>
         {this.state.session === undefined ? (
           <Box
             sx={{
@@ -749,7 +746,10 @@ class RoomClass extends Component {
             {/* 화면 위 쪽 UI */}
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
               <Grid container spacing={2} sx={HeaderBoxStyle}>
-                <Grid item xs={12} sx={{ padding: '30px' }}>
+                <Grid
+                  item
+                  xs={12}
+                  sx={{ padding: '5px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   {/* 타이머 & 시작 준비 종료 버튼 */}
                   <TimeBox>
                     {isFinish ? (
@@ -812,7 +812,7 @@ class RoomClass extends Component {
               </Grid>
             </div>
 
-            <Grid container spacing={2} sx={{ flexGrow: 1 }}>
+            <Grid container spacing={2} sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
               {/* 친구들 화면 */}
               <Grid item xs={3}>
                 <SubContainer>
@@ -830,13 +830,10 @@ class RoomClass extends Component {
               </Grid>
 
               {/* 내 화면 */}
-              <Grid item xs={6}>
+              <Grid item xs={4}>
                 {this.state.publisher !== undefined ? (
                   <MainContainer>
-                    <div className="stream-container">
-                      <UserVideoComponent isMe={true} streamManager={this.state.publisher} />
-                    </div>
-
+                    <OpenViduVideoComponent streamManager={this.state.publisher} />
                     <MyInfoBox>
                       <Chip label={myUserName} variant="outlined" />
 
@@ -905,7 +902,7 @@ class RoomClass extends Component {
                   {this.state.subscribers.map((sub, i) => {
                     if (i % 2) {
                       return (
-                        <div key={i} className="stream-container">
+                        <div key={i}>
                           <UserVideoComponent streamManager={sub} />
                         </div>
                       );
@@ -926,9 +923,8 @@ export default RoomPage;
 
 const HeaderBoxStyle = {
   flexGrow: 1,
-  maxWidth: '1190px',
+  padding: '0px 10px',
   justifySelf: 'center',
-  padding: '30px',
 };
 
 const MyInfoBox = styled.div`
@@ -968,7 +964,7 @@ const Item = styledC(Paper)(({ theme }) => ({
 
 const TimeBox = styled.div`
   display: flex;
-  width: 100%;
+  width: 80%;
   align-items: center;
   justify-content: center;
 `;
@@ -990,8 +986,17 @@ function CountDownIcon({ countdown }) {
 }
 
 // 1분 타이머
+const TimerBox = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
 const Timer = ({ setFinish, isFinish }) => {
   const [value, setValue] = useState(5);
+  const getValue = function () {
+    return parseInt(value, 10);
+  };
   useEffect(() => {
     if (!isFinish) {
       const myInterval = setInterval(() => {
@@ -1010,9 +1015,12 @@ const Timer = ({ setFinish, isFinish }) => {
   });
 
   return (
-    <>
-      <CustomizedProgressBars value={value}></CustomizedProgressBars>
-    </>
+    <TimerBox>
+      <div style={{ alignSelf: 'center' }}>남은 시간 : {getValue()}</div>
+      <div>
+        <CustomizedProgressBars value={value}></CustomizedProgressBars>
+      </div>
+    </TimerBox>
   );
 };
 
