@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://localhost:5000';
+export const API_BASE_URL = 'http://localhost:5000/api';
 // 'http://i7a205.p.ssafy.io' +':5000'
 
 const USER_URL = '/user';
@@ -28,6 +28,7 @@ const SEARCH_URL = '/search?keyword=';
 const QUIT_URL = '/disconnect';
 
 const START_URL = '/start';
+const END_URL = '/end';
 
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
@@ -54,4 +55,5 @@ export default {
   quit: () => API_BASE_URL + ROOM_URL + QUIT_URL,
 
   start: () => API_BASE_URL + GAME_URL + START_URL,
+  end: () => API_BASE_URL + GAME_URL + END_URL,
 };
