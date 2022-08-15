@@ -1,12 +1,17 @@
-import { Tooltip } from '@mui/material';
+import { Tooltip, Button } from '@mui/material';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+import Carousel from 'nuka-carousel';
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import awards from '../../../assets/data/awardItems';
+import blank from '../../../assets/images/award/blank.png';
 
 const AwardBox = styled.div`
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
 `;
 
 const ImgBox = styled.div`
@@ -25,18 +30,61 @@ export default function AwardList() {
   for (let i = 0; i < achieveAwards.length; i++) {
     awardList = [...awardList, achieveAwards[i].award];
   }
+
+  let myAwards = [];
+  let temp = [];
+  for (let i = 0; i < awards.length; i++) {
+    if (awardList.includes(awards[i].eventName)) {
+      temp.push({ img: awards[i].acheiveImg, description: awards[i].description });
+    } else {
+      temp.push({ img: awards[i].notAcheiveImg });
+    }
+
+    if (temp.length >= 6) {
+      myAwards = [...myAwards, temp];
+      temp = [];
+    }
+
+    if (awards.length - 1 === i) {
+      const num = awards.length % 6;
+      for (let i = 0; i < 6 - num; i++) {
+        temp = [...temp, { img: blank }];
+      }
+      myAwards = [...myAwards, temp];
+      temp = [];
+    }
+  }
+
   return (
     <div>
       <h2>도전과제</h2>
-      <AwardBox>
-        {awards.map((award, idx) =>
-          awardList.includes(award.eventName) ? (
-            <AwardImg key={idx} awardImg={award.acheiveImg} description={award.description} />
-          ) : (
-            <AwardImg key={idx} awardImg={award.notAcheiveImg} />
-          )
+      <Carousel
+        autoplay={true}
+        autoplayInterval={'4000'}
+        wrapAround={true}
+        renderCenterLeftControls={({ previousSlide }) => (
+          <Button>
+            <ArrowBackIosIcon fontSize="large" onClick={previousSlide}></ArrowBackIosIcon>
+          </Button>
         )}
-      </AwardBox>
+        renderCenterRightControls={({ nextSlide }) => (
+          <Button>
+            <ArrowForwardIosIcon fontSize="large" onClick={nextSlide}></ArrowForwardIosIcon>
+          </Button>
+        )}
+        defaultControlsConfig={{
+          pagingDotsStyle: {
+            padding: '0px 3px',
+          },
+        }}>
+        {myAwards.map((arr, j) => (
+          <AwardBox>
+            {arr.map((award, idx) => (
+              <AwardImg key={idx} awardImg={award.img} description={award.description} />
+            ))}
+          </AwardBox>
+        ))}
+      </Carousel>
     </div>
   );
 }

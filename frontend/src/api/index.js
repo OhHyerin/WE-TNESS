@@ -28,6 +28,7 @@ const QUIT_URL = '/disconnect';
 
 const START_URL = '/start';
 const END_URL = '/end';
+const FETCH_DIARY = '/diary';
 
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
@@ -55,4 +56,5 @@ export default {
 
   start: () => API_BASE_URL + GAME_URL + START_URL,
   end: () => API_BASE_URL + GAME_URL + END_URL,
+  fetchDiary: nickname => API_BASE_URL + GAME_URL + FETCH_DIARY + `/${nickname}`,
 };
