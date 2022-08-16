@@ -36,6 +36,10 @@
   display: block;
 }
 
+.element-content {
+  font-size: 20px;
+}
+
 @keyframes rotate {
   10%,
   15%,
