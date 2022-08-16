@@ -53,19 +53,12 @@ const fetchLungeRanking = createAsyncThunk('fetchRankList', async (payload, { re
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
 const initialState = {
-  ranks: [
-    {
-      userNickname: '',
-      address: '',
-      calorie: 0,
-      date: '',
-    },
-  ],
+  ranks: [],
   message: '',
 
   // 메인페이지 실시간 랭킹
