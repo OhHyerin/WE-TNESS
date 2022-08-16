@@ -2,13 +2,12 @@ package com.wetness.model.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wetness.auth.jwt.JwtUtil;
+import com.wetness.db.entity.Follow;
 import com.wetness.db.entity.LoggedContinue;
 import com.wetness.db.entity.LoggedIn;
 import com.wetness.db.entity.User;
-import com.wetness.db.repository.CommonCodeRepository;
-import com.wetness.db.repository.LoggedContinueRepository;
-import com.wetness.db.repository.LoggedInRepository;
-import com.wetness.db.repository.UserRepository;
+import com.wetness.db.repository.*;
+import com.wetness.exception.DropUserException;
 import com.wetness.model.dto.request.JoinUserDto;
 import com.wetness.model.dto.request.PasswordDto;
 import com.wetness.model.dto.request.UpdateUserDto;
@@ -49,13 +48,14 @@ public class UserServiceImpl implements UserService {
     private final LoggedContinueRepository loggedContinueRepository;
     private final CommonCodeRepository commonCodeRepository;
     private final LoggedInRepository loggedInRepository;
+    private final FollowRepository followRepository;
+
     private final AwardService awardService;
 
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    private final String hostKakao = "https://kauth.kakao.com/oauth/token";
 
     @Override
     @Transactional
@@ -77,7 +77,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public LoginSocialDto registerSocialUser(Map<String, Object> data){
+    public LoginSocialDto registerSocialUser(Map<String, Object> data) {
 
         RandomString randomString = new RandomString(20);
         User user = new User();
@@ -101,10 +101,10 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        LoginSocialDto loginSocialDto =  loginSocialUser(user);
+        LoginSocialDto loginSocialDto = loginSocialUser(user);
         loginSocialDto.setExistUser("false");
 
-        return  loginSocialDto;
+        return loginSocialDto;
     }
 
     @Override
@@ -197,6 +197,10 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByNickname(nickname);
         if (user != null) {
             user.setRole("drop");
+            //해당 유저를 팔로우 하고 있는 레코드 삭제
+            ArrayList<Follow> byFollowing = followRepository.findByFollowing(user);
+            followRepository.deleteAll(byFollowing);
+
             return true;
         }
         return false;
@@ -235,10 +239,10 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public String getSocialAccessToken(String auth, String code) throws IOException {
+    public String getSocialAccessToken(String code) throws IOException {
 
 
-        URL url = new URL(hostKakao);
+        URL url = new URL("https://kauth.kakao.com/oauth/token");
 
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         String token = "";
@@ -252,7 +256,7 @@ public class UserServiceImpl implements UserService {
             // Client_id = REST_API_KEY 수정 필요
             sb.append("&client_id=cddf8fe3437329bf32a17342aa27ea7e");
             // 초기 프론트에서 설정한 Redirect_uri
-            sb.append("&redirect_uri=http://localhost:8080/user/login/kakao");
+            sb.append("&redirect_uri=http://localhost:3000/user/login/kakao");
             sb.append("&code=" + code);
 
             bw.write(sb.toString());
@@ -322,8 +326,8 @@ public class UserServiceImpl implements UserService {
             // id를 포함해 kakao account 관련 정보 빼오기
             String id = obj.get("id").toString();
             result.put("id", id);
-            for(Object key : kakaoAccount.keySet()){
-                result.put((String) key,kakaoAccount.get(key));
+            for (Object key : kakaoAccount.keySet()) {
+                result.put((String) key, kakaoAccount.get(key));
             }
 
 
@@ -400,6 +404,10 @@ public class UserServiceImpl implements UserService {
     public LoginDto loginUser(User user) {
         Authentication authentication = getAuthentication(user);
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+        if (userDetails.getRole().equals("drop")) {
+            throw new DropUserException();
+        }
+
         String accessToken = jwtUtil.createAccessToken(authentication);
         String refreshToken = jwtUtil.createRefreshToken();
 
@@ -411,6 +419,7 @@ public class UserServiceImpl implements UserService {
 
         return new LoginDto("200", null, accessToken, refreshToken);
     }
+
     @Override
     @Transactional
     public LoginSocialDto loginSocialUser(User user) {
@@ -423,7 +432,7 @@ public class UserServiceImpl implements UserService {
         saveRefreshToken(userDetails.getNickname(), refreshToken);
         setLoginData(userDetails.getId());
 
-        return new LoginSocialDto("true","200", null, accessToken, refreshToken);
+        return new LoginSocialDto("true", "200", null, accessToken, refreshToken);
     }
 
     @Override
@@ -503,4 +512,16 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public ArrayList<UserInfoResDto> searchUserWithKeyword(String keyword) {
+        ArrayList<UserInfoResDto> list = new ArrayList<UserInfoResDto>();
+        ArrayList<User> users = userRepository.findByNicknameContains(keyword);
+
+        for (User u : users) {
+            String address = getAddress(u.getSidoCode(), u.getGugunCode());
+            UserInfoResDto userInfoResDto = UserInfoResDto.generateUserInfoResDto(u, address);
+            list.add(userInfoResDto);
+        }
+        return list;
+    }
 }

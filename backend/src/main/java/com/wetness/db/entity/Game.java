@@ -58,7 +58,8 @@ public class Game {
             return this;
         }
         public GameBuilder buildCreateTime(int[] created){
-            this.createDate = LocalDateTime.of(created[0],created[1],created[2],created[3],created[4],created[5]);
+            this.createDate = LocalDateTime.of(created[0],created[1],created[2],
+                    created[3],created[4],created[5]);
             return this;
         }
 

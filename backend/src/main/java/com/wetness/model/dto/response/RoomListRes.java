@@ -8,7 +8,7 @@ import lombok.Data;
 @AllArgsConstructor
 @Builder
 public class RoomListRes {
-    private int workout;
+    private int workoutId;
     private String title;
     private boolean isLocked;
     private int headcount;
