@@ -1,43 +1,38 @@
 .center {
-  background: var(--primary-color);
-  border: 1px;
+  background: white;
   border-radius: 5px;
-  box-shadow: 5px 5px black;
+  box-shadow: 2px 2px gray;
 }
 .carousel {
   position: relative;
   width: 100%;
   text-align: center;
-  font-size: 30px;
+  font-size: 25px;
   line-height: 45px;
   height: 50px;
 }
 .carousel .pre {
   position: absolute;
   top: 0;
-  right: 80%;
+  left: 25%;
   height: 50px;
-  text-shadow: 1px 1px 1px #3c2254;
   font-weight: 300;
 }
 .carousel .change_outer {
   position: absolute;
   top: 0;
-  left: 25%;
+  left: 50%;
+  font-size: 18px;
   text-align: left;
   height: 45px;
   overflow: hidden;
 }
 .carousel .change_outer .change_inner {
   position: relative;
-  animation: rotate 8s ease-in-out infinite;
+  animation: rotate 12s ease-in-out infinite;
 }
 .carousel .change_outer .element {
   display: block;
-}
-
-.element-content {
-  font-size: 20px;
 }
 
 @keyframes rotate {

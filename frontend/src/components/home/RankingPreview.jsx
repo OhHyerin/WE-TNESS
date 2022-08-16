@@ -11,7 +11,7 @@ import {
 import './RankingPreview.css';
 
 const PriviewBanner = styled.div`
-  padding: 30px;
+  padding: 60px 40px;
 `;
 
 export default function RankingPreview() {

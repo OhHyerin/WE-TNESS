@@ -22,7 +22,7 @@ const workoutItems = [
   },
   {
     id: 4,
-    name: '플랭크',
+    name: '런지',
   },
 ];
 
