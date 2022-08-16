@@ -187,6 +187,7 @@ export default function Home() {
     <div>
       <div>
         <Banner />
+        {/* 랭킹 프리뷰 버티컬 캐러셀 */}
         <RankingPreview />
         <>
           {/* 운동 목록 */}

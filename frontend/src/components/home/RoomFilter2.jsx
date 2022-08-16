@@ -1,4 +1,4 @@
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -7,7 +7,6 @@ import Switch from '@mui/material/Switch';
 import { testShowPrivate } from '../../features/room/RoomSlice';
 
 export default function RoomFilter2() {
-  const showPrivate = useSelector(state => state.room.showPrivate);
   const dispatch = useDispatch();
 
   const handleChange = () => {
@@ -24,7 +23,6 @@ export default function RoomFilter2() {
           labelPlacement="start"
         />
       </FormGroup>
-      {showPrivate ? <div>내가 사라져볼게</div> : <div>얍</div>}
     </>
   );
 }
