@@ -13,6 +13,7 @@ const LOGOUT_URL = '/logout';
 const SIGNUP_URL = '/join';
 const CHECK_NICKNAME_URL = '/duplicate-nickname';
 const CHECK_EMAIL_URL = '/duplicate-email';
+const SEARCH_USER = '/info?keyword=';
 
 const FETCH_FOLLOWING_LIST_URL = '/follow';
 const FETCH_FOLLOWER_LIST_URL = '/follow/me';
@@ -28,6 +29,7 @@ const QUIT_URL = '/disconnect';
 
 const START_URL = '/start';
 const END_URL = '/end';
+const FETCH_DIARY = '/diary';
 
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
@@ -44,6 +46,7 @@ export default {
   fetchUserInfo: () => API_BASE_URL + USER_URL + FETCH_USER_INFO_URL,
   edit: () => API_BASE_URL + USER_URL,
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
+  searchUser: keyword => API_BASE_URL + USER_URL + SEARCH_USER + `${keyword}`,
   fetchHistory: nickname => API_BASE_URL + FITNESS_URL + `/${nickname}`,
   fetchRankList: () => API_BASE_URL + RANK_URL,
   fetchRoomList: () => API_BASE_URL + ROOM_URL,
@@ -55,4 +58,5 @@ export default {
 
   start: () => API_BASE_URL + GAME_URL + START_URL,
   end: () => API_BASE_URL + GAME_URL + END_URL,
+  fetchDiary: nickname => API_BASE_URL + GAME_URL + FETCH_DIARY + `/${nickname}`,
 };

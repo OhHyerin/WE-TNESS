@@ -4,20 +4,36 @@ import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
 import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
-import { styled as styledC, Box, Paper, Grid, CircularProgress, Modal, Chip, keyframes } from '@mui/material';
+import {
+  styled as styledC,
+  Box,
+  Paper,
+  Grid,
+  CircularProgress,
+  Modal,
+  Chip,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+} from '@mui/material';
 import LooksOneOutlinedIcon from '@mui/icons-material/LooksOneOutlined';
 import LooksTwoOutlinedIcon from '@mui/icons-material/LooksTwoOutlined';
 import Looks3OutlinedIcon from '@mui/icons-material/Looks3Outlined';
+import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
+import KeyboardArrowUpRoundedIcon from '@mui/icons-material/KeyboardArrowUpRounded';
 import styled from 'styled-components';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IoMicOutline, IoMicOffOutline, IoVideocamOffOutline, IoVideocamOutline } from 'react-icons/io5';
 import { faMedal } from '@fortawesome/free-solid-svg-icons';
+import OpenViduVideoComponent from './OvVideo';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import setConfig from '../../features/authHeader';
 import api from '../../api';
+import './RoomPage.css';
 
 // 효과음
 import startSound from '../../assets/sound/startSound.wav';
@@ -29,22 +45,27 @@ const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 const Container = styled.div`
   padding: 0;
-`;
-
-const VideoContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 10px;
+  width: 100%;
+  max-width: 100%;
+  > * {
+    max-width: 100%;
+  }
 `;
 
 const SubContainer = styled.div`
+  padding: 30px;
+  width: 80%;
   display: flex;
   flex-direction: column;
+  justify-content: center;
+  align-items: center;
   gap: 10px;
 `;
 
 const MainContainer = styled.div`
   display: flex;
+  padding: 30px;
+  width: 100%;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -60,7 +81,7 @@ function RoomPage() {
 
   if (isAuthenticated) {
     if (sessionInfo) {
-      return <RoomClass sessionInfo={sessionInfo} nickname={nickname} navigate={navigate}></RoomClass>;
+      return <RoomClass sessionInfo={sessionInfo} nickname={nickname} navigate={navigate} />;
     }
     return <div>세션정보없음</div>;
   }
@@ -83,6 +104,7 @@ class RoomClass extends Component {
       subscribers: [],
       currentVideoDevice: undefined,
       connectionErr: false,
+      isRankView: false,
 
       audioState: true,
       videoState: true,
@@ -112,7 +134,6 @@ class RoomClass extends Component {
     this.joinSession = this.joinSession.bind(this);
     this.leaveSession = this.leaveSession.bind(this);
     this.switchCamera = this.switchCamera.bind(this);
-    this.handleMainVideoStream = this.handleMainVideoStream.bind(this);
     this.onbeforeunload = this.onbeforeunload.bind(this);
 
     // 커스텀
@@ -123,6 +144,8 @@ class RoomClass extends Component {
     this.readySignal = this.readySignal.bind(this);
     this.checkPossibleStart = this.checkPossibleStart.bind(this);
     this.setFinish = this.setFinish.bind(this);
+    this.setIsRankView = this.setIsRankView.bind(this);
+    this.getMyRank = this.getMyRank.bind(this);
 
     // 모션 인식
     this.setModel = this.setModel.bind(this);
@@ -160,14 +183,6 @@ class RoomClass extends Component {
 
   onbeforeunload(event) {
     this.leaveSession();
-  }
-
-  handleMainVideoStream(stream) {
-    if (this.state.mainStreamManager !== stream) {
-      this.setState({
-        mainStreamManager: stream,
-      });
-    }
   }
 
   deleteSubscriber(streamManager) {
@@ -278,6 +293,7 @@ class RoomClass extends Component {
             // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
             // element: we will manage it on our own) and with the desired properties
             const publisher = this.OV.initPublisher(undefined, {
+              nickname: this.state.myUserName,
               audioSource: undefined, // The source of audio. If undefined default microphone
               videoSource: undefined, // The source of video. If undefined default webcam
               // videoDevices[0].deviceId,
@@ -416,7 +432,8 @@ class RoomClass extends Component {
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
-        Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
+        Url = 'https://teachablemachine.withgoogle.com/models/TPlEwiz6u/';
+        // Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
         break;
       case 2: // 푸쉬업
         Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
@@ -481,6 +498,10 @@ class RoomClass extends Component {
       });
   }
 
+  getMyRank() {
+    return this.state.rankList.findIndex(item => item.nickname === this.state.myUserName) + 1;
+  }
+
   // 게임 종료 정보 전달
   setFinish() {
     console.log('게임 끝!');
@@ -498,8 +519,7 @@ class RoomClass extends Component {
       data.getUTCSeconds(),
     ];
 
-    // 내 랭크정보 전달 수정 필요
-    const rank = 1;
+    const rank = this.getMyRank();
     const payload = {
       gameId: this.state.gameId,
       terminateDate,
@@ -516,6 +536,12 @@ class RoomClass extends Component {
       .catch(err => {
         console.log(err);
       });
+  }
+
+  setIsRankView() {
+    this.setState({
+      isRankView: !this.state.isRankView,
+    });
   }
 
   // 스쿼트
@@ -548,7 +574,6 @@ class RoomClass extends Component {
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
     if (prediction[0].probability.toFixed(2) > 0.99) {
-      console.log('푸쉬업 올라감');
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -558,7 +583,6 @@ class RoomClass extends Component {
         }, 10);
       }
     } else if (prediction[1].probability.toFixed(2) > 0.99) {
-      console.log('푸쉬업 내려감');
       this.setState({ check: true });
     }
   }
@@ -684,7 +708,6 @@ class RoomClass extends Component {
       connectionErr,
       workoutId,
       isModelError,
-      title,
       isFinish,
       myUserName,
       isGaming,
@@ -704,7 +727,14 @@ class RoomClass extends Component {
     return (
       <Container>
         {this.state.session === undefined ? (
-          <Box sx={{ display: 'flex' }}>
+          <Box
+            sx={{
+              display: 'flex',
+              width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingTop: '100px',
+            }}>
             <CircularProgress />
           </Box>
         ) : (
@@ -717,143 +747,164 @@ class RoomClass extends Component {
             </Modal>
 
             {/* 화면 위 쪽 UI */}
-            <Box sx={{ flexGrow: 1 }}>
-              <Grid container spacing={2} sx={{ padding: '30px' }}>
-                <Grid item xs={12} sx={{ padding: '30px' }}>
-                  {/* 타이머 & 시작버튼 */}
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+              <Grid container spacing={2} sx={HeaderBoxStyle}>
+                <Grid
+                  item
+                  xs={12}
+                  sx={{ padding: '5px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                  {/* 타이머 & 시작 준비 종료 버튼 */}
                   <TimeBox>
-                    {isGaming ? (
-                      <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
-                    ) : myUserName === managerNickname ? (
-                      <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
-                        시작!
+                    {isFinish ? (
+                      <SubmitBtn disabled={true} deactive={true}>
+                        게임 종료!
                       </SubmitBtn>
                     ) : (
-                      <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                      <>
+                        {isGaming ? (
+                          <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
+                        ) : myUserName === managerNickname ? (
+                          <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
+                            시작!
+                          </SubmitBtn>
+                        ) : (
+                          <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                        )}
+                      </>
                     )}
                   </TimeBox>
                 </Grid>
 
                 {/* 실시간 순위 */}
-                <Grid item xs={4}>
+                <Grid item xs={4} sx={SubContainerStyle}>
                   {isFinish ? null : (
-                    <Item>
+                    <Item sx={{ width: '100%' }}>
                       <LiveRank rankList={rankList}></LiveRank>
                     </Item>
                   )}
+                  {/* 친구 화면 */}
+                  <SubContainer>
+                    {this.state.subscribers.map((sub, i) => {
+                      if (i % 2 === 0) {
+                        return (
+                          <div key={i} className="stream-container">
+                            <UserVideoComponent streamManager={sub} />
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
+                  </SubContainer>
                 </Grid>
 
                 {/* 애니매이션 & 결과창 */}
                 <Grid item xs={4}>
-                  <Item>{isFinish ? <RankResult rankList={rankList}></RankResult> : '애니매이션'}</Item>
-                </Grid>
-
-                {/* 운동정보 및 내 횟수와 순위 */}
-                <Grid item xs={4}>
                   <Item>
+                    {isFinish ? (
+                      <RankResult
+                        rankList={rankList}
+                        isRankView={this.state.isRankView}
+                        setIsRankView={this.setIsRankView}></RankResult>
+                    ) : (
+                      <Animation isGaming={this.state.isGaming} check={this.state.check}></Animation>
+                    )}
+                  </Item>
+
+                  {/* 내 화면 */}
+                  {this.state.publisher !== undefined ? (
+                    <MainContainer>
+                      <OpenViduVideoComponent streamManager={this.state.publisher} />
+                      <MyInfoBox>
+                        <Chip label={myUserName} variant="outlined" />
+
+                        {/* 마이크 & 카메라 onOff */}
+                        <MicVideoBtn>
+                          <Chip
+                            label={
+                              this.state.audioState ? (
+                                <IoMicOutline
+                                  color="#009688"
+                                  size="24"
+                                  onClick={() => {
+                                    this.state.publisher.publishAudio(!this.state.audioState);
+                                    this.setState({ audioState: !this.state.audioState });
+                                  }}
+                                />
+                              ) : (
+                                <IoMicOffOutline
+                                  color="#009688"
+                                  size="24"
+                                  onClick={() => {
+                                    this.state.publisher.publishAudio(!this.state.audioState);
+                                    this.setState({ audioState: !this.state.audioState });
+                                  }}
+                                />
+                              )
+                            }
+                            variant="outlined"
+                          />
+                          <Chip
+                            label={
+                              this.state.videoState ? (
+                                <IoVideocamOutline
+                                  color="#009688"
+                                  size="24"
+                                  onClick={() => {
+                                    this.state.publisher.publishVideo(!this.state.videoState);
+                                    this.setState({ videoState: !this.state.videoState });
+                                  }}
+                                />
+                              ) : (
+                                <IoVideocamOffOutline
+                                  color="#009688"
+                                  size="24"
+                                  onClick={() => {
+                                    this.state.publisher.publishVideo(!this.state.videoState);
+                                    this.setState({ videoState: !this.state.videoState });
+                                  }}
+                                />
+                              )
+                            }
+                            variant="outlined"
+                          />
+                        </MicVideoBtn>
+                      </MyInfoBox>
+                    </MainContainer>
+                  ) : (
+                    <div></div>
+                  )}
+                </Grid>
+                {/* 운동정보 및 내 횟수와 순위 */}
+                <Grid item xs={4} sx={SubContainerStyle}>
+                  <Item sx={{ width: '100%' }}>
                     <MyWorkoutInfo count={count} workoutId={workoutId} rankList={rankList} myUserName={myUserName} />
                   </Item>
+                  <SubContainer>
+                    {/* 친구들 화면 */}
+                    {this.state.subscribers.map((sub, i) => {
+                      if (i % 2) {
+                        return (
+                          <div key={i}>
+                            <UserVideoComponent streamManager={sub} />
+                          </div>
+                        );
+                      }
+                      return null;
+                    })}
+                  </SubContainer>
                 </Grid>
               </Grid>
-            </Box>
+            </div>
 
-            <VideoContainer>
-              {/* 친구들 화면 */}
-              <SubContainer>
-                {this.state.subscribers.map((sub, i) => {
-                  if (i % 2 === 0) {
-                    return (
-                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
-                        <UserVideoComponent streamManager={sub} />
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </SubContainer>
-
-              {/* 내 화면 */}
-              <>
-                {this.state.publisher !== undefined ? (
-                  <MainContainer>
-                    <div className="stream-container" onClick={() => this.handleMainVideoStream(this.state.publisher)}>
-                      <UserVideoComponent streamManager={this.state.publisher} />
-                    </div>
-
-                    <MyInfoBox>
-                      <Chip label={myUserName} variant="outlined" />
-
-                      {/* 마이크 & 카메라 onOff */}
-                      <MicVideoBtn>
-                        <Chip
-                          label={
-                            this.state.audioState ? (
-                              <IoMicOutline
-                                color="#009688"
-                                size="24"
-                                onClick={() => {
-                                  this.state.publisher.publishAudio(!this.state.audioState);
-                                  this.setState({ audioState: !this.state.audioState });
-                                }}
-                              />
-                            ) : (
-                              <IoMicOffOutline
-                                color="#009688"
-                                size="24"
-                                onClick={() => {
-                                  this.state.publisher.publishAudio(!this.state.audioState);
-                                  this.setState({ audioState: !this.state.audioState });
-                                }}
-                              />
-                            )
-                          }
-                          variant="outlined"
-                        />
-
-                        <Chip
-                          label={
-                            this.state.videoState ? (
-                              <IoVideocamOutline
-                                color="#009688"
-                                size="24"
-                                onClick={() => {
-                                  this.state.publisher.publishVideo(!this.state.videoState);
-                                  this.setState({ videoState: !this.state.videoState });
-                                }}
-                              />
-                            ) : (
-                              <IoVideocamOffOutline
-                                color="#009688"
-                                size="24"
-                                onClick={() => {
-                                  this.state.publisher.publishVideo(!this.state.videoState);
-                                  this.setState({ videoState: !this.state.videoState });
-                                }}
-                              />
-                            )
-                          }
-                          variant="outlined"
-                        />
-                      </MicVideoBtn>
-                    </MyInfoBox>
-                  </MainContainer>
-                ) : null}
-              </>
-
-              <SubContainer>
-                {/* 친구들 화면 */}
-                {this.state.subscribers.map((sub, i) => {
-                  if (i % 2) {
-                    return (
-                      <div key={i} className="stream-container" onClick={() => this.handleMainVideoStream(sub)}>
-                        <UserVideoComponent streamManager={sub} />
-                      </div>
-                    );
-                  }
-                  return null;
-                })}
-              </SubContainer>
-            </VideoContainer>
+            {/* 전체 결과 모달 */}
+            <Modal open={this.state.isRankView} onClose={this.setIsRankView}>
+              <Box sx={isRankViewstyle}>
+                <RankResult
+                  rankList={rankList}
+                  isRankView={this.state.isRankView}
+                  setIsRankView={this.setIsRankView}></RankResult>
+              </Box>
+            </Modal>
           </div>
         )}
       </Container>
@@ -862,6 +913,18 @@ class RoomClass extends Component {
 }
 
 export default RoomPage;
+
+const SubContainerStyle = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+};
+
+const HeaderBoxStyle = {
+  flexGrow: 1,
+  padding: '0px 10px',
+  justifySelf: 'center',
+};
 
 const MyInfoBox = styled.div`
   display: flex;
@@ -882,7 +945,7 @@ const countDownStyle = {
   position: 'absolute',
   top: '50%',
   left: '50%',
-  transform: 'translate(-50%, -50%)',
+  transform: 'translate(-30%, -30%)',
 };
 
 const countDownIconStyle = {
@@ -900,7 +963,7 @@ const Item = styledC(Paper)(({ theme }) => ({
 
 const TimeBox = styled.div`
   display: flex;
-  width: 100%;
+  width: 80%;
   align-items: center;
   justify-content: center;
 `;
@@ -922,8 +985,17 @@ function CountDownIcon({ countdown }) {
 }
 
 // 1분 타이머
+const TimerBox = styled.div`
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+`;
+
 const Timer = ({ setFinish, isFinish }) => {
-  const [value, setValue] = useState(60);
+  const [value, setValue] = useState(5);
+  const getValue = function () {
+    return parseInt(value, 10);
+  };
   useEffect(() => {
     if (!isFinish) {
       const myInterval = setInterval(() => {
@@ -942,9 +1014,12 @@ const Timer = ({ setFinish, isFinish }) => {
   });
 
   return (
-    <>
-      <CustomizedProgressBars value={value}></CustomizedProgressBars>
-    </>
+    <TimerBox>
+      <div style={{ alignSelf: 'center' }}>남은 시간 : {getValue()}</div>
+      <div>
+        <CustomizedProgressBars value={value}></CustomizedProgressBars>
+      </div>
+    </TimerBox>
   );
 };
 
@@ -983,9 +1058,9 @@ const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
 function CustomizedProgressBars(props) {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {props.value <= 10 ? (
+      {props.value <= 5 ? (
         <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
-      ) : props.value < 30 ? (
+      ) : props.value < 20 ? (
         <WarnLinearProgress variant="determinate" value={(props.value * 100) / 60} />
       ) : (
         <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
@@ -1003,9 +1078,17 @@ const MyBox = styled.div`
   align-items: center;
 `;
 
+const WorkoutTitle = styled.div`
+  padding: 10px;
+`;
+
 const MyRank = styled.div`
   display: flex;
+  width: 80%;
+  justify-content: space-between;
+  padding: 10px;
 `;
+
 function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
   const workoutName = function () {
     switch (workoutId) {
@@ -1033,10 +1116,14 @@ function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
 
   return (
     <MyBox>
-      <p>1분 {workoutName()}!!!</p>
-      <p>나의 운동 횟수 {count}개</p>
+      <WorkoutTitle>{workoutName()} - 1분</WorkoutTitle>
       <MyRank>
-        <p>나의 순위</p> {myRank()} <p>등!</p>
+        <div>나의 운동 횟수</div>
+        <div>{count}개</div>
+      </MyRank>
+      <MyRank>
+        <div>나의 순위</div>
+        <div>{myRank()}등!</div>
       </MyRank>
     </MyBox>
   );
@@ -1055,12 +1142,20 @@ function LiveRank({ rankList }) {
   const rankListLi = rankList.map((item, i) => {
     if (i <= 2) {
       return (
-        <li key={i}>
-          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
-          <p>
-            {item.nickname} {item.count}개
-          </p>
-        </li>
+        <ListItem key={i}>
+          <ListItemAvatar>
+            {i === 0 ? (
+              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'gold' }} />
+            ) : i === 1 ? (
+              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'silver' }} />
+            ) : i === 2 ? (
+              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'bronze' }} />
+            ) : (
+              <p>{i + 1}</p>
+            )}
+          </ListItemAvatar>
+          <ListItemText primary={`${item.nickname}`} secondary={`${item.count}개`} />
+        </ListItem>
       );
     }
     return null;
@@ -1068,29 +1163,94 @@ function LiveRank({ rankList }) {
   return (
     <LiveBox>
       <p>실시간 랭킹 !!</p>
-      <ul>{rankListLi}</ul>
+      <List>{rankListLi}</List>
     </LiveBox>
   );
 }
 
-function RankResult({ rankList }) {
+// 애니매이션
+const ArrowsBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+`;
+function Animation({ check, isGaming }) {
+  return (
+    <Grid container>
+      {isGaming ? (
+        <>
+          <Grid item xs={6}>
+            <p>애니메이션</p>
+          </Grid>
+          <Grid item xs={6}>
+            {check ? (
+              <ArrowsBox className="arrows">
+                <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
+                <KeyboardArrowUpRoundedIcon fontSize="large" className="a2" />
+                <KeyboardArrowUpRoundedIcon fontSize="large" className="a1" />
+              </ArrowsBox>
+            ) : (
+              <ArrowsBox className="arrows">
+                <KeyboardArrowDownRoundedIcon fontSize="large" className="a1" />
+                <KeyboardArrowDownRoundedIcon fontSize="large" className="a2" />
+                <KeyboardArrowDownRoundedIcon fontSize="large" className="a3" />
+              </ArrowsBox>
+            )}
+          </Grid>
+        </>
+      ) : (
+        <Grid item xs={12}>
+          <p>애니메이션</p>
+        </Grid>
+      )}
+    </Grid>
+  );
+}
+
+// 최종 랭킹
+
+const isRankViewstyle = {
+  position: 'absolute',
+  top: '20%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 800,
+  bgcolor: 'background.paper',
+  border: '1px solid var(--primary-color)',
+  borderRadius: '10px',
+  boxShadow: 24,
+  p: 4,
+};
+
+function RankResult({ rankList, isRankView, setIsRankView }) {
   const rankListLi = rankList.map((item, i) => {
-    if (i <= 2) {
-      return (
-        <li key={i}>
-          <FontAwesomeIcon icon={faMedal} style={{ color: 'var(--primary-color)' }} />{' '}
-          <p>
-            {item.nickname} {item.count}개
-          </p>
-        </li>
-      );
+    if (!isRankView && i > 2) {
+      return null;
     }
-    return null;
+
+    return (
+      <ListItem key={i}>
+        <ListItemAvatar>
+          {i === 0 ? (
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'gold' }} />
+          ) : i === 1 ? (
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'silver' }} />
+          ) : i === 2 ? (
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'bronze' }} />
+          ) : (
+            <p>{i + 1}</p>
+          )}
+        </ListItemAvatar>
+        <ListItemText primary={`${item.nickname}`} secondary={`${item.count}개`} />
+      </ListItem>
+    );
   });
   return (
     <LiveBox>
-      <p>결과 !!</p>
-      <ul>{rankListLi}</ul>
+      <h2>최종 순위</h2>
+      {!isRankView ? <button onClick={setIsRankView}>전체 순위 보기</button> : null}
+      <List>{rankListLi}</List>
     </LiveBox>
   );
 }
