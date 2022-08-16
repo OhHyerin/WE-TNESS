@@ -70,7 +70,7 @@ public class RoomService {
 
     }
 
-    public EnterRoomRes makeToken(UserDetailsImpl userDetails, EnterRoomReq enterRoomReq) throws OpenViduJavaClientException, OpenViduHttpException {
+    public EnterRoomRes makeToken(UserDetailsImpl userDetails, EnterRoomReq enterRoomReq) throws Exception {
 
         // 다른 참가자가 나를 닉네임으로 판변하기 위한 데이터
         String userData = "{\"nickname\": \"" + userDetails.getNickname() + "\"}";
@@ -82,7 +82,11 @@ public class RoomService {
                                 .role(OpenViduRole.PUBLISHER).build();
 
         MapSessionRoom mapSessionRoom = this.mapSessions.get(enterRoomReq.getTitle());
-
+        for(String session : this.mapSessionNamesConnections.keySet()){
+            if(this.mapSessionNamesConnections.get(session).containsKey(userDetails.getNickname())){
+                throw new Exception("User Already Exists in Other Room");
+            }
+        }
         Room room = mapSessionRoom.getRoom();
         // 방이 잠겨있는데 비밀번호가 다르다면
         if(room.isLocked()&&!(room.getPassword().equals(enterRoomReq.getPassword()))) {
