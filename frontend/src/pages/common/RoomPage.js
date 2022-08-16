@@ -433,8 +433,7 @@ class RoomClass extends Component {
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
-        Url = 'https://teachablemachine.withgoogle.com/models/TPlEwiz6u/';
-        // Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
+        Url = 'https://teachablemachine.withgoogle.com/models/TBUb4jY4b/';
         break;
       case 2: // 푸쉬업
         Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
@@ -596,7 +595,7 @@ class RoomClass extends Component {
     const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
-    if (prediction[1].probability.toFixed(2) > 0.99) {
+    if (prediction[0].probability.toFixed(2) > 0.99) {
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -605,7 +604,7 @@ class RoomClass extends Component {
           this.countSignal();
         }, 10);
       }
-    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
     }
   }
@@ -1181,6 +1180,20 @@ const ArrowsBox = styled.div`
   align-items: center;
 `;
 function Animation({ check, isGaming, workoutId }) {
+  const workoutAnimation = function () {
+    switch (workoutId) {
+      case 1:
+        return <video loop autoPlay src={squat} type="video/mp4" />;
+      case 2:
+        return <video loop autoPlay src={pushup} type="video/mp4" />;
+      case 3:
+        return <video loop autoPlay src={pushup} type="video/mp4" />;
+      case 4:
+        return <video loop autoPlay src={pushup} type="video/mp4" />;
+      default:
+        return null;
+    }
+  };
   return (
     <Grid container>
       {isGaming ? (
@@ -1190,7 +1203,7 @@ function Animation({ check, isGaming, workoutId }) {
               <source src={squat} type="video/mp4" />
             </video>
           </Grid>
-          <Grid item xs={4}>
+          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {check ? (
               <ArrowsBox className="arrows">
                 <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
@@ -1208,10 +1221,7 @@ function Animation({ check, isGaming, workoutId }) {
         </>
       ) : (
         <Grid item xs={12}>
-          <video loop autoPlay>
-            <source src={squat} type="video/mp4" />
-          </video>
-          <video loop autoPlay src={pushup} type="video/mp4" />
+          {workoutAnimation()}
         </Grid>
       )}
     </Grid>
