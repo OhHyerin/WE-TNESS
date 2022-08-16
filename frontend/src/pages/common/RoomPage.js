@@ -2,7 +2,6 @@ import React, { Component, useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
 import axios from 'axios';
-import * as tmPose from '@teachablemachine/pose';
 import { useSelector } from 'react-redux';
 import {
   styled as styledC,
@@ -457,6 +456,7 @@ class RoomClass extends Component {
     // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
     // Note: the pose library adds a tmPose object to your window (window.tmPose)
     this.setState({
+      // eslint-disable-next-line no-undef
       model: await tmPose.load(modelURL, metadataURL),
     });
   }
