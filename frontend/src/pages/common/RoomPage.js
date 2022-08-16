@@ -366,12 +366,12 @@ class RoomClass extends Component {
     const data = new Date();
     const { title } = this.state;
     const createDate = [
-      data.getUTCFullYear(),
-      data.getUTCMonth(),
-      data.getUTCDate(),
-      data.getUTCHours(),
-      data.getUTCMinutes(),
-      data.getUTCSeconds(),
+      data.getFullYear(),
+      data.getMonth() + 1,
+      data.getDate(),
+      data.getHours(),
+      data.getMinutes(),
+      data.getSeconds(),
     ];
     const payload = {
       title,
@@ -512,12 +512,12 @@ class RoomClass extends Component {
 
     const data = new Date();
     const terminateDate = [
-      data.getUTCFullYear(),
-      data.getUTCMonth() + 1,
-      data.getUTCDate(),
-      data.getUTCHours(),
-      data.getUTCMinutes(),
-      data.getUTCSeconds(),
+      data.getFullYear(),
+      data.getMonth() + 1,
+      data.getDate(),
+      data.getHours(),
+      data.getMinutes(),
+      data.getSeconds(),
     ];
 
     const rank = this.getMyRank();
