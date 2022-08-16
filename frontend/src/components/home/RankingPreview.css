@@ -1,0 +1,65 @@
+.center {
+  background: var(--primary-color);
+  border: 1px;
+  border-radius: 5px;
+  box-shadow: 5px 5px black;
+}
+.carousel {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  font-size: 30px;
+  line-height: 45px;
+  height: 50px;
+}
+.carousel .pre {
+  position: absolute;
+  top: 0;
+  right: 80%;
+  height: 50px;
+  text-shadow: 1px 1px 1px #3c2254;
+  font-weight: 300;
+}
+.carousel .change_outer {
+  position: absolute;
+  top: 0;
+  left: 25%;
+  text-align: left;
+  height: 45px;
+  overflow: hidden;
+}
+.carousel .change_outer .change_inner {
+  position: relative;
+  animation: rotate 8s ease-in-out infinite;
+}
+.carousel .change_outer .element {
+  display: block;
+}
+
+.element-content {
+  font-size: 20px;
+}
+
+@keyframes rotate {
+  10%,
+  15%,
+  100% {
+    transform: translateY(0);
+  }
+  25%,
+  36% {
+    transform: translateY(-45px);
+  }
+  46%,
+  57% {
+    transform: translateY(-90px);
+  }
+  67%,
+  78% {
+    transform: translateY(-135px);
+  }
+  88%,
+  99% {
+    transform: translateY(-180px);
+  }
+}

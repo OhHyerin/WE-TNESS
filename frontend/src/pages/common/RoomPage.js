@@ -35,6 +35,8 @@ import api from '../../api';
 import './RoomPage.css';
 
 // 효과음
+import squat from '../../assets/video/squat.mp4';
+import pushup from '../../assets/video/pushup.mp4';
 import startSound from '../../assets/sound/startSound.wav';
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
@@ -431,8 +433,7 @@ class RoomClass extends Component {
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
-        Url = 'https://teachablemachine.withgoogle.com/models/TPlEwiz6u/';
-        // Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
+        Url = 'https://teachablemachine.withgoogle.com/models/TBUb4jY4b/';
         break;
       case 2: // 푸쉬업
         Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
@@ -594,7 +595,7 @@ class RoomClass extends Component {
     const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
-    if (prediction[1].probability.toFixed(2) > 0.99) {
+    if (prediction[0].probability.toFixed(2) > 0.99) {
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -603,7 +604,7 @@ class RoomClass extends Component {
           this.countSignal();
         }, 10);
       }
-    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
     }
   }
@@ -797,7 +798,7 @@ class RoomClass extends Component {
                   </SubContainer>
                 </Grid>
 
-                {/* 애니매이션 & 결과창 */}
+                {/* 애니메이션 & 결과창 */}
                 <Grid item xs={4}>
                   <Item>
                     {isFinish ? (
@@ -806,7 +807,10 @@ class RoomClass extends Component {
                         isRankView={this.state.isRankView}
                         setIsRankView={this.setIsRankView}></RankResult>
                     ) : (
-                      <Animation isGaming={this.state.isGaming} check={this.state.check}></Animation>
+                      <Animation
+                        isGaming={this.state.isGaming}
+                        check={this.state.check}
+                        workoutId={this.state.workoutId}></Animation>
                     )}
                   </Item>
 
@@ -1175,15 +1179,31 @@ const ArrowsBox = styled.div`
   justify-content: center;
   align-items: center;
 `;
-function Animation({ check, isGaming }) {
+function Animation({ check, isGaming, workoutId }) {
+  const workoutAnimation = function () {
+    switch (workoutId) {
+      case 1:
+        return <video loop autoPlay src={squat} type="video/mp4" />;
+      case 2:
+        return <video loop autoPlay src={pushup} type="video/mp4" />;
+      case 3:
+        return <video loop autoPlay src={pushup} type="video/mp4" />;
+      case 4:
+        return <video loop autoPlay src={pushup} type="video/mp4" />;
+      default:
+        return null;
+    }
+  };
   return (
     <Grid container>
       {isGaming ? (
         <>
-          <Grid item xs={6}>
-            <p>애니메이션</p>
+          <Grid item xs={8}>
+            <video loop autoPlay muted>
+              <source src={squat} type="video/mp4" />
+            </video>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {check ? (
               <ArrowsBox className="arrows">
                 <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
@@ -1201,7 +1221,7 @@ function Animation({ check, isGaming }) {
         </>
       ) : (
         <Grid item xs={12}>
-          <p>애니메이션</p>
+          {workoutAnimation()}
         </Grid>
       )}
     </Grid>

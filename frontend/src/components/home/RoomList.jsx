@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import styled from 'styled-components';
 import { useEffect } from 'react';
-import { fetchRoomList, testRoomList } from '../../features/room/RoomSlice';
+import { fetchRoomList } from '../../features/room/RoomSlice';
 import RoomCard from '../common/RoomCard';
 
 const List = styled.div`
@@ -16,23 +16,17 @@ export default function RoomList() {
   const isRoomsLoaded = useSelector(state => state.room.isRoomsLoaded);
 
   const dispatch = useDispatch();
-  const handleAddTest = () => {
-    dispatch(testRoomList());
-  };
 
   useEffect(() => {
-    console.log('방 리스트 로드');
     dispatch(fetchRoomList());
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>
-      <h2>방 리스트</h2>
-      <button onClick={handleAddTest}>add test</button>
       {isRoomsLoaded ? (
         // 룸 리스트가 로드된 경우 => 룸 리스트 개수에 따라서 처리
         rooms.length === 0 ? (
-          <div>"룸 리스트가 비었어요."</div>
+          <NoRoom content={'진행중인 방이 없습니다.'} />
         ) : (
           <List>
             {rooms.map((room, i) =>
@@ -43,8 +37,20 @@ export default function RoomList() {
           </List>
         )
       ) : (
-        <div>"룸 리스트가 로드되지 않았습니다."</div>
+        <NoRoom content={'로그인 후 이용해주세요.'} />
       )}
     </div>
   );
+}
+
+const NoRoomBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  font-size: large;
+`;
+
+function NoRoom({ content }) {
+  return <NoRoomBox>{content}</NoRoomBox>;
 }
