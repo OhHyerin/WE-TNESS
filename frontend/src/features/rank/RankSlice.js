@@ -14,14 +14,7 @@ const fetchRankList = createAsyncThunk('fetchRankList', async (payload, { reject
 });
 
 const initialState = {
-  ranks: [
-    {
-      userNickname: '',
-      address: '',
-      calorie: 0,
-      date: '',
-    },
-  ],
+  ranks: [],
   message: '',
 };
 

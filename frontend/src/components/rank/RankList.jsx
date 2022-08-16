@@ -2,6 +2,9 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { Grid } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import { styled as styledC } from '@mui/material/styles';
 
 const NoRankBox = styled.div`
   display: flex;
@@ -20,9 +23,24 @@ export default function RankList({ isRegion }) {
   const message = useSelector(state => state.rank.message);
 
   return (
-    <div>
-      {testRanks.length ? (
-        testRanks.map((user, i) => <RankItem key={i} user={user} />)
+    <div style={{ width: '100%' }}>
+      {ranksLength ? (
+        <Grid container spacing={1}>
+          <Grid xs={12}>
+            <Box
+              sx={{
+                padding: '30px 0px',
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                gap: '20px',
+              }}>
+              {ranks.map((user, i) => (
+                <RankItem key={i} rank={i + 1} user={user} />
+              ))}
+            </Box>
+          </Grid>
+        </Grid>
       ) : message === 'NO_GUGUN_INFO' ? (
         <NoRankBox>
           <div>지역정보 없음</div>
@@ -36,75 +54,21 @@ export default function RankList({ isRegion }) {
   );
 }
 
-function RankItem({ user }) {
+const Item = styledC(Paper)(({ theme }) => ({
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
+function RankItem({ user, rank }) {
   return (
-    <Grid container>
-      <Grid xs={4}>{user.rank}</Grid>
-      <Grid xs={4}>{user.userNickname}</Grid>
-      <Grid xs={4}>{user.calories}</Grid>
-    </Grid>
+    <Item sx={{ display: 'flex', height: '80px', alignItems: 'center' }} elevation={4}>
+      <Grid sx={{ textAlign: 'start', paddingLeft: '40px' }} xs={4}>
+        {rank}
+      </Grid>
+      <Grid sx={{ textAlign: 'start' }} xs={4}>
+        {user.userNickname}
+      </Grid>
+      <Grid xs={4}>{user.calorie} kcal</Grid>
+    </Item>
   );
 }
-
-const testRanks = [
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 500.0,
-    date: '2022-08-08',
-  },
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 500.0,
-    date: '2022-08-08',
-  },
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 400.0,
-    date: '2022-08-08',
-  },
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 400.0,
-    date: '2022-08-08',
-  },
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 300.0,
-    date: '2022-08-08',
-  },
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 300.0,
-    date: '2022-08-08',
-  },
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 200.0,
-    date: '2022-08-08',
-  },
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 200.0,
-    date: '2022-08-08',
-  },
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 100.0,
-    date: '2022-08-08',
-  },
-  {
-    userNickname: 'ninoname',
-    address: null,
-    calorie: 100.0,
-    date: '2022-08-08',
-  },
-];
