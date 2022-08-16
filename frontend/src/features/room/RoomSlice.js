@@ -124,7 +124,6 @@ export const RoomSlice = createSlice({
       state.isSearched = action.payload;
     },
     setIsRoom: (state, action) => {
-      console.log(action.payload);
       state.isRoom = action.payload;
     },
     setNowRoom: (state, action) => {

@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { Grid } from '@mui/material';
 
 const NoRankBox = styled.div`
   display: flex;
@@ -20,8 +21,8 @@ export default function RankList({ isRegion }) {
 
   return (
     <div>
-      {ranksLength ? (
-        ranks.map((user, i) => <RankItem key={i} user={user} />)
+      {testRanks.length ? (
+        testRanks.map((user, i) => <RankItem key={i} user={user} />)
       ) : message === 'NO_GUGUN_INFO' ? (
         <NoRankBox>
           <div>지역정보 없음</div>
@@ -37,10 +38,73 @@ export default function RankList({ isRegion }) {
 
 function RankItem({ user }) {
   return (
-    <div>
-      <p>{user.rank}</p>
-      <p>{user.nickname}</p>
-      <p>{user.calories}</p>
-    </div>
+    <Grid container>
+      <Grid xs={4}>{user.rank}</Grid>
+      <Grid xs={4}>{user.userNickname}</Grid>
+      <Grid xs={4}>{user.calories}</Grid>
+    </Grid>
   );
 }
+
+const testRanks = [
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 500.0,
+    date: '2022-08-08',
+  },
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 500.0,
+    date: '2022-08-08',
+  },
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 400.0,
+    date: '2022-08-08',
+  },
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 400.0,
+    date: '2022-08-08',
+  },
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 300.0,
+    date: '2022-08-08',
+  },
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 300.0,
+    date: '2022-08-08',
+  },
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 200.0,
+    date: '2022-08-08',
+  },
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 200.0,
+    date: '2022-08-08',
+  },
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 100.0,
+    date: '2022-08-08',
+  },
+  {
+    userNickname: 'ninoname',
+    address: null,
+    calorie: 100.0,
+    date: '2022-08-08',
+  },
+];
