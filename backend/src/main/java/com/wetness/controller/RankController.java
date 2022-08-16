@@ -23,24 +23,15 @@ import java.util.List;
 @RequestMapping("/api/rank")
 @RequiredArgsConstructor
 public class RankController {
-    public static final Logger logger = LoggerFactory.getLogger(UserController.class);
-    private static final String SUCCESS = "success";
-    private static final String FAIL = "fail";
-
     private final RankService rankService;
 
     @PostMapping()
     @ApiOperation(value = "랭킹")
-    public ResponseEntity<RankResDto> getRank(@RequestBody RankDto rankDto, @AuthenticationPrincipal UserDetailsImpl userDetails){
-
-//        System.out.println(rankService.getRank(rankDto));
-//        List<Rank> ranks = rankService.getRank(rankDto, userDetails.getId());
-//        RankResDto rankResDto = new RankResDto("message", ranks);
-
+    public ResponseEntity<RankResDto> getRank(@RequestBody RankDto rankDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
         RankResDto rankResDto;
-        if(rankDto.isSelectGugun()){
+        if (rankDto.isSelectGugun()) {
             rankResDto = rankService.getGugunRank(rankDto, userDetails.getId());
-        }else{
+        } else {
             rankResDto = rankService.getRank(rankDto, userDetails.getId());
         }
 

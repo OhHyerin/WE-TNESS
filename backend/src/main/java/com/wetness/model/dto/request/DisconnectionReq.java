@@ -6,6 +6,6 @@ import lombok.Data;
 public class DisconnectionReq {
 
     private String nickname;
-    private String sessionName;
+    private String title;
 
 }

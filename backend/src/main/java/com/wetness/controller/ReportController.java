@@ -34,7 +34,16 @@ public class ReportController {
 
     @PatchMapping("/{report}")
     public ResponseEntity<?> process(@PathVariable Long report) {
-        if(reportService.processReport(report)){
+        if (reportService.processReport(report)) {
+            return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
+    }
+
+    @PostMapping("/email")
+    public ResponseEntity<?> getReports(@AuthenticationPrincipal UserDetailsImpl userDetails, @RequestParam String email, @RequestParam String nickname) {
+        if (userDetails.getRole().equals("admin")) {
+            reportService.sendReportMail(nickname, email);
             return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
         }
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));

@@ -60,6 +60,7 @@ public class JwtUtilImpl implements JwtUtil {
 
         return jwt;
     }
+
     public String createTokenForRefresh(User user) {
 
         Map<String, Object> headers = new HashMap<>();
@@ -128,13 +129,13 @@ public class JwtUtilImpl implements JwtUtil {
     public Map<String, Object> get(String key) throws ExpiredJwtException, ServletException, UnsupportedEncodingException {
 
         Jws<Claims> claims = null;
-        Map<String,Object> payload = null;
+        Map<String, Object> payload = null;
 
 
-            claims = Jwts.parser()
-                    .setSigningKey(jwtSecret.getBytes("UTF-8"))
-                    .parseClaimsJws(key);
-            payload = claims.getBody();
+        claims = Jwts.parser()
+                .setSigningKey(jwtSecret.getBytes("UTF-8"))
+                .parseClaimsJws(key);
+        payload = claims.getBody();
         logger.info("payload : {}", payload);
         return payload;
     }
@@ -145,7 +146,7 @@ public class JwtUtilImpl implements JwtUtil {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(this.generateKey()).parseClaimsJws(jwt);
             return true;
-        }catch (SignatureException e) {
+        } catch (SignatureException e) {
             logger.error("Invalid JWT signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
