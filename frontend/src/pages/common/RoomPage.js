@@ -35,6 +35,8 @@ import api from '../../api';
 import './RoomPage.css';
 
 // 효과음
+import squat from '../../assets/video/squat.mp4';
+import pushup from '../../assets/video/pushup.mp4';
 import startSound from '../../assets/sound/startSound.wav';
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
@@ -512,7 +514,7 @@ class RoomClass extends Component {
     const data = new Date();
     const terminateDate = [
       data.getUTCFullYear(),
-      data.getUTCMonth(),
+      data.getUTCMonth() + 1,
       data.getUTCDate(),
       data.getUTCHours(),
       data.getUTCMinutes(),
@@ -797,7 +799,7 @@ class RoomClass extends Component {
                   </SubContainer>
                 </Grid>
 
-                {/* 애니매이션 & 결과창 */}
+                {/* 애니메이션 & 결과창 */}
                 <Grid item xs={4}>
                   <Item>
                     {isFinish ? (
@@ -806,7 +808,10 @@ class RoomClass extends Component {
                         isRankView={this.state.isRankView}
                         setIsRankView={this.setIsRankView}></RankResult>
                     ) : (
-                      <Animation isGaming={this.state.isGaming} check={this.state.check}></Animation>
+                      <Animation
+                        isGaming={this.state.isGaming}
+                        check={this.state.check}
+                        workoutId={this.state.workoutId}></Animation>
                     )}
                   </Item>
 
@@ -1175,15 +1180,17 @@ const ArrowsBox = styled.div`
   justify-content: center;
   align-items: center;
 `;
-function Animation({ check, isGaming }) {
+function Animation({ check, isGaming, workoutId }) {
   return (
     <Grid container>
       {isGaming ? (
         <>
-          <Grid item xs={6}>
-            <p>애니메이션</p>
+          <Grid item xs={8}>
+            <video loop autoPlay muted>
+              <source src={squat} type="video/mp4" />
+            </video>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4}>
             {check ? (
               <ArrowsBox className="arrows">
                 <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
@@ -1201,7 +1208,10 @@ function Animation({ check, isGaming }) {
         </>
       ) : (
         <Grid item xs={12}>
-          <p>애니메이션</p>
+          <video loop autoPlay>
+            <source src={squat} type="video/mp4" />
+          </video>
+          <video loop autoPlay src={pushup} type="video/mp4" />
         </Grid>
       )}
     </Grid>

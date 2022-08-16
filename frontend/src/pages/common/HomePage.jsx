@@ -5,11 +5,6 @@ import styled from 'styled-components';
 import { Box, Modal, TextField, Fab } from '@mui/material';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ClearIcon from '@mui/icons-material/Clear';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import Banner from '../../components/home/Banner';
 import RankingPreview from '../../components/home/RankingPreview';
 import RoomList from '../../components/home/RoomList';
@@ -21,6 +16,7 @@ import SubmitBtn from '../../components/common/SubmitBtn';
 import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
 import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId, setNowRoom } from '../../features/room/RoomSlice';
 import { removeSessionInfo } from '../../features/Token';
+import workoutItems from '../../assets/data/workoutItems';
 
 const style = {
   position: 'absolute',
@@ -80,6 +76,22 @@ const closeStyle = {
   },
 };
 
+const WorkoutImgBox = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  > img:hover {
+    cursor: pointer;
+  }
+`;
+
+const WorkoutImg = styled.img`
+  width: 25%;
+  border: ${props => (props.active ? '5px double var(--primary-color)' : '')};
+  filter: ${props => (props.active ? '' : 'blur(2px) grayscale(90%)')};
+  border-radius: 5px;
+`;
+
 export default function Home() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -119,9 +131,8 @@ export default function Home() {
     e.preventDefault();
     dispatch(fetchTitle(e.target.value));
   }
-  function onWorkoutHandler(e) {
-    e.preventDefault();
-    dispatch(fetchWorkoutId(e.target.value));
+  function onWorkoutHandler(workoutId) {
+    dispatch(fetchWorkoutId(workoutId));
   }
   function onPasswordHandler(e) {
     e.preventDefault();
@@ -217,21 +228,24 @@ export default function Home() {
           <ClearIcon sx={closeStyle} onClick={onClose}></ClearIcon>
           <FormBox>
             <SubmitForm onSubmit={onSubmitRoom}>
-              <FormControl
-                value={roomInfo.workoutId}
-                onChange={onWorkoutHandler}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'end',
-                }}>
-                <FormLabel>운동종류</FormLabel>
-                <RadioGroup defaultValue="1">
-                  <FormControlLabel value="1" control={<Radio />} label="1번 운동" />
-                  <FormControlLabel value="2" control={<Radio />} label="2번 운동" />
-                  <FormControlLabel value="3" control={<Radio />} label="3번 운동" />
-                </RadioGroup>
-              </FormControl>
+              <p>방 만들기</p>
+              <WorkoutImgBox>
+                {workoutItems.map(workout => {
+                  if (workout.id !== 0 && workout.img) {
+                    return (
+                      <WorkoutImg
+                        key={workout.id}
+                        src={workout.img}
+                        alt="workout.id번 운동"
+                        onClick={() => onWorkoutHandler(workout.id)}
+                        active={workout.id === roomInfo.workoutId}
+                      />
+                    );
+                  } else {
+                    return null;
+                  }
+                })}
+              </WorkoutImgBox>
               <InputBox>
                 <TextField label="방 제목" value={roomInfo.title} onChange={onTitleHandler} />
               </InputBox>
