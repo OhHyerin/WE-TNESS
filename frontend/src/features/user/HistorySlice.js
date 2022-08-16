@@ -14,6 +14,17 @@ const fetchHistory = createAsyncThunk('fetchHistory', async (payload, { rejectWi
   }
 });
 
+const fetchDiary = createAsyncThunk('fetchDiary', async (payload, { rejectWithValue }) => {
+  const { nickname } = payload;
+  try {
+    const res = await axios.get(api.fetchDiary(nickname), setConfig());
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response);
+  }
+});
+
 const initialState = {
   achieveAwards: [{ award: 'login_1', receiveDate: '2022-08-10T11:43:17' }],
   heatMapList: [],
@@ -76,10 +87,13 @@ export const HistorySlice = createSlice({
       state.todayCalorie = action.payload.todayCalorie;
       state.weeklyCalories = action.payload.weeklyRecords;
     },
+    [fetchDiary.fulfilled]: (state, action) => {
+      state.diaryPhotos = action.payload;
+    },
   },
 });
 
-export { fetchHistory };
+export { fetchHistory, fetchDiary };
 export const {} = HistorySlice.actions;
 
 export default HistorySlice.reducer;
