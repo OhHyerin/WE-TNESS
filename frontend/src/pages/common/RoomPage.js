@@ -120,9 +120,6 @@ class RoomClass extends Component {
 
       isGaming: undefined,
       isFinish: false,
-      isReady: undefined,
-      readyState: new Map(),
-      isPossibleStart: true,
 
       gameId: undefined,
       count: 0,
@@ -139,11 +136,8 @@ class RoomClass extends Component {
 
     // 커스텀
     this.init = this.init.bind(this);
-    this.join = this.join.bind(this);
     this.startSignal = this.startSignal.bind(this);
     this.start = this.start.bind(this);
-    this.readySignal = this.readySignal.bind(this);
-    this.checkPossibleStart = this.checkPossibleStart.bind(this);
     this.setFinish = this.setFinish.bind(this);
     this.setIsRankView = this.setIsRankView.bind(this);
     this.getMyRank = this.getMyRank.bind(this);
@@ -153,6 +147,9 @@ class RoomClass extends Component {
     this.loop = this.loop.bind(this);
     this.countSignal = this.countSignal.bind(this);
     this.squatPredict = this.squatPredict.bind(this);
+    this.pushupPredict = this.pushupPredict.bind(this);
+    this.burpeePredict = this.burpeePredict.bind(this);
+    this.lungePredict = this.lungePredict.bind(this);
   }
 
   // state 업데이트 => 모델 생성 & 세션 입장 (백에서 받은 token으로 입장)
@@ -178,7 +175,6 @@ class RoomClass extends Component {
 
   componentWillUnmount() {
     this.leaveSession();
-    console.log('leave Session');
     window.removeEventListener('beforeunload', this.onbeforeunload);
   }
 
@@ -237,24 +233,12 @@ class RoomClass extends Component {
           console.warn(exception);
         });
 
-        // 입장 신호 수신
-        mySession.on('signal:join', event => {
-          this.state.readyState.set(event.data, false);
-        });
-
         // 시작 신호 수신
         mySession.on('signal:start', event => {
           this.setState({
             gameId: event.data,
           });
           this.start();
-        });
-
-        // 준비 신호 수신
-        mySession.on('signal:ready', event => {
-          const data = event.data.split(',');
-          this.readyState.set(data[0], data[1]);
-          this.checkPossibleStart();
         });
 
         // 모든 유저 1회 추가마다 수신
@@ -324,40 +308,6 @@ class RoomClass extends Component {
         // });
       }
     );
-  }
-
-  join() {
-    const mySession = this.state.session;
-    if (this.state.myUserName !== this.state.managerNickname) {
-      mySession.signal({
-        data: this.state.myUserName,
-        type: 'join',
-      });
-    }
-  }
-
-  readySignal() {
-    const mySession = this.state.session;
-
-    this.setState({
-      isReady: !this.state.isReady,
-    });
-
-    mySession.signal({
-      data: `${this.state.myUserName},${this.state.isReady}`,
-      type: 'ready',
-    });
-  }
-
-  // 레디가 다 되었는지 확인
-  checkPossibleStart() {
-    if (this.myUserName === this.managerNickname) {
-      if (this.readyState.every((value, key) => value)) {
-        this.setState({
-          isPossibleStart: true,
-        });
-      }
-    }
   }
 
   startSignal() {
@@ -713,8 +663,6 @@ class RoomClass extends Component {
       myUserName,
       isGaming,
       managerNickname,
-      isPossibleStart,
-      isReady,
       count,
       rankList,
     } = this.state;
@@ -765,11 +713,9 @@ class RoomClass extends Component {
                         {isGaming ? (
                           <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
                         ) : myUserName === managerNickname ? (
-                          <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
-                            시작!
-                          </SubmitBtn>
+                          <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
                         ) : (
-                          <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                          <SubmitBtn deactive>{'대기 중'}</SubmitBtn>
                         )}
                       </>
                     )}
@@ -996,7 +942,7 @@ const TimerBox = styled.div`
 `;
 
 const Timer = ({ setFinish, isFinish }) => {
-  const [value, setValue] = useState(5);
+  const [value, setValue] = useState(30);
   const getValue = function () {
     return parseInt(value, 10);
   };
