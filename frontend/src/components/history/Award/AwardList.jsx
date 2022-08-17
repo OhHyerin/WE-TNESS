@@ -78,7 +78,7 @@ export default function AwardList() {
           },
         }}>
         {myAwards.map((arr, j) => (
-          <AwardBox>
+          <AwardBox key={j}>
             {arr.map((award, idx) => (
               <AwardImg key={idx} awardImg={award.img} description={award.description} />
             ))}
