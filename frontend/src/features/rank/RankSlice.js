@@ -17,7 +17,7 @@ const fetchTotalRanking = createAsyncThunk('fetchRankList', async (payload, { re
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -26,7 +26,7 @@ const fetchSquatRanking = createAsyncThunk('fetchRankList', async (payload, { re
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -35,7 +35,7 @@ const fetchPushupRanking = createAsyncThunk('fetchRankList', async (payload, { r
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -44,7 +44,7 @@ const fetchBurpeeRanking = createAsyncThunk('fetchRankList', async (payload, { r
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
