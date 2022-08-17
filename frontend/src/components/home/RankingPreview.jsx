@@ -8,6 +8,7 @@ import {
   fetchBurpeeRanking,
   fetchLungeRanking,
 } from '../../features/rank/RankSlice';
+import { getAccessToken } from '../../features/Token';
 import './RankingPreview.css';
 
 const PriviewBanner = styled.div`
@@ -20,11 +21,14 @@ export default function RankingPreview() {
   const rank = useSelector(state => state.rank.previewRank);
 
   useEffect(() => {
-    dispatch(fetchTotalRanking({ workoutId: [1, 2, 3, 4], selectGugun: false }));
-    dispatch(fetchSquatRanking({ workoutId: [1], selectGugun: false }));
-    dispatch(fetchPushupRanking({ workoutId: [2], selectGugun: false }));
-    dispatch(fetchBurpeeRanking({ workoutId: [3], selectGugun: false }));
-    dispatch(fetchLungeRanking({ workoutId: [4], selectGugun: false }));
+    const token = getAccessToken();
+    if (token) {
+      dispatch(fetchTotalRanking({ workoutId: [1, 2, 3, 4], selectGugun: false }));
+      dispatch(fetchSquatRanking({ workoutId: [1], selectGugun: false }));
+      dispatch(fetchPushupRanking({ workoutId: [2], selectGugun: false }));
+      dispatch(fetchBurpeeRanking({ workoutId: [3], selectGugun: false }));
+      dispatch(fetchLungeRanking({ workoutId: [4], selectGugun: false }));
+    }
   }, [dispatch]);
 
   return (

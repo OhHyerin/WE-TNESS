@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { useEffect } from 'react';
 import { fetchRoomList } from '../../features/room/RoomSlice';
 import RoomCard from '../common/RoomCard';
+import { getAccessToken } from '../../features/Token';
 
 const List = styled.div`
   display: flex;
@@ -18,7 +19,10 @@ export default function RoomList() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchRoomList());
+    const token = getAccessToken();
+    if (token) {
+      dispatch(fetchRoomList());
+    }
   }, [dispatch]);
 
   return (
