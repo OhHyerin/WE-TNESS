@@ -356,8 +356,8 @@ class RoomClass extends Component {
       isStart: true,
       count: 0,
       check: undefined,
-      countList: undefined,
-      rankList: undefined,
+      countList: new Map(),
+      rankList: [],
       countdown: 3,
     });
     const countdown = setInterval(() => {
