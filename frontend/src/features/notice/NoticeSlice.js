@@ -10,7 +10,7 @@ const fetchNotice = createAsyncThunk('fetchNotice', async (payload, { rejectWith
     return res.data;
   } catch (err) {
     console.log(err);
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -22,7 +22,7 @@ const checkNotice = createAsyncThunk('checkNotice', async (payload, { rejectWith
     return res.data;
   } catch (err) {
     console.log(err);
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
