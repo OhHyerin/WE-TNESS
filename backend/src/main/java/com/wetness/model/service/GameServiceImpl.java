@@ -190,7 +190,7 @@ public class GameServiceImpl implements GameService{
 
         System.out.println(N+"      3333333====================");
 
-        if(rankRepo.findByUserIdAndWorkoutIdAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isEmpty()){
+        if(!rankRepo.findByUserIdAndWorkoutIdAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isEmpty()){
 
             System.out.println(" 4444444444444====================");
 
