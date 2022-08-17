@@ -92,7 +92,7 @@ public class UserController {
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
-    @PatchMapping("/pw")
+    @PutMapping("/pw")
     @ApiOperation(value = "비밀번호 수정")
     public ResponseEntity<BaseResponseEntity> updateUserPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                  @Valid @RequestBody PasswordDto passwordDto) {

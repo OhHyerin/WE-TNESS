@@ -56,7 +56,7 @@ public class RoomController {
         }
     }
 
-    @PatchMapping(value = "/disconnect")
+    @PutMapping(value = "/disconnect")
     public ResponseEntity<?> disconnection(@RequestBody DisconnectionReq disconnectionReq) {
         try {
             roomService.disconnect(disconnectionReq);

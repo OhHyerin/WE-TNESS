@@ -71,7 +71,7 @@ public class RoomService {
         // 방을 만들고
         Session session = this.openVidu.createSession();
 
-        mapSessions.put(roomTitle,new MapSessionRoom(room,session));
+        this.mapSessions.put(roomTitle,new MapSessionRoom(room,session));
 
     }
 
@@ -155,7 +155,7 @@ public class RoomService {
 
         List<RoomListRes> list = new ArrayList<>();
 
-        for(String key : mapSessions.keySet()){
+        for(String key : this.mapSessions.keySet()){
 
             list.add(getRoomListResutil(key));
         }
@@ -168,7 +168,7 @@ public class RoomService {
         List<RoomListRes> list = new ArrayList<>();
 
         // 방 제목에서 찾기
-        for(String key : mapSessions.keySet()){
+        for(String key : this.mapSessions.keySet()){
 
             if(key.contains(keyword)){
 
@@ -177,9 +177,9 @@ public class RoomService {
         }
 
         // 방안에 있는 유저 중 찾기
-        for(String key : mapSessionNamesConnections.keySet()){
+        for(String key : this.mapSessionNamesConnections.keySet()){
 
-            Map<String,Connection> tmp = mapSessionNamesConnections.get(key);
+            Map<String,Connection> tmp = this.mapSessionNamesConnections.get(key);
             for(String nickname : tmp.keySet()){
 
                 if(nickname.contains(keyword)){
@@ -193,9 +193,9 @@ public class RoomService {
 
     private RoomListRes getRoomListResutil(String title){
 
-        MapSessionRoom tmp = mapSessions.get(title);
+        MapSessionRoom tmp = this.mapSessions.get(title);
         Room room = tmp.getRoom();
-        int headcount = mapSessionNamesConnections.get(title).size();
+        int headcount = this.mapSessionNamesConnections.get(title).size();
         boolean isGaming = !gameRepository.findByRoomIdAndIsPlaying(room.getId(),true).isEmpty();
 
         return RoomListRes.builder()
