@@ -20,9 +20,9 @@ export default function RoomFilter1() {
             sx={{ width: '130px', height: '45px' }}
             key={nowWorkout.id}
             size="large"
-            variant={nowWorkout.name === workout ? 'contained' : 'outlined'}
+            variant={nowWorkout.id === workout ? 'contained' : 'outlined'}
             onClick={() => {
-              handleBtnChange(nowWorkout.name);
+              handleBtnChange(nowWorkout.id);
             }}>
             {nowWorkout.name}
           </Button>
