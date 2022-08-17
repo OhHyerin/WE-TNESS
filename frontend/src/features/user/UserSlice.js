@@ -97,14 +97,14 @@ const initialState = {
   },
   followingList: [
     {
-      nickname: '',
-      loginState: false,
+      // nickname: '',
+      // loginState: false,
     },
   ],
   followerList: [
     {
-      nickname: '',
-      loginState: false,
+      // nickname: '',
+      // loginState: false,
     },
   ],
   isLoding: false,
