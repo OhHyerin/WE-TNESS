@@ -74,7 +74,7 @@ public class UserController {
     public ResponseEntity<DuplicateCheckResDto> duplicatedLoginNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                         @PathVariable String nickname) {
         if (userDetails.getNickname().equals(nickname)) {
-            return ResponseEntity.ok().body(new DuplicateCheckResDto(true));
+            return ResponseEntity.ok().body(new DuplicateCheckResDto(false));
         }
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
     }
