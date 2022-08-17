@@ -1,8 +1,6 @@
 import squat from '../images/workout/squatImg.png';
 import pushup from '../images/workout/pushupImg.png';
 
-import lunge from '../images/workout/lungeImg.png';
-
 const workoutItems = [
   {
     id: 0,
@@ -25,7 +23,6 @@ const workoutItems = [
   {
     id: 4,
     name: '런지',
-    img: lunge,
   },
 ];
 
