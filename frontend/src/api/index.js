@@ -33,6 +33,7 @@ const FETCH_DIARY = '/diary';
 
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
+  checkEditNickname: nickname => API_BASE_URL + USER_URL + LOGIN_URL + CHECK_NICKNAME_URL + `/${nickname}`,
   checkEmail: email => API_BASE_URL + USER_URL + CHECK_EMAIL_URL + `/${email}`,
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
   signout: () => API_BASE_URL + USER_URL,

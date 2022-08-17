@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../../api/index';
+import setConfig from '../authHeader';
 
 const signup = createAsyncThunk('signup', async (payload, { rejectWithValue }) => {
   try {
@@ -13,9 +14,18 @@ const signup = createAsyncThunk('signup', async (payload, { rejectWithValue }) =
 
 const checkNickname = createAsyncThunk('checkNickname', async (payload, { rejectWithValue }) => {
   const nickname = payload;
-  const headers = { 'Access-Control-Allow-Origin': '*' };
   try {
-    const res = await axios.get(api.checkNickname(nickname), headers);
+    const res = await axios.get(api.checkNickname(nickname));
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data);
+  }
+});
+
+const checkEditNickname = createAsyncThunk('checkEditNickname', async (payload, { rejectWithValue }) => {
+  const nickname = payload;
+  try {
+    const res = await axios.get(api.checkEditNickname(nickname), setConfig());
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
@@ -89,6 +99,9 @@ export const SignupSlice = createSlice({
     [checkNickname.fulfilled]: (state, action) => {
       state.isPossibleNickname = !action.payload.exist;
     },
+    [checkEditNickname.fulfilled]: (state, action) => {
+      state.isPossibleNickname = !action.payload.exist;
+    },
     [checkEmail.fulfilled]: (state, action) => {
       state.isPossibleEmail = !action.payload.exist;
       state.errorMsg = '';
@@ -103,7 +116,7 @@ export const SignupSlice = createSlice({
   },
 });
 
-export { signup, checkNickname, checkEmail, addInfo };
+export { signup, checkNickname, checkEmail, addInfo, checkEditNickname };
 
 export const { fetchNickname, fetchEmail, fetchPassword, fetchPwdVerify, toggleIsModal } = SignupSlice.actions;
 
