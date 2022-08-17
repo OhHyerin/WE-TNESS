@@ -69,6 +69,16 @@ public class UserController {
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
     }
 
+    @GetMapping("/login/duplicate-nickname/{nickname}")
+    @ApiOperation(value = "닉네임 중복확인")
+    public ResponseEntity<DuplicateCheckResDto> duplicatedLoginNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                        @PathVariable String nickname) {
+        if (userDetails.getNickname().equals(nickname)) {
+            return ResponseEntity.ok().body(new DuplicateCheckResDto(true));
+        }
+        return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
+    }
+
     @PatchMapping
     @ApiOperation(value = "회원정보 수정")
     public ResponseEntity<?> updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
