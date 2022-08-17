@@ -1150,7 +1150,7 @@ function Animation({ check, isGaming, workoutId }) {
       case 3:
         return <video loop autoPlay src={pushup} type="video/mp4" />;
       case 4:
-        return <video loop autoPlay src={pushup} type="video/mp4" />;
+        return <video loop autoPlay src={lunge} type="video/mp4" />;
       default:
         return null;
     }
