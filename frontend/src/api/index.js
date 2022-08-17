@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://i7a205.p.ssafy.io:5000/api';
+export const API_BASE_URL = 'http://localhost:5000/api';
 
 const USER_URL = '/user';
 const RANK_URL = '/rank';
@@ -17,8 +17,8 @@ const CHECK_NICKNAME_URL = '/duplicate-nickname';
 const CHECK_EMAIL_URL = '/duplicate-email';
 const SEARCH_USER = '/info?keyword=';
 
-const FETCH_FOLLOWING_LIST_URL = '/following?nickname=';
-const FETCH_FOLLOWER_LIST_URL = '/follower?nickname=';
+const FETCH_FOLLOWING_LIST_URL = '/following';
+const FETCH_FOLLOWER_LIST_URL = '/follower';
 
 const FETCH_USER_INFO_URL = '/me';
 const CHANGE_PASSWORD = '/pw';
@@ -46,8 +46,8 @@ export default {
   findPassword: () => API_BASE_URL + USER_URL + FIND_PASSWORD,
   kakao: () => API_BASE_URL + USER_URL + LOGIN_URL + KAKAO_URL,
   addInfo: () => API_BASE_URL + USER_URL + ADD_INFO_URL,
-  fetchFollowingList: () => API_BASE_URL + FOLLOW_URL + FETCH_FOLLOWING_LIST_URL,
-  fetchFollowerList: () => API_BASE_URL + FOLLOW_URL + FETCH_FOLLOWER_LIST_URL,
+  fetchFollowingList: nickname => API_BASE_URL + FOLLOW_URL + FETCH_FOLLOWING_LIST_URL + `/${nickname}`,
+  fetchFollowerList: nickname => API_BASE_URL + FOLLOW_URL + FETCH_FOLLOWER_LIST_URL + `/${nickname}`,
   fetchUserInfo: () => API_BASE_URL + USER_URL + FETCH_USER_INFO_URL,
   edit: () => API_BASE_URL + USER_URL,
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
