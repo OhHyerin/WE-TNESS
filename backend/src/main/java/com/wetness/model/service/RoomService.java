@@ -46,7 +46,7 @@ public class RoomService {
     private Map<String, Map<String, Connection>> mapSessionNamesConnections = new ConcurrentHashMap<>();
 
 
-    public void generateRoom(UserDetailsImpl userDetails, MakeRoomReq req) throws OpenViduJavaClientException, OpenViduHttpException {
+    public void generateRoom(UserDetailsImpl userDetails, MakeRoomReq req) throws Exception {
 
         // DB에 저장할 방 만듦
         Room room = Room.builder()
@@ -57,6 +57,11 @@ public class RoomService {
                 .createDate(new Timestamp(System.currentTimeMillis()))
                 .managerId(userDetails.getId())
                 .build();
+
+        for(String title : this.mapSessions.keySet()){
+
+            if(req.getTitle().equals(title)) throw new Exception("이미 같은 제목의 방이 있습니다");
+        }
 
         // DB에 새로 생성된 방 저장
         room = roomRepository.save(room);
@@ -200,5 +205,10 @@ public class RoomService {
                 .managerNickname(userRepository.getOne(room.getManagerId()).getNickname())
                 .isGaming(isGaming)
                 .build();
+    }
+
+    public Room getRoomByTitle(String title){
+
+        return this.mapSessions.get(title).getRoom();
     }
 }
