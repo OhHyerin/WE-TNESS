@@ -8,7 +8,7 @@ const fetchRankList = createAsyncThunk('fetchRankList', async (payload, { reject
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 

@@ -18,6 +18,14 @@ import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId, setNowRoom } fro
 import { removeSessionInfo } from '../../features/Token';
 import workoutItems from '../../assets/data/workoutItems';
 
+const HomeBox = styled.div`
+  padding-top: 40px;
+`;
+
+const ChannelTitle = styled.p`
+  font-size: 30px;
+`;
+
 const style = {
   position: 'absolute',
   top: '50%',
@@ -185,18 +193,19 @@ export default function Home() {
 
   return (
     <div>
-      <div>
+      <HomeBox>
         <Banner />
         {/* 랭킹 프리뷰 버티컬 캐러셀 */}
         <RankingPreview />
         <>
-          {/* 운동 목록 */}
-          <RoomFilter1 />
+          <ChannelTitle>실시간 채널</ChannelTitle>
           {/* 비밀방 여부 */}
           <RoomFilter2 />
+          {/* 운동 목록 */}
+          <RoomFilter1 />
         </>
         <RoomList />
-      </div>
+      </HomeBox>
 
       {/* 카카오 로그인 추가정보 입력 모달 */}
       <Modal open={isModal} onClose={handleClose}>
