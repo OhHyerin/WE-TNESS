@@ -3,7 +3,6 @@ import { Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
@@ -11,6 +10,9 @@ import SearchForm from '../search/SearchForm';
 import AccountMenu from './Dropdown';
 import logo from '../../assets/images/logo.jpg';
 import { setIsRoom } from '../../features/room/RoomSlice';
+import Notifications from './Notifications';
+import { fetchNotice } from '../../features/notice/NoticeSlice';
+import { getAccessToken } from '../../features/Token';
 
 const Header = styled.div`
   display: flex;
@@ -58,6 +60,9 @@ export default function NavBar() {
   const navigate = useNavigate();
   const isRoom = useSelector(state => state.room.isRoom);
   const nowRoom = useSelector(state => state.room.nowRoom);
+  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
+  const userNickname = useSelector(state => state.user.currentUser.nickname);
+  const notices = useSelector(state => state.notice.notices);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -66,10 +71,11 @@ export default function NavBar() {
     } else {
       dispatch(setIsRoom(false));
     }
+    const token = getAccessToken();
+    if (token) {
+      dispatch(fetchNotice());
+    }
   }, [location]);
-
-  const isAuthenticated = useSelector(state => state.user.isAuthenticated);
-  const userNickname = useSelector(state => state.user.currentUser.nickname);
 
   const handleGoOut = () => {
     // 방나가는 로직 (게임방 삭제)
@@ -108,11 +114,9 @@ export default function NavBar() {
               {isAuthenticated ? (
                 <LoginMenu>
                   {/* 알림 - 임시 & 수정 필요 */}
-                  <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-                    <Badge badgeContent={17} color="error">
-                      <NotificationsIcon />
-                    </Badge>
-                  </IconButton>
+                  <Badge badgeContent={notices.length} color="error">
+                    <Notifications notices={notices} />
+                  </Badge>
                   {/* 계정 버튼 - 드롭다운 */}
                   <AccountMenu />
                 </LoginMenu>

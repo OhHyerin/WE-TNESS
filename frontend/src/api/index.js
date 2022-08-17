@@ -6,6 +6,7 @@ const ROOM_URL = '/room';
 const GAME_URL = '/game';
 const FITNESS_URL = '/fitness';
 const FOLLOW_URL = '/follow';
+const NOTICE_URL = '/notice';
 
 const LOGIN_URL = '/login';
 const KAKAO_URL = '/kakao';
@@ -16,8 +17,8 @@ const CHECK_NICKNAME_URL = '/duplicate-nickname';
 const CHECK_EMAIL_URL = '/duplicate-email';
 const SEARCH_USER = '/info?keyword=';
 
-const FETCH_FOLLOWING_LIST_URL = '/following?nickname=';
-const FETCH_FOLLOWER_LIST_URL = '/follower?nickname=';
+const FOLLOWING_LIST_URL = '/following?nickname=';
+const FOLLOWER_LIST_URL = '/follower?nickname=';
 
 const FETCH_USER_INFO_URL = '/me';
 const CHANGE_PASSWORD = '/pw';
@@ -32,8 +33,11 @@ const START_URL = '/start';
 const END_URL = '/end';
 const FETCH_DIARY = '/diary';
 
+const CHECK_NOTICE = '/check';
+
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
+  checkEditNickname: nickname => API_BASE_URL + USER_URL + LOGIN_URL + CHECK_NICKNAME_URL + `/${nickname}`,
   checkEmail: email => API_BASE_URL + USER_URL + CHECK_EMAIL_URL + `/${email}`,
   signup: () => API_BASE_URL + USER_URL + SIGNUP_URL,
   signout: () => API_BASE_URL + USER_URL,
@@ -42,6 +46,8 @@ export default {
   findPassword: () => API_BASE_URL + USER_URL + FIND_PASSWORD,
   kakao: () => API_BASE_URL + USER_URL + LOGIN_URL + KAKAO_URL,
   addInfo: () => API_BASE_URL + USER_URL + ADD_INFO_URL,
+  fetchFollowingList: nickname => API_BASE_URL + FOLLOW_URL + FOLLOWING_LIST_URL + `${nickname}`,
+  fetchFollowerList: nickname => API_BASE_URL + FOLLOW_URL + FOLLOWER_LIST_URL + `${nickname}`,
   fetchUserInfo: () => API_BASE_URL + USER_URL + FETCH_USER_INFO_URL,
   edit: () => API_BASE_URL + USER_URL,
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
@@ -63,4 +69,7 @@ export default {
   start: () => API_BASE_URL + GAME_URL + START_URL,
   end: () => API_BASE_URL + GAME_URL + END_URL,
   fetchDiary: nickname => API_BASE_URL + GAME_URL + FETCH_DIARY + `/${nickname}`,
+
+  fetchNotice: () => API_BASE_URL + NOTICE_URL,
+  checkNotice: () => API_BASE_URL + NOTICE_URL + CHECK_NOTICE,
 };

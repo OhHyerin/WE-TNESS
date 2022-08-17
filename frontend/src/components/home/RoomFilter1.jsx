@@ -14,13 +14,15 @@ export default function RoomFilter1() {
 
   return (
     <>
-      <Stack spacing={2} direction="row">
+      <Stack spacing={1} direction="row">
         {workouts.map(nowWorkout => (
           <Button
+            sx={{ width: '130px', height: '45px' }}
             key={nowWorkout.id}
+            size="large"
             variant={nowWorkout.name === workout ? 'contained' : 'outlined'}
             onClick={() => {
-              handleBtnChange(nowWorkout.name);
+              handleBtnChange(nowWorkout.id);
             }}>
             {nowWorkout.name}
           </Button>

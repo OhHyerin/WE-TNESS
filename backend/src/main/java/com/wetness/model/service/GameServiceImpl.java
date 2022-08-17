@@ -33,11 +33,12 @@ public class GameServiceImpl implements GameService{
     private final FitnessRecordRepository fitRepo;
     private final AwardRepository awardRepo;
     private final UserAwardRepository userAwardRepo;
+    private final RoomService roomService;
 
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
 
-        Room room = roomRepo.findByTitle(gameReqDto.getTitle());
+        Room room = roomService.getRoomByTitle(gameReqDto.getTitle());
 
         //userId validation 체크 추가하기 -> Room 생성할 때 생성한 user 정보가 없어서 애매함
         
@@ -173,10 +174,12 @@ public class GameServiceImpl implements GameService{
     void insertRank(GameRecord gameRecord){
 
         if(gameRecord.getUser().getWeight()==null) return; //weight 정보 없음
-
+        System.out.println("111111================================"    +gameRecord.getUser().getNickname());
         //칼로리 계산식 리팩토링 필요
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore();
+
+        System.out.println(calorie+"2222================================");
 
         User user = userRepo.findById(gameRecord.getUser().getId()).get();
 
@@ -185,8 +188,22 @@ public class GameServiceImpl implements GameService{
 
         int N = gameRecord.getWorkout().getId()-1;
 
+        System.out.println(N+"      3333333====================");
+
         if(rankRepo.findByUserIdAndWorkoutIdAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isEmpty()){
+
+            System.out.println(" 4444444444444====================");
+
             List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
+
+            System.out.println(" 5555555==============================");
+            for(Rank r : oldList){
+
+                System.out.println(r.getUser()+ "     "+r.getCalorie()+" =======666666");
+
+            }
+
+
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);
                 if((old.getWorkoutId() & (1<<N) )== 0) continue;
@@ -198,6 +215,16 @@ public class GameServiceImpl implements GameService{
             newList.add(new Rank(0L, user, (1<<N), user.getSidoCode(), user.getGugunCode(), calorie, regDate));
 
             List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
+
+
+            System.out.println("  7777===========================");
+            for(Rank r : oldList){
+
+                System.out.println(r.getUser()+ "     "+r.getCalorie()+" ======     88888888888");
+
+            }
+
+
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);
                 newList.add(new Rank(0L, user, (old.getWorkoutId()|(1<<N)),user.getSidoCode(),
@@ -206,6 +233,7 @@ public class GameServiceImpl implements GameService{
             rankRepo.saveAll(newList);
         }
 
+        System.out.println(" 99999999================");
 
         return;
     }

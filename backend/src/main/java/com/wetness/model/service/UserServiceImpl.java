@@ -254,9 +254,9 @@ public class UserServiceImpl implements UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             // Client_id = REST_API_KEY 수정 필요
-            sb.append("&client_id=cddf8fe3437329bf32a17342aa27ea7e");
+            sb.append("&client_id=376a57e7cef85c6560a77351c93a9b1f");
             // 초기 프론트에서 설정한 Redirect_uri
-            sb.append("&redirect_uri=http://localhost:3000/user/login/kakao");
+            sb.append("&redirect_uri=https://i7a205.p.ssafy.io/login/kakao");
             sb.append("&code=" + code);
 
             bw.write(sb.toString());

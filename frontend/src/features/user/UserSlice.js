@@ -60,7 +60,7 @@ const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { 
     console.log(res.data);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -70,28 +70,30 @@ const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (arg, { re
     console.log(res.data);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
-const kakaoLogin = createAsyncThunk('kakaoLogin', async (payload, { rejectWithValue }) => {
-  console.log(payload);
+const kakaoLogin = createAsyncThunk('kakaoLogin', async (code, { rejectWithValue }) => {
+  console.log(code);
+  const payload = {
+    code,
+  };
   try {
     const res = await axios.post(api.kakao(), payload);
     console.log(res);
     return res;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
 const findPassword = createAsyncThunk('findPassword', async (payload, { rejectWithValue }) => {
   try {
-    console.log(payload);
     const response = await axios.post(api.findPassword(), payload);
     return response;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -101,11 +103,9 @@ const signout = createAsyncThunk('signout', async (arg, { rejectWithValue }) => 
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();
-    console.log(res);
     return res.data;
   } catch (err) {
-    console.log(err);
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -122,14 +122,14 @@ const initialState = {
   },
   followingList: [
     {
-      nickname: '',
-      loginState: false,
+      // nickname: '',
+      // loginState: false,
     },
   ],
   followerList: [
     {
-      nickname: '',
-      loginState: false,
+      // nickname: '',
+      // loginState: false,
     },
   ],
   isLoding: false,

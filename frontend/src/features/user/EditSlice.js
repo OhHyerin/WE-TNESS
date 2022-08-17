@@ -15,16 +15,15 @@ import {
 const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios.get(api.fetchUserInfo(), setConfig());
-    console.log(res);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
 const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
   try {
-    const res = await axios.patch(api.edit(), payload, setConfig());
+    const res = await axios.put(api.edit(), payload, setConfig());
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();
@@ -33,13 +32,13 @@ const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
     setCurrentUser(decodeAccessToken(res.data.accessToken));
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
 const changePassword = createAsyncThunk('changePassword', async (payload, { rejectWithValue }) => {
   try {
-    const res = await axios.patch(api.changePassword(), payload, setConfig());
+    const res = await axios.put(api.changePassword(), payload, setConfig());
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
