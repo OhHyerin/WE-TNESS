@@ -19,7 +19,7 @@ export default function HistoryPage() {
     const payload = { nickname };
     dispatch(fetchHistory(payload));
     dispatch(fetchDiary(payload));
-  }, []);
+  }, [dispatch]);
 
   if (isAuthenticated) {
     return (
