@@ -71,17 +71,8 @@ export default function AccountMenu() {
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-        <Link to={`/history/${userNickname}`}>
-          <MenuItem>내 운동 현황</MenuItem>
-        </Link>
-        <Link to="/ranking">
-          <MenuItem>랭킹 페이지</MenuItem>
-        </Link>
-        <Link to={`/mypage`}>
-          <MenuItem>마이 페이지</MenuItem>
-        </Link>
-        <Link to={`/admin/user`}>
-          <MenuItem>관리자 페이지</MenuItem>
+        <Link to={`/edit`}>
+          <MenuItem>정보 수정</MenuItem>
         </Link>
         <MenuItem
           onClick={() => {

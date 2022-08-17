@@ -1,18 +1,74 @@
 import { useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { Link } from 'react-router-dom';
+import { Grid } from '@mui/material';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import { styled as styledC } from '@mui/material/styles';
 
-export default function RankList() {
+const NoRankBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px;
+  gap: 20px;
+  font-size: large;
+`;
+
+export default function RankList({ isRegion }) {
   const ranks = useSelector(state => state.rank.ranks);
   const ranksLength = ranks?.length;
 
-  return <div>{ranksLength ? ranks.map((user, i) => <RankItem key={i} user={user} />) : <p>하이룽</p>}</div>;
-}
-function RankItem({ user }) {
+  const message = useSelector(state => state.rank.message);
+
   return (
-    <div>
-      <p>{user.rank}</p>
-      <p>{user.nickname}</p>
-      <p>{user.calories}</p>
-      <p>하이</p>
+    <div style={{ width: '100%' }}>
+      {ranksLength ? (
+        <Grid container spacing={1}>
+          <Grid xs={12}>
+            <Box
+              sx={{
+                padding: '30px 0px',
+                display: 'flex',
+                flexDirection: 'column',
+                width: '100%',
+                gap: '20px',
+              }}>
+              {ranks.map((user, i) => (
+                <RankItem key={i} rank={i + 1} user={user} />
+              ))}
+            </Box>
+          </Grid>
+        </Grid>
+      ) : message === 'NO_GUGUN_INFO' ? (
+        <NoRankBox>
+          <div>지역정보 없음</div>
+          <div>지역을 등록하여 같은 지역 주민들과 경쟁해보세요!</div>
+          <Link to="/edit">정보 수정하기</Link>
+        </NoRankBox>
+      ) : (
+        <NoRankBox>랭킹정보 없음</NoRankBox>
+      )}
     </div>
+  );
+}
+
+const Item = styledC(Paper)(({ theme }) => ({
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
+
+function RankItem({ user, rank }) {
+  return (
+    <Item sx={{ display: 'flex', height: '80px', alignItems: 'center' }} elevation={4}>
+      <Grid sx={{ textAlign: 'start', paddingLeft: '40px' }} xs={4}>
+        {rank}
+      </Grid>
+      <Grid sx={{ textAlign: 'start' }} xs={4}>
+        {user.userNickname}
+      </Grid>
+      <Grid xs={4}>{user.calorie} kcal</Grid>
+    </Item>
   );
 }

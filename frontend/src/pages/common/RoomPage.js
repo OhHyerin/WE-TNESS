@@ -35,6 +35,8 @@ import api from '../../api';
 import './RoomPage.css';
 
 // 효과음
+import squat from '../../assets/video/squat.mp4';
+import pushup from '../../assets/video/pushup.mp4';
 import startSound from '../../assets/sound/startSound.wav';
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
@@ -118,9 +120,6 @@ class RoomClass extends Component {
 
       isGaming: undefined,
       isFinish: false,
-      isReady: undefined,
-      readyState: new Map(),
-      isPossibleStart: true,
 
       gameId: undefined,
       count: 0,
@@ -137,11 +136,8 @@ class RoomClass extends Component {
 
     // 커스텀
     this.init = this.init.bind(this);
-    this.join = this.join.bind(this);
     this.startSignal = this.startSignal.bind(this);
     this.start = this.start.bind(this);
-    this.readySignal = this.readySignal.bind(this);
-    this.checkPossibleStart = this.checkPossibleStart.bind(this);
     this.setFinish = this.setFinish.bind(this);
     this.setIsRankView = this.setIsRankView.bind(this);
     this.getMyRank = this.getMyRank.bind(this);
@@ -151,6 +147,9 @@ class RoomClass extends Component {
     this.loop = this.loop.bind(this);
     this.countSignal = this.countSignal.bind(this);
     this.squatPredict = this.squatPredict.bind(this);
+    this.pushupPredict = this.pushupPredict.bind(this);
+    this.burpeePredict = this.burpeePredict.bind(this);
+    this.lungePredict = this.lungePredict.bind(this);
   }
 
   // state 업데이트 => 모델 생성 & 세션 입장 (백에서 받은 token으로 입장)
@@ -176,7 +175,6 @@ class RoomClass extends Component {
 
   componentWillUnmount() {
     this.leaveSession();
-    console.log('leave Session');
     window.removeEventListener('beforeunload', this.onbeforeunload);
   }
 
@@ -228,16 +226,14 @@ class RoomClass extends Component {
         mySession.on('streamDestroyed', event => {
           // Remove the stream from 'subscribers' array
           this.deleteSubscriber(event.stream.streamManager);
+          if (this.state.managerNickname === JSON.parse(event.stream.streamManager.stream.connection.data).nickname) {
+            this.props.navigate('/');
+          }
         });
 
         // On every asynchronous exception...
         mySession.on('exception', exception => {
           console.warn(exception);
-        });
-
-        // 입장 신호 수신
-        mySession.on('signal:join', event => {
-          this.state.readyState.set(event.data, false);
         });
 
         // 시작 신호 수신
@@ -246,13 +242,6 @@ class RoomClass extends Component {
             gameId: event.data,
           });
           this.start();
-        });
-
-        // 준비 신호 수신
-        mySession.on('signal:ready', event => {
-          const data = event.data.split(',');
-          this.readyState.set(data[0], data[1]);
-          this.checkPossibleStart();
         });
 
         // 모든 유저 1회 추가마다 수신
@@ -283,7 +272,6 @@ class RoomClass extends Component {
           .connect(token)
           // , { clientData: this.state.myUserName }
           .then(async () => {
-            this.join();
             const devices = await this.OV.getDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
@@ -324,52 +312,18 @@ class RoomClass extends Component {
     );
   }
 
-  join() {
-    const mySession = this.state.session;
-    if (this.state.myUserName !== this.state.managerNickname) {
-      mySession.signal({
-        data: this.state.myUserName,
-        type: 'join',
-      });
-    }
-  }
-
-  readySignal() {
-    const mySession = this.state.session;
-
-    this.setState({
-      isReady: !this.state.isReady,
-    });
-
-    mySession.signal({
-      data: `${this.state.myUserName},${this.state.isReady}`,
-      type: 'ready',
-    });
-  }
-
-  // 레디가 다 되었는지 확인
-  checkPossibleStart() {
-    if (this.myUserName === this.managerNickname) {
-      if (this.readyState.every((value, key) => value)) {
-        this.setState({
-          isPossibleStart: true,
-        });
-      }
-    }
-  }
-
   startSignal() {
     const mySession = this.state.session;
 
     const data = new Date();
     const { title } = this.state;
     const createDate = [
-      data.getUTCFullYear(),
-      data.getUTCMonth(),
-      data.getUTCDate(),
-      data.getUTCHours(),
-      data.getUTCMinutes(),
-      data.getUTCSeconds(),
+      data.getFullYear(),
+      data.getMonth() + 1,
+      data.getDate(),
+      data.getHours(),
+      data.getMinutes(),
+      data.getSeconds(),
     ];
     const payload = {
       title,
@@ -392,7 +346,7 @@ class RoomClass extends Component {
   start() {
     console.log('게임 시작!');
     new Audio(startSound).play();
-    this.setState({ isStart: true });
+    this.setState({ isFinish: false, isStart: true, count: 0, check: undefined });
     const countdown = setInterval(() => {
       if (this.state.countdown <= 0) {
         clearInterval(countdown);
@@ -431,8 +385,7 @@ class RoomClass extends Component {
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
-        Url = 'https://teachablemachine.withgoogle.com/models/TPlEwiz6u/';
-        // Url = 'https://teachablemachine.withgoogle.com/models/u5-ebydin/';
+        Url = 'https://teachablemachine.withgoogle.com/models/TBUb4jY4b/';
         break;
       case 2: // 푸쉬업
         Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
@@ -511,12 +464,12 @@ class RoomClass extends Component {
 
     const data = new Date();
     const terminateDate = [
-      data.getUTCFullYear(),
-      data.getUTCMonth(),
-      data.getUTCDate(),
-      data.getUTCHours(),
-      data.getUTCMinutes(),
-      data.getUTCSeconds(),
+      data.getFullYear(),
+      data.getMonth() + 1,
+      data.getDate(),
+      data.getHours(),
+      data.getMinutes(),
+      data.getSeconds(),
     ];
 
     const rank = this.getMyRank();
@@ -594,7 +547,7 @@ class RoomClass extends Component {
     const { pose, posenetOutput } = await this.state.model.estimatePose(this.state.webcam.canvas);
     // Prediction 2: run input through teachable machine classification model
     const prediction = await this.state.model.predict(posenetOutput);
-    if (prediction[1].probability.toFixed(2) > 0.99) {
+    if (prediction[0].probability.toFixed(2) > 0.99) {
       if (this.state.check) {
         this.setState({
           count: this.state.count + 1,
@@ -603,7 +556,7 @@ class RoomClass extends Component {
           this.countSignal();
         }, 10);
       }
-    } else if (prediction[0].probability.toFixed(2) > 0.99) {
+    } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
     }
   }
@@ -639,7 +592,7 @@ class RoomClass extends Component {
     }
 
     axios
-      .patch(
+      .put(
         api.quit(),
         {
           nickname: this.state.myUserName,
@@ -661,7 +614,7 @@ class RoomClass extends Component {
         this.props.navigate('/');
       })
       .catch(err => {
-        console.log(err);
+        this.props.navigate('/');
       });
   }
 
@@ -712,8 +665,6 @@ class RoomClass extends Component {
       myUserName,
       isGaming,
       managerNickname,
-      isPossibleStart,
-      isReady,
       count,
       rankList,
     } = this.state;
@@ -756,19 +707,15 @@ class RoomClass extends Component {
                   {/* 타이머 & 시작 준비 종료 버튼 */}
                   <TimeBox>
                     {isFinish ? (
-                      <SubmitBtn disabled={true} deactive={true}>
-                        게임 종료!
-                      </SubmitBtn>
+                      <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
                     ) : (
                       <>
                         {isGaming ? (
                           <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
                         ) : myUserName === managerNickname ? (
-                          <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
-                            시작!
-                          </SubmitBtn>
+                          <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
                         ) : (
-                          <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                          <SubmitBtn deactive>{'대기 중'}</SubmitBtn>
                         )}
                       </>
                     )}
@@ -797,7 +744,7 @@ class RoomClass extends Component {
                   </SubContainer>
                 </Grid>
 
-                {/* 애니매이션 & 결과창 */}
+                {/* 애니메이션 & 결과창 */}
                 <Grid item xs={4}>
                   <Item>
                     {isFinish ? (
@@ -806,7 +753,10 @@ class RoomClass extends Component {
                         isRankView={this.state.isRankView}
                         setIsRankView={this.setIsRankView}></RankResult>
                     ) : (
-                      <Animation isGaming={this.state.isGaming} check={this.state.check}></Animation>
+                      <Animation
+                        isGaming={this.state.isGaming}
+                        check={this.state.check}
+                        workoutId={this.state.workoutId}></Animation>
                     )}
                   </Item>
 
@@ -992,7 +942,7 @@ const TimerBox = styled.div`
 `;
 
 const Timer = ({ setFinish, isFinish }) => {
-  const [value, setValue] = useState(5);
+  const [value, setValue] = useState(30);
   const getValue = function () {
     return parseInt(value, 10);
   };
@@ -1175,15 +1125,31 @@ const ArrowsBox = styled.div`
   justify-content: center;
   align-items: center;
 `;
-function Animation({ check, isGaming }) {
+function Animation({ check, isGaming, workoutId }) {
+  const workoutAnimation = function () {
+    switch (workoutId) {
+      case 1:
+        return <video loop autoPlay src={squat} type="video/mp4" />;
+      case 2:
+        return <video loop autoPlay src={pushup} type="video/mp4" />;
+      case 3:
+        return <video loop autoPlay src={pushup} type="video/mp4" />;
+      case 4:
+        return <video loop autoPlay src={pushup} type="video/mp4" />;
+      default:
+        return null;
+    }
+  };
   return (
     <Grid container>
       {isGaming ? (
         <>
-          <Grid item xs={6}>
-            <p>애니메이션</p>
+          <Grid item xs={8}>
+            <video loop autoPlay muted>
+              <source src={squat} type="video/mp4" />
+            </video>
           </Grid>
-          <Grid item xs={6}>
+          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {check ? (
               <ArrowsBox className="arrows">
                 <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
@@ -1201,7 +1167,7 @@ function Animation({ check, isGaming }) {
         </>
       ) : (
         <Grid item xs={12}>
-          <p>애니메이션</p>
+          {workoutAnimation()}
         </Grid>
       )}
     </Grid>

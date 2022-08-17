@@ -6,7 +6,7 @@ import { Box, Button, Modal } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { checkNickname } from '../../features/user/SignupSlice';
+import { checkEditNickname } from '../../features/user/SignupSlice';
 import { signout } from '../../features/user/UserSlice';
 import { fetchUserInfo, edit, changePassword, fetchNickname } from '../../features/user/EditSlice';
 import SubmitBtn from '../../components/common/SubmitBtn';
@@ -75,7 +75,7 @@ export default function EditPage() {
     e.preventDefault();
     const payload = userInfo.nickname;
     setIsCheckNN(true);
-    dispatch(checkNickname(payload));
+    dispatch(checkEditNickname(payload));
   }
 
   function onSubmitHandler(e) {
