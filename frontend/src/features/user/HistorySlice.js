@@ -10,7 +10,7 @@ const fetchHistory = createAsyncThunk('fetchHistory', async (payload, { rejectWi
     console.log(res);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response.data);
+    return rejectWithValue(err.response);
   }
 });
 
@@ -21,7 +21,7 @@ const fetchDiary = createAsyncThunk('fetchDiary', async (payload, { rejectWithVa
     console.log(res.data);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response.data);
+    return rejectWithValue(err.response);
   }
 });
 
@@ -94,7 +94,6 @@ export const HistorySlice = createSlice({
 });
 
 export { fetchHistory, fetchDiary };
-
 export const {} = HistorySlice.actions;
 
 export default HistorySlice.reducer;

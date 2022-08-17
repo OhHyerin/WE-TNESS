@@ -67,9 +67,9 @@ export default function UserProfile(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(fetchFollowerList(props.userNickname));
-    dispatch(fetchFollowingList(props.userNickname));
-  }, [dispatch]);
+    dispatch(fetchFollowerList());
+    dispatch(fetchFollowingList());
+  }, []);
 
   const followerList = useSelector(state => state.user.followerList);
   const followingList = useSelector(state => state.user.followingList);

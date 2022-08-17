@@ -14,10 +14,15 @@ export default function RoomFilter2() {
   };
 
   return (
-    <div>
+    <>
       <FormGroup>
-        <FormControlLabel control={<Switch />} onChange={handleChange} label="비밀방 보기" labelPlacement="start" />
+        <FormControlLabel
+          control={<Switch defaultChecked />}
+          onChange={handleChange}
+          label="비밀방 보기"
+          labelPlacement="start"
+        />
       </FormGroup>
-    </div>
+    </>
   );
 }
