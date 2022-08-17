@@ -226,12 +226,12 @@ class RoomClass extends Component {
         mySession.on('streamDestroyed', event => {
           // Remove the stream from 'subscribers' array
           this.deleteSubscriber(event.stream.streamManager);
-          console.log(event.stream.streamManager);
-          console.log(this.state.managerNickname);
-          console.log(JSON.parse(event.stream.streamManager.stream.connection.data).nickname);
-          if (this.state.managerNickname === JSON.parse(event.stream.streamManager.stream.connection.data).nickname) {
-            this.leaveSession();
-          }
+          // console.log(event.stream.streamManager);
+          // console.log(this.state.managerNickname);
+          // console.log(JSON.parse(event.stream.streamManager.stream.connection.data).nickname);
+          // if (this.state.managerNickname === JSON.parse(event.stream.streamManager.stream.connection.data).nickname) {
+          //   this.props.navigate('/');
+          // }
         });
 
         // On every asynchronous exception...
@@ -617,7 +617,7 @@ class RoomClass extends Component {
         this.props.navigate('/');
       })
       .catch(err => {
-        console.log(err);
+        this.props.navigate('/');
       });
   }
 
