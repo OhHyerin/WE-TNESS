@@ -139,6 +139,7 @@ public class RoomService {
             //방장이 나갔다면 세션 종료
             if(user.getId().equals(room.getManagerId())){
                 session.close();
+                sessionInfo.remove(req.getNickname());
                 // 방장이 아니라면 세션으로의 커넥션 정보만 제거
             }else{
                 sessionInfo.remove(req.getNickname());
