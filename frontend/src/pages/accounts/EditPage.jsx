@@ -61,6 +61,7 @@ export default function EditPage() {
   const pwdVerify = useSelector(state => state.signup.userInfo.pwdVerify);
   const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
 
+  const [isCheckingNN, setIsCheckingNN] = useState(false);
   const [isCheckNN, setIsCheckNN] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
 
@@ -70,12 +71,14 @@ export default function EditPage() {
   const handleClose = () => setIsPasswordEdit(false);
 
   const onNicknameHandler = e => {
+    setIsCheckingNN(true);
     dispatch(fetchNickname(e.target.value));
   };
 
   function onCheckNicknameHandler(e) {
     e.preventDefault();
     const payload = userInfo.nickname;
+    setIsCheckingNN(false);
     setIsCheckNN(true);
     dispatch(checkEditNickname(payload));
   }
@@ -183,7 +186,9 @@ export default function EditPage() {
               <AddressForm />
             </InputBox>
             <BodyForm></BodyForm>
-            <SubmitBtn disabled={!isCheckNN || !isPossibleNickname} deactive={!isCheckNN || !isPossibleNickname}>
+            <SubmitBtn
+              disabled={isCheckingNN || (isCheckNN && !isPossibleNickname)}
+              deactive={isCheckingNN || (isCheckNN && !isPossibleNickname)}>
               수정하기
             </SubmitBtn>
           </SignupForm>
