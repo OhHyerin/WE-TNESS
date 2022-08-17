@@ -15,6 +15,10 @@ import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { joinRoom, setNowRoom } from '../../features/room/RoomSlice';
 import workoutItems from '../../assets/data/workoutItems';
+import squat from '../../assets/images/card/squatCardImg.gif';
+import pushup from '../../assets/images/card/pushupCardImg.gif';
+import burpee from '../../assets/images/card/burpeeCardImg.gif';
+import lunge from '../../assets/images/card/lungeCardImg.gif';
 
 const SubmitForm = styled.form`
   display: flex;
@@ -96,6 +100,26 @@ export default function RoomCard(props) {
     }
   };
 
+  const workoutImg = function () {
+    switch (workoutId) {
+      case 1: {
+        return <CardMedia component="img" height="50" image={squat} alt="" />;
+      }
+      case 2: {
+        return <CardMedia component="img" height="50" image={pushup} alt="" />;
+      }
+      case 3: {
+        return <CardMedia component="img" height="50" image={burpee} alt="" />;
+      }
+      case 4: {
+        return <CardMedia component="img" height="50" image={lunge} alt="" />;
+      }
+      default: {
+        return <p>운동 정보 없음</p>;
+      }
+    }
+  };
+
   // 비밀방 비밀번호 입력
   function onPasswordHandler(e) {
     e.preventDefault();
@@ -120,7 +144,7 @@ export default function RoomCard(props) {
   return (
     <>
       <Card sx={{ maxWidth: 345, minWidth: 300 }}>
-        <CardMedia component="img" height="140" image="" alt="" />
+        {workoutImg()}
         <CardContent>
           {locked ? (
             <Typography gutterBottom variant="h5" component="div">

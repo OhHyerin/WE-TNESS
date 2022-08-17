@@ -8,6 +8,8 @@ import { getAccessToken } from '../../features/Token';
 const List = styled.div`
   display: flex;
   flex-wrap: wrap;
+  padding: 20px;
+  gap: 20px;
 `;
 
 export default function RoomList() {
