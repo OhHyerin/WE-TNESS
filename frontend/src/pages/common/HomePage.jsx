@@ -2,14 +2,9 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Box, Modal, TextField, Fab } from '@mui/material';
+import { Box, Modal, TextField, Fab, Grid, styled as styledC, Paper } from '@mui/material';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ClearIcon from '@mui/icons-material/Clear';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
-import FormLabel from '@mui/material/FormLabel';
 import Banner from '../../components/home/Banner';
 import RankingPreview from '../../components/home/RankingPreview';
 import RoomList from '../../components/home/RoomList';
@@ -21,6 +16,15 @@ import SubmitBtn from '../../components/common/SubmitBtn';
 import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
 import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId, setNowRoom } from '../../features/room/RoomSlice';
 import { removeSessionInfo } from '../../features/Token';
+import workoutItems from '../../assets/data/workoutItems';
+
+const HomeBox = styled.div`
+  padding-top: 40px;
+`;
+
+const ChannelTitle = styled.p`
+  font-size: 30px;
+`;
 
 const style = {
   position: 'absolute',
@@ -72,13 +76,37 @@ const fabStyle = {
 
 const closeStyle = {
   position: 'absolute',
-  top: '10px',
-  right: '10px',
+  top: '30px',
+  right: '30px',
   '&:hover': {
     cursor: 'pointer',
     opacity: '80%',
   },
 };
+
+const WorkoutImgBox = styled.div`
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  > img:hover {
+    cursor: pointer;
+  }
+`;
+
+const WorkoutImg = styled.img`
+  width: 50%;
+  border: ${props => (props.active ? '5px double var(--primary-color)' : '')};
+  filter: ${props => (props.active ? '' : 'blur(2px) grayscale(90%)')};
+  border-radius: 5px;
+`;
+
+const Item = styledC(Paper)(({ theme }) => ({
+  backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+  ...theme.typography.body2,
+  padding: theme.spacing(1),
+  textAlign: 'center',
+  color: theme.palette.text.secondary,
+}));
 
 export default function Home() {
   const navigate = useNavigate();
@@ -119,9 +147,8 @@ export default function Home() {
     e.preventDefault();
     dispatch(fetchTitle(e.target.value));
   }
-  function onWorkoutHandler(e) {
-    e.preventDefault();
-    dispatch(fetchWorkoutId(e.target.value));
+  function onWorkoutHandler(workoutId) {
+    dispatch(fetchWorkoutId(workoutId));
   }
   function onPasswordHandler(e) {
     e.preventDefault();
@@ -166,17 +193,19 @@ export default function Home() {
 
   return (
     <div>
-      <div>
+      <HomeBox>
         <Banner />
+        {/* 랭킹 프리뷰 버티컬 캐러셀 */}
         <RankingPreview />
         <>
-          {/* 운동 목록 */}
-          <RoomFilter1 />
+          <ChannelTitle>실시간 채널</ChannelTitle>
           {/* 비밀방 여부 */}
           <RoomFilter2 />
+          {/* 운동 목록 */}
+          <RoomFilter1 />
         </>
         <RoomList />
-      </div>
+      </HomeBox>
 
       {/* 카카오 로그인 추가정보 입력 모달 */}
       <Modal open={isModal} onClose={handleClose}>
@@ -216,31 +245,52 @@ export default function Home() {
         <Box sx={addStyle}>
           <ClearIcon sx={closeStyle} onClick={onClose}></ClearIcon>
           <FormBox>
+            <p style={{ fontSize: 'xx-large', fontWeight: 'bold' }}>방 만들기</p>
             <SubmitForm onSubmit={onSubmitRoom}>
-              <FormControl
-                value={roomInfo.workoutId}
-                onChange={onWorkoutHandler}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  justifyContent: 'end',
-                }}>
-                <FormLabel>운동종류</FormLabel>
-                <RadioGroup defaultValue="1">
-                  <FormControlLabel value="1" control={<Radio />} label="1번 운동" />
-                  <FormControlLabel value="2" control={<Radio />} label="2번 운동" />
-                  <FormControlLabel value="3" control={<Radio />} label="3번 운동" />
-                </RadioGroup>
-              </FormControl>
-              <InputBox>
-                <TextField label="방 제목" value={roomInfo.title} onChange={onTitleHandler} />
-              </InputBox>
-              <InputBox>
-                <TextField label="방 비밀번호" value={roomInfo.password} onChange={onPasswordHandler} />
-              </InputBox>
-              <SubmitBtn disabled={false} deactive={false} onClick={onCreate}>
-                방 생성하기
-              </SubmitBtn>
+              <Grid container spacing={2} sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: '15px' }}>
+                <Grid item xs={5}>
+                  <Item sx={{ width: '100%', height: '400px', display: 'flex', flexWrap: 'wrap' }}>
+                    <WorkoutImgBox>
+                      {workoutItems.map(workout => {
+                        if (workout.id !== 0 && workout.img) {
+                          return (
+                            <WorkoutImg
+                              key={workout.id}
+                              src={workout.img}
+                              alt="workout.id번 운동"
+                              onClick={() => onWorkoutHandler(workout.id)}
+                              active={workout.id === roomInfo.workoutId}
+                            />
+                          );
+                        } else {
+                          return null;
+                        }
+                      })}
+                    </WorkoutImgBox>
+                  </Item>
+                </Grid>
+
+                <Grid item xs={5} style={{ padding: '20px' }}>
+                  <Item sx={{ width: '100%', height: '400px', display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ textAlign: 'center', padding: '20px', paddingBottom: '50px' }}>
+                      <p style={{ fontSize: 'larger', fontWeight: 'bold' }}>방 정보</p>
+                    </div>
+                    <div sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                      <InputBox style={{ padding: '10px' }}>
+                        <TextField label="방 제목" value={roomInfo.title} onChange={onTitleHandler} />
+                      </InputBox>
+                      <InputBox style={{ padding: '10px' }}>
+                        <TextField label="방 비밀번호" value={roomInfo.password} onChange={onPasswordHandler} />
+                      </InputBox>
+                    </div>
+                  </Item>
+                </Grid>
+                <Grid item xs={10} style={{ padding: '20px', display: 'flex' }}>
+                  <SubmitBtn style={{ width: '100%' }} onClick={onCreate}>
+                    방 생성하기
+                  </SubmitBtn>
+                </Grid>
+              </Grid>
             </SubmitForm>
           </FormBox>
         </Box>

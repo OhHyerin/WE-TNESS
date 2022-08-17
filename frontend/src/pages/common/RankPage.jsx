@@ -9,11 +9,13 @@ import RankList from '../../components/rank/RankList';
 
 const BtnBox = styled.div`
   display: flex;
-  gap: 10px;
+  width: 100%;
+  padding: 100px 0px;
 `;
+
 const BigBox = styled.div`
   display: flex;
-  margin-top: 100px;
+  padding-top: 50px;
   justify-content: center;
   align-items: center;
 `;
@@ -21,6 +23,17 @@ const BigBox = styled.div`
 const RankBox = styled.div`
   width: 50%;
 `;
+
+const Title = styled.p`
+  font-size: 100px;
+  text-align: center;
+`;
+
+const BtnStyle = {
+  width: '149.5px',
+  height: '59px',
+  borderRadius: '0px',
+};
 
 export default function RankPage() {
   const dispatch = useDispatch();
@@ -60,9 +73,13 @@ export default function RankPage() {
     return (
       <BigBox>
         <RankBox>
-          <h1>랭킹</h1>
+          <Title>RANKING</Title>
+
           <BtnBox>
             <Button
+              style={{ borderRadius: '5px 0px 0px 5px' }}
+              sx={BtnStyle}
+              size="large"
               variant={squat ? 'contained' : 'outlined'}
               onClick={() => {
                 setSquat(!squat);
@@ -70,6 +87,8 @@ export default function RankPage() {
               스쿼트
             </Button>
             <Button
+              sx={BtnStyle}
+              size="large"
               variant={pushup ? 'contained' : 'outlined'}
               onClick={() => {
                 setPushup(!pushup);
@@ -77,13 +96,18 @@ export default function RankPage() {
               팔굽혀펴기
             </Button>
             <Button
+              size="large"
+              sx={BtnStyle}
               variant={burpee ? 'contained' : 'outlined'}
               onClick={() => {
                 setBurpee(!burpee);
               }}>
-              버핏
+              버피
             </Button>
             <Button
+              style={{ borderRadius: '0px 5px 5px 0px' }}
+              size="large"
+              sx={BtnStyle}
               variant={plank ? 'contained' : 'outlined'}
               onClick={() => {
                 setPlank(!plank);
@@ -101,7 +125,9 @@ export default function RankPage() {
               labelPlacement="start"
             />
           </FormGroup>
-          <RankList />
+
+          {/* 랭킹정보 */}
+          <RankList isRegion={isRegion} />
         </RankBox>
       </BigBox>
     );

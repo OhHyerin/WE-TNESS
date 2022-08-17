@@ -37,20 +37,18 @@ const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
 const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios.get(api.fetchFollowingList(), setConfig());
-    console.log(res);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
 const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios.get(api.fetchFollowerList(), setConfig());
-    console.log(res.data);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -61,17 +59,16 @@ const kakaoLogin = createAsyncThunk('kakaoLogin', async (payload, { rejectWithVa
     console.log(res);
     return res;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
 const findPassword = createAsyncThunk('findPassword', async (payload, { rejectWithValue }) => {
   try {
-    console.log(payload);
     const response = await axios.post(api.findPassword(), payload);
     return response;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -81,11 +78,9 @@ const signout = createAsyncThunk('signout', async (arg, { rejectWithValue }) => 
     removeAccessToken();
     removeRefreshToken();
     removeCurrentUser();
-    console.log(res);
     return res.data;
   } catch (err) {
-    console.log(err);
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
