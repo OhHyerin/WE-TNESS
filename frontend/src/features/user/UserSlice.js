@@ -36,8 +36,8 @@ const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
 
 const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { rejectWithValue }) => {
   try {
-    const res = await axios.get(api.fetchFollowingList(), setConfig());
-    console.log(res);
+    const res = await axios.get(api.fetchFollowingList(arg.nickname), setConfig());
+    console.log(res.data);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response);
@@ -46,7 +46,7 @@ const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { 
 
 const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (arg, { rejectWithValue }) => {
   try {
-    const res = await axios.get(api.fetchFollowerList(), setConfig());
+    const res = await axios.get(api.fetchFollowerList(arg.nickname), setConfig());
     console.log(res.data);
     return res.data;
   } catch (err) {
