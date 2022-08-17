@@ -79,7 +79,7 @@ public class UserController {
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
     }
 
-    @PatchMapping
+    @PutMapping
     @ApiOperation(value = "회원정보 수정")
     public ResponseEntity<?> updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                         @RequestBody UpdateUserDto updateUserDto) {
