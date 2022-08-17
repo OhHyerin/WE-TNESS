@@ -13,9 +13,7 @@ import KakaoLoginPage from './pages/accounts/KakaoLoginPage';
 import HistoryPage from './pages/accounts/HistoryPage';
 import MyPage from './pages/accounts/MyPage';
 import EditPage from './pages/accounts/EditPage';
-import AdminUserPage from './pages/admin/AdminUserPage';
-import AdminRoomPage from './pages/admin/AdminRoomPage';
-import AdminReportPage from './pages/admin/AdminReportPage';
+import NotFoundPage from './pages/common/NotFoundPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -30,13 +28,8 @@ root.render(
           <Route path="history/:userNickname" element={<HistoryPage />}></Route>
           <Route path="room" element={<RoomPage />}></Route>
           <Route path="ranking" element={<RankPage />}></Route>
-          <Route path="mypage" element={<MyPage />}></Route>
           <Route path="edit" element={<EditPage />}></Route>
-          <Route path="admin/">
-            <Route path="user" element={<AdminUserPage />}></Route>
-            <Route path="room" element={<AdminRoomPage />}></Route>
-            <Route path="report" element={<AdminReportPage />}></Route>
-          </Route>
+          <Route path="/*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </Provider>
