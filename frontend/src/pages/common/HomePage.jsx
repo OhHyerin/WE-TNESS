@@ -86,8 +86,7 @@ const closeStyle = {
 
 const WorkoutImgBox = styled.div`
   display: flex;
-  justify-content: space-evenly;
-  align-items: center;
+  flex-wrap: wrap;
   > img:hover {
     cursor: pointer;
   }
