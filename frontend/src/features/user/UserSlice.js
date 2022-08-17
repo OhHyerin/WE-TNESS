@@ -52,8 +52,11 @@ const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (arg, { re
   }
 });
 
-const kakaoLogin = createAsyncThunk('kakaoLogin', async (payload, { rejectWithValue }) => {
-  console.log(payload);
+const kakaoLogin = createAsyncThunk('kakaoLogin', async (code, { rejectWithValue }) => {
+  console.log(code);
+  const payload = {
+    code,
+  };
   try {
     const res = await axios.post(api.kakao(), payload);
     console.log(res);
