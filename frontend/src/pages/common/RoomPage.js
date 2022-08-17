@@ -226,7 +226,10 @@ class RoomClass extends Component {
         mySession.on('streamDestroyed', event => {
           // Remove the stream from 'subscribers' array
           this.deleteSubscriber(event.stream.streamManager);
-          this.leaveSession();
+          console.log(event.stream.streamManager);
+          if (this.managerNickname === JSON.parse(event.stream.streamManager.stream.connection.data).nickname) {
+            this.leaveSession();
+          }
         });
 
         // On every asynchronous exception...
