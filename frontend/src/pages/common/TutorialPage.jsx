@@ -3,7 +3,8 @@ import { Button, ButtonGroup } from '@mui/material';
 import styled from 'styled-components';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import camSet from '../../assets/images/tutorial/camSet.PNG';
+import camSet1 from '../../assets/images/tutorial/camSet1.PNG';
+import camSet2 from '../../assets/images/tutorial/camSet2.PNG';
 import test from '../../assets/images/tutorial/test.PNG';
 
 const Box = styled.div`
@@ -34,15 +35,19 @@ const Buttons = styled.div`
 const ImgCard = styled.div`
   border-radius: 10px;
   box-shadow: 0px 3px 3px -2px rgb(0 0 0 / 20%), 0px 3px 4px 0px rgb(0 0 0 / 14%), 0px 1px 8px 0px rgb(0 0 0 / 12%);
+  width: 1190px;
+  > * {
+    width: 100%;
+  }
 `;
 
 const tittle = ['Camera Setting', 'Posture'];
 const workout = ['스쿼트', '팔굽혀펴기', '버피', '런지'];
 const article = [
-  [camSet, test, '스쿼트3', '스쿼트4'],
-  [camSet, '팔굽2'],
-  [camSet, '버피2'],
-  [camSet, '런지2'],
+  [camSet1, test, '스쿼트3', '스쿼트4'],
+  [camSet2, '팔굽2'],
+  [camSet1, '버피2'],
+  [camSet1, '런지2'],
 ];
 
 export default function TutorialPage() {

@@ -61,7 +61,7 @@ export default function NavBar() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!isRoom && location.pathname == '/room') {
+    if ((!isRoom && location.pathname == '/room') || location.pathname == '/tutorial') {
       dispatch(setIsRoom(true));
     } else {
       dispatch(setIsRoom(false));
@@ -87,8 +87,15 @@ export default function NavBar() {
               <img src={logo} alt="Logo" width={'40px'} height={'auto'} />
             </Logo>
             <div>
-              {nowRoom.locked ? <LockIcon fontSize="small" /> : null} [
-              {nowRoom.workout === 1 ? '운동1' : nowRoom.workout === 2 ? '운동2' : '운동3'}] {nowRoom.title}{' '}
+              {nowRoom.locked ? <LockIcon fontSize="small" /> : null}
+              {nowRoom.workout === 1
+                ? '[운동1]'
+                : nowRoom.workout === 2
+                ? '[운동2]'
+                : nowRoom.workout === 2
+                ? '[운동3]'
+                : null}
+              {nowRoom.title}{' '}
             </div>
             <Button id="goOutBtn" variant="contained" color="error" onClick={handleGoOut}>
               나가기
