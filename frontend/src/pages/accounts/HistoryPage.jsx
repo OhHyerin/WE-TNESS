@@ -16,9 +16,8 @@ export default function HistoryPage() {
   const nickname = params.userNickname;
 
   useEffect(() => {
-    const payload = { nickname };
-    dispatch(fetchHistory(payload));
-    dispatch(fetchDiary(payload));
+    dispatch(fetchHistory(nickname));
+    dispatch(fetchDiary(nickname));
   }, [dispatch]);
 
   if (isAuthenticated) {
