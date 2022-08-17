@@ -4,7 +4,8 @@ import RoomReducer from './features/room/RoomSlice.js';
 import SignupReducer from './features/user/SignupSlice.js';
 import HistoryReducer from './features/user/HistorySlice.js';
 import EditReducer from './features/user/EditSlice.js';
-import RankReducer from './features/rank/RankSlice.js'
+import RankReducer from './features/rank/RankSlice.js';
+import NoticeReducer from './features/notice/NoticeSlice.js';
 
 const store = configureStore({
   reducer: {
@@ -14,6 +15,7 @@ const store = configureStore({
     history: HistoryReducer,
     edit: EditReducer,
     rank: RankReducer,
+    notice: NoticeReducer,
   },
 });
 
