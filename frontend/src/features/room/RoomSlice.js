@@ -9,7 +9,7 @@ const initialState = {
   searchRoomResult: [],
   searchUserResult: [],
   workout: '전체',
-  showPrivate: false,
+  showPrivate: true,
   isRoomsLoaded: false,
   isWorkoutsLoaded: false,
   isSearched: false,

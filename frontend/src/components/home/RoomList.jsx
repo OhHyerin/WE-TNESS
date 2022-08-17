@@ -32,12 +32,11 @@ export default function RoomList() {
           <NoRoom content={'진행중인 방이 없습니다.'} />
         ) : (
           <List>
-            {rooms.map((room, i) => {
-              if ((!room.locked || showPrivate) && (workout === '전체' ? true : workout === room.workout)) {
-                return <RoomCard key={i} room={room} />;
-              }
-              return null;
-            })}
+            {rooms.map((room, i) =>
+              room.locked === showPrivate && (workout === '전체' ? true : workout === room.workout) ? (
+                <RoomCard key={i} room={room} />
+              ) : null
+            )}
           </List>
         )
       }
