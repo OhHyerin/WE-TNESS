@@ -226,6 +226,7 @@ class RoomClass extends Component {
         mySession.on('streamDestroyed', event => {
           // Remove the stream from 'subscribers' array
           this.deleteSubscriber(event.stream.streamManager);
+          this.leaveSession();
         });
 
         // On every asynchronous exception...
@@ -343,7 +344,7 @@ class RoomClass extends Component {
   start() {
     console.log('게임 시작!');
     new Audio(startSound).play();
-    this.setState({ isStart: true });
+    this.setState({ isFinish: false, isStart: true, count: 0, check: undefined });
     const countdown = setInterval(() => {
       if (this.state.countdown <= 0) {
         clearInterval(countdown);
@@ -704,9 +705,7 @@ class RoomClass extends Component {
                   {/* 타이머 & 시작 준비 종료 버튼 */}
                   <TimeBox>
                     {isFinish ? (
-                      <SubmitBtn disabled={true} deactive={true}>
-                        게임 종료!
-                      </SubmitBtn>
+                      <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
                     ) : (
                       <>
                         {isGaming ? (

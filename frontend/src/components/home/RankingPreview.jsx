@@ -39,7 +39,7 @@ export default function RankingPreview() {
           <div className="change_outer">
             <div className="change_inner">
               <div className="element">
-                {rank?.total ? (
+                {rank.total?.length ? (
                   <p>
                     전체 1등 {rank?.total[0]?.userNickname} 2등 {rank.total[1]?.userNickname} 3등{' '}
                     {rank.total[2]?.userNickname}
@@ -49,7 +49,7 @@ export default function RankingPreview() {
                 )}
               </div>
               <div className="element">
-                {rank?.squat ? (
+                {rank.squat?.length ? (
                   <p>
                     스쿼트1등 {rank?.squat[0]?.userNickname} 2등 {rank.squat[1]?.userNickname} 3등{' '}
                     {rank.squat[2]?.userNickname}
@@ -59,7 +59,7 @@ export default function RankingPreview() {
                 )}
               </div>
               <div className="element">
-                {rank?.pushup ? (
+                {rank.pushup?.length ? (
                   <p>
                     팔굽혀펴기 1등 {rank.pushup[0]?.userNickname} 2등 {rank.pushup[1]?.userNickname} 3등{' '}
                   </p>
@@ -68,7 +68,7 @@ export default function RankingPreview() {
                 )}
               </div>
               <div className="element">
-                {rank?.burpee ? (
+                {rank.burpee?.length ? (
                   <p>
                     버피 1등 {rank.burpee[0]?.userNickname} 2등 {rank.burpee[1]?.userNickname} 3등{' '}
                     {rank.burpee[2]?.userNickname}
@@ -78,7 +78,7 @@ export default function RankingPreview() {
                 )}
               </div>
               <div className="element">
-                {rank?.lunge ? (
+                {rank.lunge?.length ? (
                   <p>
                     런지 1등 {rank.lunge[0]?.userNickname} 2등 {rank.lunge[1]?.userNickname} 3등{' '}
                     {rank.lunge[2]?.userNickname}
