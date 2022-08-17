@@ -51,15 +51,15 @@ public class FollowController {
         return ResponseEntity.ok().body(followUserResDto);
     }
 
-    @GetMapping("/follower")
-    public ResponseEntity<?> getFollowerByNickname(@RequestParam String nickname) {
+    @GetMapping("/follower/{nickname}")
+    public ResponseEntity<?> getFollowerByNickname(@PathVariable String nickname) {
         User target = userService.findByNickname(nickname);
         FollowUserResDto followUserResDto = followService.getFollowers(target.getId());
         return ResponseEntity.ok().body(followUserResDto);
     }
 
-    @GetMapping("/following")
-    public ResponseEntity<?> getFollowingByNickname(@RequestParam String nickname) {
+    @GetMapping("/following/{nickname}")
+    public ResponseEntity<?> getFollowingByNickname(@PathVariable String nickname) {
         User target = userService.findByNickname(nickname);
         FollowUserResDto followUserResDto = followService.getFollowings(target.getId());
         return ResponseEntity.ok().body(followUserResDto);

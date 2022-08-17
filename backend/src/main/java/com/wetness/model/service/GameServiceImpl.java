@@ -192,7 +192,6 @@ public class GameServiceImpl implements GameService{
 
 
             List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
-
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);
                 if((old.getWorkoutId() & (1<<N) )== 0) continue;
