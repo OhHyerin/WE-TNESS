@@ -12,6 +12,7 @@ import logo from '../../assets/images/logo.jpg';
 import { setIsRoom } from '../../features/room/RoomSlice';
 import Notifications from './Notifications';
 import { fetchNotice } from '../../features/notice/NoticeSlice';
+import { getAccessToken } from '../../features/Token';
 
 const Header = styled.div`
   display: flex;
@@ -70,7 +71,10 @@ export default function NavBar() {
     } else {
       dispatch(setIsRoom(false));
     }
-    dispatch(fetchNotice());
+    const token = getAccessToken();
+    if (token) {
+      dispatch(fetchNotice());
+    }
   }, [location]);
 
   const handleGoOut = () => {
