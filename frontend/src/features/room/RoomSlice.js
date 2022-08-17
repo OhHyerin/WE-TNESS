@@ -8,7 +8,7 @@ const initialState = {
   rooms: [],
   searchRoomResult: [],
   searchUserResult: [],
-  workout: '전체',
+  workout: 0,
   showPrivate: false,
   isRoomsLoaded: false,
   isWorkoutsLoaded: false,
