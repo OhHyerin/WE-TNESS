@@ -5,6 +5,7 @@ const RANK_URL = '/rank';
 const ROOM_URL = '/room';
 const GAME_URL = '/game';
 const FITNESS_URL = '/fitness';
+const NOTICE_URL = '/notice';
 
 const LOGIN_URL = '/login';
 const KAKAO_URL = '/kakao';
@@ -30,6 +31,8 @@ const QUIT_URL = '/disconnect';
 const START_URL = '/start';
 const END_URL = '/end';
 const FETCH_DIARY = '/diary';
+
+const CHECK_NOTICE = '/check';
 
 export default {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
@@ -60,4 +63,7 @@ export default {
   start: () => API_BASE_URL + GAME_URL + START_URL,
   end: () => API_BASE_URL + GAME_URL + END_URL,
   fetchDiary: nickname => API_BASE_URL + GAME_URL + FETCH_DIARY + `/${nickname}`,
+
+  fetchNotice: () => API_BASE_URL + NOTICE_URL,
+  checkNotice: () => API_BASE_URL + NOTICE_URL + CHECK_NOTICE,
 };
