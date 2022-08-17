@@ -42,8 +42,6 @@ export default {
   findPassword: () => API_BASE_URL + USER_URL + FIND_PASSWORD,
   kakao: () => API_BASE_URL + USER_URL + LOGIN_URL + KAKAO_URL,
   addInfo: () => API_BASE_URL + USER_URL + ADD_INFO_URL,
-  fetchFollowingList: nickname => API_BASE_URL + FOLLOW_URL + FETCH_FOLLOWING_LIST_URL + `${nickname}`,
-  fetchFollowerList: nickname => API_BASE_URL + FOLLOW_URL + FETCH_FOLLOWER_LIST_URL + `${nickname}`,
   fetchUserInfo: () => API_BASE_URL + USER_URL + FETCH_USER_INFO_URL,
   edit: () => API_BASE_URL + USER_URL,
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
@@ -56,6 +54,11 @@ export default {
   createRoom: () => API_BASE_URL + ROOM_URL + MAKE_URL,
   joinRoom: () => API_BASE_URL + ROOM_URL + ENTER_URL,
   quit: () => API_BASE_URL + ROOM_URL + QUIT_URL,
+
+  addFollow: () => API_BASE_URL + FOLLOW_URL,
+  deleteFollow: () => API_BASE_URL + FOLLOW_URL,
+  fetchFollowingList: nickname => API_BASE_URL + FOLLOW_URL + FETCH_FOLLOWING_LIST_URL + `${nickname}`,
+  fetchFollowerList: nickname => API_BASE_URL + FOLLOW_URL + FETCH_FOLLOWER_LIST_URL + `${nickname}`,
 
   start: () => API_BASE_URL + GAME_URL + START_URL,
   end: () => API_BASE_URL + GAME_URL + END_URL,

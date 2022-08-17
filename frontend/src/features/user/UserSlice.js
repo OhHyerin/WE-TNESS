@@ -34,6 +34,26 @@ const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
   }
 });
 
+const addFollow = createAsyncThunk('addFollow', async (payload, { rejectWithValue }) => {
+  try {
+    const res = await axios.post(api.addFollow(), payload, setConfig());
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response);
+  }
+});
+
+const deleteFollow = createAsyncThunk('deleteFollow', async (payload, { rejectWithValue }) => {
+  try {
+    const res = await axios.delete(api.deleteFollow(), payload, setConfig());
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response);
+  }
+});
+
 const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios.get(api.fetchFollowingList(arg.nickname), setConfig());
@@ -158,7 +178,17 @@ export const UserSlice = createSlice({
   },
 });
 
-export { login, logout, fetchFollowingList, fetchFollowerList, kakaoLogin, findPassword, signout };
+export {
+  login,
+  logout,
+  addFollow,
+  deleteFollow,
+  fetchFollowingList,
+  fetchFollowerList,
+  kakaoLogin,
+  findPassword,
+  signout,
+};
 export const { fetchCurrentUser, checkLogin, toggleIsLoding } = UserSlice.actions;
 
 export default UserSlice.reducer;

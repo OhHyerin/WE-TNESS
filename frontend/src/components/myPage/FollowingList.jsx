@@ -6,7 +6,8 @@ import TableBody from '@mui/material/TableBody';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+import { deleteFollow } from '../../features/user/UserSlice';
 
 export default function FollowingList({ followingList }) {
   return (
@@ -27,40 +28,22 @@ const columns = [
       return '오프라인';
     },
   },
-  // { id: 'name', label: '' },
-  // { id: 'user', label: 'User', minWidth: 50 },
-  // {
-  //   id: 'calories',
-  //   label: 'Calories\u00a0(kcal)',
-  //   minWidth: 130,
-  //   align: 'right',
-  //   format: value => value.toLocaleString('en-US'),
-  // },
-  // {
-  //   id: 'state',
-  //   label: 'State',
-  //   minWidth: 100,
-  //   align: 'right',
-  //   format: value => value.toFixed(2),
-  // },
+  {
+    id: 'followState',
+    label: '팔로우',
+  },
 ];
-
-// function createData(name, user, calories, state) {
-//   return { name, user, calories, state };
-// }
-
-// const rows = [
-//   createData('avt', 'wdsaf', 1324171354, 'o'),
-//   createData('avt', 'wdsaf', 1403500365, 'o'),
-//   createData('avt', 'wdsaf', 60483973, 'o'),
-//   createData('avt aw', 'wdsaf', 327167434, 'o'),
-//   createData('avt', 'wdsaf', 37602103, 'o'),
-//   createData('avt', 'wdsaf', 25475400, 'o'),
-//   createData('avt', 'wdsaf', 83019200, 'o'),
-// ];
 
 function ColumnGroupingTable() {
   const rows = useSelector(state => state.user.followingList);
+
+  const dispatch = useDispatch();
+
+  const handler = e => {
+    const payload = { nickname: e };
+    console.log(payload);
+    dispatch(deleteFollow(payload));
+  };
 
   return (
     <Paper>
@@ -87,7 +70,18 @@ function ColumnGroupingTable() {
                   const value = row[column.id];
                   return (
                     <TableCell key={column.id} align={column.align}>
-                      {column.format ? column.format(value) : value}
+                      {column.id === 'followState' ? (
+                        <button
+                          onClick={() => {
+                            handler(row['nickname']);
+                          }}>
+                          삭제
+                        </button>
+                      ) : column.id === 'loginState' ? (
+                        column.format(value)
+                      ) : (
+                        value
+                      )}
                     </TableCell>
                   );
                 })}
