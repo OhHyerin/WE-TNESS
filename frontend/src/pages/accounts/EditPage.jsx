@@ -18,6 +18,8 @@ import AddressForm from '../../components/common/auth/AddressForm';
 import GenderForm from '../../components/common/auth/GenderForm';
 import BodyForm from '../../components/common/auth/BodyForm';
 import CheckBtn from '../../components/common/CheckBtn';
+import { fetchCurrentUser } from '../../features/user/UserSlice';
+import { getCurrentUser } from '../../features/Token';
 
 const MySwal = withReactContent(Swal);
 
@@ -90,11 +92,13 @@ export default function EditPage() {
     console.log(payload);
     dispatch(edit(payload))
       .then(() => {
+        dispatch(fetchCurrentUser(getCurrentUser()));
         MySwal.fire({
           title: <p>회원정보 변경</p>,
           titleText: <p>변경되었습니다.</p>,
           icon: 'success',
         });
+        navigate('/');
       })
       .catch(err => {
         console.log(err);

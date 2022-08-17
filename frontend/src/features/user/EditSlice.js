@@ -17,7 +17,7 @@ const fetchUserInfo = createAsyncThunk('fetchUserInfo', async (arg, { rejectWith
     const res = await axios.get(api.fetchUserInfo(), setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -32,7 +32,7 @@ const edit = createAsyncThunk('edit', async (payload, { rejectWithValue }) => {
     setCurrentUser(decodeAccessToken(res.data.accessToken));
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
