@@ -76,6 +76,26 @@ export default function RoomCard(props) {
   const [password, setPassword] = useState('');
   const [isJoinRoom, setIsJoinRoom] = useState(false);
 
+  const workoutName = function () {
+    switch (workoutId) {
+      case 1: {
+        return '스쿼트';
+      }
+      case 2: {
+        return '팔굽혀펴기';
+      }
+      case 3: {
+        return '버피';
+      }
+      case 4: {
+        return '런지';
+      }
+      default: {
+        return '운동 정보 없음';
+      }
+    }
+  };
+
   // 비밀방 비밀번호 입력
   function onPasswordHandler(e) {
     e.preventDefault();
@@ -114,7 +134,7 @@ export default function RoomCard(props) {
 
           <>
             <Typography variant="body2" color="text.secondary">
-              {workoutId}
+              {workoutName()}
             </Typography>
             {isGaming ? (
               <Typography variant="body2" color="text.secondary">
@@ -147,31 +167,20 @@ export default function RoomCard(props) {
         <Box sx={addStyle}>
           <ClearIcon sx={closeStyle} onClick={() => setIsJoinRoom(false)}></ClearIcon>
           <FormBox>
-            <SubmitForm onSubmit={onJoinRoom}>
-              <p>운동 종류 : {workoutId}</p>
-              <p>방 제목: {title}</p>
-              <p>방장 : {managerNickname}</p>
-              <p>상태 :{isGaming ? '게임중' : '대기중'}</p>
-              <p>인원 : {headcount} / 6 </p>
-              {locked ? (
-                <InputBox>
-                  <TextField label="방 비밀번호" value={password} onChange={onPasswordHandler} />
-                </InputBox>
-              ) : null}
-              <SubmitBtn>방 입장하기</SubmitBtn>
-            </SubmitForm>
-          </FormBox>
-        </Box>
-      </Modal>
-      <Modal open={isJoinRoom} onClose={() => setIsJoinRoom(false)}>
-        <Box sx={addStyle}>
-          <ClearIcon sx={closeStyle} onClick={() => setIsJoinRoom(false)}></ClearIcon>
-          <FormBox>
             <p style={{ fontSize: 'xx-large', fontWeight: 'bold' }}>방 입장하기</p>
             <SubmitForm onSubmit={onJoinRoom}>
               <Grid container spacing={2} sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center', gap: '15px' }}>
                 <Grid item xs={5}>
-                  <Item sx={{ width: '100%', height: '400px', display: 'flex', flexWrap: 'wrap' }}>
+                  <Item
+                    sx={{
+                      width: '100%',
+                      height: '400px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
+                    <p style={{ fontSize: 'x-large', fontWeight: 'bold', paddingBottom: '30px' }}>{workoutName()}</p>
                     <WorkoutImgBox>
                       {workoutItems.map(workout => {
                         if (workout.id === workoutId) {
@@ -185,12 +194,29 @@ export default function RoomCard(props) {
                 </Grid>
 
                 <Grid item xs={5} style={{ padding: '20px' }}>
-                  <Item sx={{ width: '100%', height: '400px', display: 'flex', flexDirection: 'column' }}>
-                    <p>운동 종류 : {workoutId}</p>
-                    <p>방 제목: {title}</p>
-                    <p>방장 : {managerNickname}</p>
-                    <p>상태 :{isGaming ? '게임중' : '대기중'}</p>
-                    <p>인원 : {headcount} / 6 </p>
+                  <Item
+                    sx={{
+                      width: '100%',
+                      height: '400px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-around',
+                      gap: '20px',
+                    }}>
+                    <div style={{ alignSelf: 'self-start' }}>
+                      <p style={{ fontSize: 'large', fontWeight: 'bold' }}>
+                        {locked ? '[비밀방]' : '[공개방]'} {title}
+                      </p>
+                    </div>
+                    <div style={{ alignSelf: 'self-start', fontSize: 'large', fontWeight: 'bold' }}>
+                      <p>방장 : {managerNickname}</p>
+                    </div>
+                    <div style={{ alignSelf: 'self-start', fontSize: 'large', fontWeight: 'bold' }}>
+                      <p>{isGaming ? '게임중' : '대기중'}</p>
+                    </div>
+                    <div style={{ alignSelf: 'self-start', fontSize: 'large', fontWeight: 'bold' }}>
+                      <p>인원 : {headcount} / 6 </p>
+                    </div>
                     {locked ? (
                       <InputBox>
                         <TextField label="방 비밀번호" value={password} onChange={onPasswordHandler} />

@@ -33,7 +33,7 @@ export default function RoomList() {
         ) : (
           <List>
             {rooms.map((room, i) => {
-              if ((!room.locked || showPrivate) && (workout === '전체' ? true : workout === room.workout)) {
+              if ((!room.locked || showPrivate) && (workout === '전체' ? true : workout === room.workoutId)) {
                 return <RoomCard key={i} room={room} />;
               }
               return null;
