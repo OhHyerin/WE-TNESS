@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { signup, checkEditNickname, checkEmail, fetchNickname, fetchEmail } from '../../features/user/SignupSlice';
+import { signup, checkNickname, checkEmail, fetchNickname, fetchEmail } from '../../features/user/SignupSlice';
 import PageBox from '../../components/common/auth/PageBox';
 import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
@@ -50,7 +50,7 @@ export default function SignupPage() {
   function onCheckNicknameHandler(e) {
     e.preventDefault();
     const payload = userInfo.nickname;
-    dispatch(checkEditNickname(payload)).then(() => {
+    dispatch(checkNickname(payload)).then(() => {
       setIsCheckNN(true);
     });
   }
