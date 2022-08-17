@@ -3,7 +3,6 @@ import { Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
@@ -11,6 +10,7 @@ import SearchForm from '../search/SearchForm';
 import AccountMenu from './Dropdown';
 import logo from '../../assets/images/logo.jpg';
 import { setIsRoom } from '../../features/room/RoomSlice';
+import Notifications from './Notifications';
 
 const Header = styled.div`
   display: flex;
@@ -108,11 +108,9 @@ export default function NavBar() {
               {isAuthenticated ? (
                 <LoginMenu>
                   {/* 알림 - 임시 & 수정 필요 */}
-                  <IconButton size="large" aria-label="show 17 new notifications" color="inherit">
-                    <Badge badgeContent={17} color="error">
-                      <NotificationsIcon />
-                    </Badge>
-                  </IconButton>
+                  <Badge badgeContent={17} color="error">
+                    <Notifications />
+                  </Badge>
                   {/* 계정 버튼 - 드롭다운 */}
                   <AccountMenu />
                 </LoginMenu>
