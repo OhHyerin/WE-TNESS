@@ -72,6 +72,7 @@ public class RoomService {
         Session session = this.openVidu.createSession();
 
         this.mapSessions.put(roomTitle,new MapSessionRoom(room,session));
+        this.mapSessionNamesConnections.put(roomTitle, new ConcurrentHashMap<>());
 
     }
 
@@ -87,11 +88,6 @@ public class RoomService {
                                 .role(OpenViduRole.PUBLISHER).build();
 
         MapSessionRoom mapSessionRoom = this.mapSessions.get(enterRoomReq.getTitle());
-        for(String session : this.mapSessionNamesConnections.keySet()){
-            if(this.mapSessionNamesConnections.get(session).containsKey(userDetails.getNickname())){
-                throw new Exception("User Already Exists in Other Room");
-            }
-        }
         Room room = mapSessionRoom.getRoom();
         // 방이 잠겨있는데 비밀번호가 다르다면
         if(room.isLocked()&&!(room.getPassword().equals(enterRoomReq.getPassword()))) {
@@ -100,9 +96,6 @@ public class RoomService {
         Connection connection = mapSessionRoom.getSession()
                                 .createConnection(connectionProperties);
 
-        if(!this.mapSessionNamesConnections.containsKey(enterRoomReq.getTitle())){
-            this.mapSessionNamesConnections.put(enterRoomReq.getTitle(), new ConcurrentHashMap<>());
-        }
         this.mapSessionNamesConnections.get(enterRoomReq.getTitle()).put(userDetails.getNickname(), connection);
 
         roomUserRepository.save(RoomUser.builder()
@@ -134,16 +127,8 @@ public class RoomService {
             this.mapSessions.remove(sessionName);
             this.mapSessionNamesConnections.remove(sessionName);
         }
-
         else{
-            //방장이 나갔다면 세션 종료
-            if(user.getId().equals(room.getManagerId())){
-                session.close();
-                sessionInfo.remove(req.getNickname());
-                // 방장이 아니라면 세션으로의 커넥션 정보만 제거
-            }else{
-                sessionInfo.remove(req.getNickname());
-            }
+            sessionInfo.remove(req.getNickname());
         }
         // room_user 테이블에서 방을 나간 시간 설정
         RoomUser roomUser = roomUserRepository.findByRoomIdAndUserId(room.getId(), user.getId());
