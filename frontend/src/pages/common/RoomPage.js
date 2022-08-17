@@ -383,7 +383,7 @@ class RoomClass extends Component {
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
-        Url = 'https://teachablemachine.withgoogle.com/models/TBUb4jY4b/';
+        Url = 'https://teachablemachine.withgoogle.com/models/2LnjsbrXs/';
         break;
       case 2: // 푸쉬업
         Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
