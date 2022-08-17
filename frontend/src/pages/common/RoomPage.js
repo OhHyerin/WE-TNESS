@@ -38,7 +38,11 @@ import './RoomPage.css';
 import squat from '../../assets/video/squat.mp4';
 import pushup from '../../assets/video/pushup.mp4';
 import lunge from '../../assets/video/lunge.mp4';
-import startSound from '../../assets/sound/startSound.wav';
+import startSound from '../../assets/sound/startSound.mp3';
+import endSound from '../../assets/sound/endSound.wav';
+import gameSound from '../../assets/sound/gameSound.mp3';
+
+const gameMusic = new Audio(gameSound);
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
 // url :
@@ -172,6 +176,7 @@ class RoomClass extends Component {
       this.joinSession(sessionInfo.token);
     }, 1000);
     this.init();
+    gameMusic.currentTime = 0;
   }
 
   componentWillUnmount() {
@@ -345,9 +350,16 @@ class RoomClass extends Component {
   }
 
   start() {
-    console.log('게임 시작!');
     new Audio(startSound).play();
-    this.setState({ isFinish: false, isStart: true, count: 0, check: undefined });
+    this.setState({
+      isFinish: false,
+      isStart: true,
+      count: 0,
+      check: undefined,
+      countList: undefined,
+      rankList: undefined,
+      countdown: 3,
+    });
     const countdown = setInterval(() => {
       if (this.state.countdown <= 0) {
         clearInterval(countdown);
@@ -356,6 +368,7 @@ class RoomClass extends Component {
       }
     }, 1000);
     setTimeout(() => {
+      gameMusic.play();
       this.setState({
         isStart: false,
         isGaming: true,
@@ -458,7 +471,8 @@ class RoomClass extends Component {
 
   // 게임 종료 정보 전달
   setFinish() {
-    console.log('게임 끝!');
+    gameMusic.pause();
+    new Audio(endSound).play();
     this.setState({
       isFinish: true,
     });
@@ -481,7 +495,6 @@ class RoomClass extends Component {
       score: this.state.count,
       rank,
     };
-    console.log(payload);
     axios
       .post(api.end(), payload, setConfig())
       .then(res => {
@@ -585,9 +598,9 @@ class RoomClass extends Component {
 
   leaveSession() {
     // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
+    gameMusic.pause();
 
     const mySession = this.state.session;
-
     if (mySession) {
       mySession.disconnect();
     }
@@ -921,6 +934,7 @@ const TimeBox = styled.div`
 
 function CountDownIcon({ countdown }) {
   const viewIcon = function () {
+    console.log(countdown);
     switch (countdown) {
       case 1:
         return <LooksOneOutlinedIcon sx={countDownIconStyle}></LooksOneOutlinedIcon>;

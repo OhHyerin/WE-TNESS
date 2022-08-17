@@ -22,7 +22,7 @@ export default function RoomFilter1() {
             size="large"
             variant={nowWorkout.name === workout ? 'contained' : 'outlined'}
             onClick={() => {
-              handleBtnChange(nowWorkout.name);
+              handleBtnChange(nowWorkout.id);
             }}>
             {nowWorkout.name}
           </Button>
