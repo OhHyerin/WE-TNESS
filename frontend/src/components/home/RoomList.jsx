@@ -33,7 +33,7 @@ export default function RoomList() {
         ) : (
           <List>
             {rooms.map((room, i) =>
-              (room.scope === 'public' || showPrivate) && (workout === '전체' ? true : workout === room.workout) ? (
+              room.isLocked === showPrivate && (workout === '전체' ? true : workout === room.workout) ? (
                 <RoomCard key={i} room={room} />
               ) : null
             )}

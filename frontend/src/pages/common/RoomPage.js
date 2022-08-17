@@ -269,7 +269,6 @@ class RoomClass extends Component {
           .connect(token)
           // , { clientData: this.state.myUserName }
           .then(async () => {
-            this.join();
             const devices = await this.OV.getDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
