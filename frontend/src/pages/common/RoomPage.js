@@ -590,7 +590,7 @@ class RoomClass extends Component {
     }
 
     axios
-      .patch(
+      .put(
         api.quit(),
         {
           nickname: this.state.myUserName,
