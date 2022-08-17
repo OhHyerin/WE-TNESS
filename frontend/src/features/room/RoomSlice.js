@@ -34,8 +34,6 @@ const initialState = {
 const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios.get(api.fetchRoomList(), setConfig());
-    console.log(res);
-    console.log(res.data);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
@@ -101,13 +99,6 @@ export const RoomSlice = createSlice({
     workoutChange: (state, action) => {
       state.workout = action.payload;
     },
-    testRoomList: state => {
-      state.rooms = [
-        ...state.rooms,
-        { name: 'test1', scope: 'public', workout: '운동1', started: true, numOfPeople: 1 },
-        { name: 'test2', scope: 'private', workout: '운동2', started: true, numOfPeople: 2 },
-      ];
-    },
     fetchWorkoutId: (state, action) => {
       state.roomInfo.workoutId = action.payload;
     },
@@ -124,7 +115,6 @@ export const RoomSlice = createSlice({
       state.isSearched = action.payload;
     },
     setIsRoom: (state, action) => {
-      console.log(action.payload);
       state.isRoom = action.payload;
     },
     setNowRoom: (state, action) => {
@@ -172,7 +162,6 @@ export const {
   testWorkout,
   testShowPrivate,
   workoutChange,
-  testRoomList,
   setKeyword,
   setIsSearch,
   setIsRoom,

@@ -1,0 +1,60 @@
+.center {
+  background: white;
+  border-radius: 5px;
+  box-shadow: 2px 2px gray;
+}
+.carousel {
+  position: relative;
+  width: 100%;
+  text-align: center;
+  font-size: 25px;
+  line-height: 45px;
+  height: 50px;
+}
+.carousel .pre {
+  position: absolute;
+  top: 0;
+  left: 25%;
+  height: 50px;
+  font-weight: 300;
+}
+.carousel .change_outer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  font-size: 18px;
+  text-align: left;
+  height: 45px;
+  overflow: hidden;
+}
+.carousel .change_outer .change_inner {
+  position: relative;
+  animation: rotate 12s ease-in-out infinite;
+}
+.carousel .change_outer .element {
+  display: block;
+}
+
+@keyframes rotate {
+  10%,
+  15%,
+  100% {
+    transform: translateY(0);
+  }
+  25%,
+  36% {
+    transform: translateY(-45px);
+  }
+  46%,
+  57% {
+    transform: translateY(-90px);
+  }
+  67%,
+  78% {
+    transform: translateY(-135px);
+  }
+  88%,
+  99% {
+    transform: translateY(-180px);
+  }
+}
