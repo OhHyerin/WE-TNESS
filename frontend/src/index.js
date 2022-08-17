@@ -13,6 +13,7 @@ import KakaoLoginPage from './pages/accounts/KakaoLoginPage';
 import HistoryPage from './pages/accounts/HistoryPage';
 import MyPage from './pages/accounts/MyPage';
 import EditPage from './pages/accounts/EditPage';
+import TutorialPage from './pages/common/TutorialPage';
 import NotFoundPage from './pages/common/NotFoundPage';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -29,6 +30,7 @@ root.render(
           <Route path="room" element={<RoomPage />}></Route>
           <Route path="ranking" element={<RankPage />}></Route>
           <Route path="edit" element={<EditPage />}></Route>
+          <Route path="tutorial" element={<TutorialPage />}></Route>
           <Route path="/*" element={<NotFoundPage />} />
         </Route>
       </Routes>
