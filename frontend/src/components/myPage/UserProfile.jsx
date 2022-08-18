@@ -1,8 +1,9 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
-import { Avatar, Modal } from '@mui/material';
+import { Avatar, Modal, Box } from '@mui/material';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import ClearIcon from '@mui/icons-material/Clear';
 import styled from 'styled-components';
 import { fetchFollowerList, fetchFollowingList, fetchFollowState, toggleFollow } from '../../features/user/UserSlice';
 import FollowerList from './FollowerList';
@@ -13,14 +14,6 @@ const ProfileBox = styled.div`
   justify-content: center;
   align-items: center;
   padding: 20px 0px;
-`;
-
-const FollowListBox = styled.div`
-  display: flex;
-  flex-direction: row;
-  gap: 50px;
-  width: 50%;
-  justify-content: space-evenly;
 `;
 
 const FollowForm = styled.div`
@@ -68,6 +61,7 @@ const MatchTile = styled.div`
   display: flex;
   flex-direction: column;
 `;
+
 const TotalMatch = styled.div`
   display: flex;
   justify-content: center;
@@ -78,6 +72,7 @@ const TotalMatch = styled.div`
     font-weight: bold;
   }
 `;
+
 const Match = styled.div`
   display: flex;
   flex-direction: column;
@@ -98,6 +93,29 @@ const FollowButton = styled.div`
 const MatchBox = styled.div`
   display: flex;
 `;
+
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  width: 'fit-contents',
+  transform: 'translate(-50%, -50%)',
+  bgcolor: 'background.paper',
+  border: '1px solid var(--primary-color)',
+  borderRadius: '10px',
+  boxShadow: 24,
+  p: 4,
+};
+
+const closeStyle = {
+  position: 'absolute',
+  top: '5px',
+  right: '5px',
+  '&:hover': {
+    cursor: 'pointer',
+    opacity: '80%',
+  },
+};
 
 export default function UserProfile(props) {
   const dispatch = useDispatch();
@@ -120,19 +138,18 @@ export default function UserProfile(props) {
   const [openFollowing, setOpenFollowing] = useState(false);
 
   // 팔로워 핸들러
-  const handleOpenFollower = () => {
-    setOpenFollower(true);
-  };
+  const handleOpenFollower = () => setOpenFollower(true);
   const handleCloseFollower = () => setOpenFollower(false);
 
   // 팔로잉 핸들러
-  const handleOpenFollowing = () => {
-    setOpenFollowing(true);
-  };
+  const handleOpenFollowing = () => setOpenFollowing(true);
   const handleCloseFollowing = () => setOpenFollowing(false);
 
   function toggleFollowState() {
-    dispatch(toggleFollow(props.userNickname));
+    dispatch(toggleFollow(props.userNickname)).then(() => {
+      dispatch(fetchFollowerList(props.userNickname));
+      dispatch(fetchFollowingList(props.userNickname));
+    });
   }
 
   return (
@@ -189,14 +206,16 @@ export default function UserProfile(props) {
 
       {/* 모달 - 팔로워, 팔로잉 */}
       <Modal open={openFollower} onClose={handleCloseFollower}>
-        <FollowListBox>
-          <FollowerList followerList={followerList} />
-        </FollowListBox>
+        <Box sx={style}>
+          <ClearIcon sx={closeStyle} onClick={handleCloseFollower}></ClearIcon>
+          <FollowerList followerList={followerList} handleCloseFollower={handleCloseFollower} />
+        </Box>
       </Modal>
       <Modal open={openFollowing} onClose={handleCloseFollowing}>
-        <FollowListBox>
-          <FollowingList followingList={followingList} />
-        </FollowListBox>
+        <Box sx={style}>
+          <ClearIcon sx={closeStyle} onClick={handleCloseFollowing}></ClearIcon>
+          <FollowingList followingList={followingList} handleCloseFollowing={handleCloseFollowing} />
+        </Box>
       </Modal>
     </ProfileBox>
   );
