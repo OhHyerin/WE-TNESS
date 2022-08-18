@@ -7,9 +7,10 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 @SpringBootApplication
 public class BackendApplication {
 	public static final String APPLICATION_LOCATIONS = "spring.config.location=" +
-			"classpath:application.properties";
-//			"classpath:application-aws.yml, " +
-//			"classpath:application-mail.yml ";
+			"classpath:application.properties+"+
+			"classpath:application-aws.yml, " +
+			"classpath:application-mail.yml " +
+			"classpath:application-kakao.yml";
 
 
 	public static void main(String[] args) {
