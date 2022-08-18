@@ -25,6 +25,7 @@ const LoginForm = styled.form`
   padding: 10px;
   gap: 15px;
 `;
+
 const style = {
   position: 'absolute',
   top: '50%',

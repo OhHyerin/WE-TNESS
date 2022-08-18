@@ -1,8 +1,23 @@
-import { List } from '@mui/material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useEffect } from 'react';
+import styled from 'styled-components';
 import RoomCard from '../common/RoomCard';
 import { searchRooms } from '../../features/room/RoomSlice';
+
+const List = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  padding-top: 50px;
+  gap: 20px;
+`;
+
+const NoRoomBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  font-size: large;
+`;
 
 export default function SearchRoomList() {
   const searchRoomResult = useSelector(state => state.room.searchRoomResult);
@@ -16,21 +31,20 @@ export default function SearchRoomList() {
       keyword,
     };
     dispatch(searchRooms(payload));
-  }, [keyword]);
+  }, [dispatch, keyword]);
 
   return (
     <div>
-      <h2>검색된 방 목록</h2>
       {searchRoomResult.length > 0 ? (
         <List>
-          {searchRoomResult.map(room =>
-            (room.scope === 'public' || showPrivate) && (workout === '전체' ? true : workout === room.workout) ? (
-              <RoomCard room={room} />
+          {searchRoomResult.map((room, i) =>
+            room.locked === showPrivate && (workout === 0 ? true : workout === room.workoutId) ? (
+              <RoomCard key={i} room={room} />
             ) : null
           )}
         </List>
       ) : (
-        <div>검색된 방이 없습니다.</div>
+        <NoRoomBox>검색된 방이 없습니다.</NoRoomBox>
       )}
     </div>
   );

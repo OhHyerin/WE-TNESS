@@ -6,49 +6,50 @@ import setConfig from '../authHeader';
 const fetchRankList = createAsyncThunk('fetchRankList', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
+    console.log(res.data);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
   }
 });
 
-const fetchTotalRanking = createAsyncThunk('fetchRankList', async (payload, { rejectWithValue }) => {
+const fetchTotalRanking = createAsyncThunk('fetchTotalRanking', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
-const fetchSquatRanking = createAsyncThunk('fetchRankList', async (payload, { rejectWithValue }) => {
+const fetchSquatRanking = createAsyncThunk('fetchSquatRanking', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
-const fetchPushupRanking = createAsyncThunk('fetchRankList', async (payload, { rejectWithValue }) => {
+const fetchPushupRanking = createAsyncThunk('fetchPushupRanking', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
-const fetchBurpeeRanking = createAsyncThunk('fetchRankList', async (payload, { rejectWithValue }) => {
+const fetchBurpeeRanking = createAsyncThunk('fetchBurpeeRanking', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
-const fetchLungeRanking = createAsyncThunk('fetchRankList', async (payload, { rejectWithValue }) => {
+const fetchLungeRanking = createAsyncThunk('fetchLungeRanking', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
     return res.data;
@@ -58,8 +59,10 @@ const fetchLungeRanking = createAsyncThunk('fetchRankList', async (payload, { re
 });
 
 const initialState = {
-  ranks: [],
-  message: '',
+  rankList: {
+    ranks: [],
+    message: '',
+  },
 
   // 메인페이지 실시간 랭킹
   previewRank: {},
@@ -71,8 +74,8 @@ export const RankSlice = createSlice({
   reducers: {},
   extraReducers: {
     [fetchRankList.fulfilled]: (state, action) => {
-      state.ranks = action.payload?.ranks;
-      state.message = action.payload?.message;
+      console.log(action.payload);
+      state.rankList = action.payload;
     },
     [fetchTotalRanking.fulfilled]: (state, action) => {
       state.previewRank.total = action.payload?.ranks;
@@ -100,7 +103,5 @@ export {
   fetchBurpeeRanking,
   fetchLungeRanking,
 };
-
-export const {} = RankSlice.actions;
 
 export default RankSlice.reducer;

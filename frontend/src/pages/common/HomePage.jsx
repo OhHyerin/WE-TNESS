@@ -2,7 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Box, Modal, TextField, Fab, Grid, styled as styledC, Paper } from '@mui/material';
+import { Box, Modal, TextField, Fab, Grid, styled as styledC, Paper, Tooltip } from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ClearIcon from '@mui/icons-material/Clear';
 import Banner from '../../components/home/Banner';
@@ -14,12 +15,26 @@ import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
-import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId, setNowRoom } from '../../features/room/RoomSlice';
+import {
+  fetchTitle,
+  fetchPassword,
+  createRoom,
+  fetchWorkoutId,
+  setNowRoom,
+  createModal,
+} from '../../features/room/RoomSlice';
 import { removeSessionInfo } from '../../features/Token';
 import workoutItems from '../../assets/data/workoutItems';
+import IconTextField from '../../components/common/IconTextField';
+import CheckBtn from '../../components/common/CheckBtn';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const HomeBox = styled.div`
   padding-top: 40px;
+  padding-bottom: 200px;
 `;
 
 const ChannelTitle = styled.p`
@@ -31,7 +46,8 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 800,
+  width: 400,
+  height: 400,
   bgcolor: 'background.paper',
   border: '1px solid var(--primary-color)',
   borderRadius: '10px',
@@ -59,7 +75,7 @@ const SubmitForm = styled.form`
   justify-content: center;
   align-items: center;
   padding: 10px;
-  gap: 10px;
+  gap: 40px;
 `;
 
 const fabStyle = {
@@ -86,8 +102,8 @@ const closeStyle = {
 
 const WorkoutImgBox = styled.div`
   display: flex;
-  justify-content: space-evenly;
   align-items: center;
+  flex-wrap: wrap;
   > img:hover {
     cursor: pointer;
   }
@@ -95,6 +111,7 @@ const WorkoutImgBox = styled.div`
 
 const WorkoutImg = styled.img`
   width: 50%;
+  height: 40%;
   border: ${props => (props.active ? '5px double var(--primary-color)' : '')};
   filter: ${props => (props.active ? '' : 'blur(2px) grayscale(90%)')};
   border-radius: 5px;
@@ -131,17 +148,18 @@ export default function Home() {
       title: roomInfo.title,
       password: roomInfo.password,
     };
+    dispatch(createModal(false));
     dispatch(createRoom(payload)).then(res => navigate('/room'));
   }
 
   // 방 생성 관련
-  const [isAddRoom, setIsAddRoom] = useState(false);
+  const isCreate = useSelector(state => state.room.isCreate);
   const roomInfo = useSelector(state => state.room.roomInfo);
   function onOpen(e) {
-    setIsAddRoom(true);
+    dispatch(createModal(true));
   }
   function onClose(e) {
-    setIsAddRoom(false);
+    dispatch(createModal(false));
   }
   function onTitleHandler(e) {
     e.preventDefault();
@@ -182,10 +200,13 @@ export default function Home() {
 
   function onSubmitHandler(e) {
     e.preventDefault();
-    const payload = nickname;
-    console.log(payload);
-    dispatch(addInfo(payload))
-      .then(() => {})
+    dispatch(addInfo(nickname))
+      .then(() => {
+        MySwal.fire({
+          title: <p>환영합니다.</p>,
+          icon: 'success',
+        });
+      })
       .catch(err => {
         console.log(err);
       });
@@ -213,10 +234,20 @@ export default function Home() {
           <ClearIcon sx={closeStyle} onClick={handleClose}></ClearIcon>
           <FormBox>
             <SubmitForm onSubmit={onSubmitHandler}>
-              <h1>추가 정보 입력</h1>
+              <p style={{ fontSize: '25px' }}>추가 정보 입력</p>
               <InputBox>
-                <TextField
+                <IconTextField
                   error={isCheckNN && !isPossibleNickname}
+                  iconStart={<AccountCircle />}
+                  iconEnd={
+                    nickname ? (
+                      <CheckBtn onClick={onCheckNicknameHandler}>확인</CheckBtn>
+                    ) : (
+                      <CheckBtn disabled deactive={!nickname}>
+                        확인
+                      </CheckBtn>
+                    )
+                  }
                   label="*닉네임"
                   value={nickname}
                   onChange={onNicknameHandler}
@@ -225,13 +256,6 @@ export default function Home() {
                   }
                 />
               </InputBox>
-              {nickname ? (
-                <SubmitBtn onClick={onCheckNicknameHandler}>닉네임 확인</SubmitBtn>
-              ) : (
-                <SubmitBtn disabled deactive={!nickname}>
-                  닉네임확인
-                </SubmitBtn>
-              )}
               <SubmitBtn disabled={!isCheckNN || !isPossibleNickname} deactive={!isCheckNN || !isPossibleNickname}>
                 제출
               </SubmitBtn>
@@ -241,7 +265,7 @@ export default function Home() {
       </Modal>
 
       {/* 방 생성 모달 */}
-      <Modal open={isAddRoom} onClose={onClose}>
+      <Modal open={isCreate} onClose={onClose}>
         <Box sx={addStyle}>
           <ClearIcon sx={closeStyle} onClick={onClose}></ClearIcon>
           <FormBox>
@@ -254,13 +278,14 @@ export default function Home() {
                       {workoutItems.map(workout => {
                         if (workout.id !== 0 && workout.img) {
                           return (
-                            <WorkoutImg
-                              key={workout.id}
-                              src={workout.img}
-                              alt="workout.id번 운동"
-                              onClick={() => onWorkoutHandler(workout.id)}
-                              active={workout.id === roomInfo.workoutId}
-                            />
+                            <Tooltip key={workout.id} title={workout.name} followCursor>
+                              <WorkoutImg
+                                src={workout.img}
+                                alt="workout.id번 운동"
+                                onClick={() => onWorkoutHandler(workout.id)}
+                                active={workout.id === roomInfo.workoutId}
+                              />
+                            </Tooltip>
                           );
                         } else {
                           return null;

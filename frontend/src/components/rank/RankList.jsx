@@ -17,14 +17,18 @@ const NoRankBox = styled.div`
 `;
 
 export default function RankList({ isRegion }) {
-  const ranks = useSelector(state => state.rank.ranks);
-  const ranksLength = ranks?.length;
-
-  const message = useSelector(state => state.rank.message);
+  const ranks = useSelector(state => state.rank.rankList.ranks);
+  const message = useSelector(state => state.rank.rankList.message);
 
   return (
     <div style={{ width: '100%' }}>
-      {ranksLength ? (
+      {message === 'NO_GUGUN_INFO' ? (
+        <NoRankBox>
+          <div>지역정보 없음</div>
+          <div>지역을 등록하여 같은 지역 주민들과 경쟁해보세요!</div>
+          <Link to="/edit">정보 수정하기</Link>
+        </NoRankBox>
+      ) : ranks.length ? (
         <Grid container spacing={1}>
           <Grid xs={12}>
             <Box
@@ -41,12 +45,6 @@ export default function RankList({ isRegion }) {
             </Box>
           </Grid>
         </Grid>
-      ) : message === 'NO_GUGUN_INFO' ? (
-        <NoRankBox>
-          <div>지역정보 없음</div>
-          <div>지역을 등록하여 같은 지역 주민들과 경쟁해보세요!</div>
-          <Link to="/edit">정보 수정하기</Link>
-        </NoRankBox>
       ) : (
         <NoRankBox>랭킹정보 없음</NoRankBox>
       )}
@@ -60,15 +58,66 @@ const Item = styledC(Paper)(({ theme }) => ({
 }));
 
 function RankItem({ user, rank }) {
-  return (
-    <Item sx={{ display: 'flex', height: '80px', alignItems: 'center' }} elevation={4}>
-      <Grid sx={{ textAlign: 'start', paddingLeft: '40px' }} xs={4}>
-        {rank}
-      </Grid>
-      <Grid sx={{ textAlign: 'start' }} xs={4}>
-        {user.userNickname}
-      </Grid>
-      <Grid xs={4}>{user.calorie} kcal</Grid>
-    </Item>
-  );
+  switch (rank) {
+    case 1:
+      return (
+        <Item
+          sx={{ border: 'gold 3px solid', display: 'flex', height: '85px', alignItems: 'center', fontWeight: 'bold' }}
+          elevation={4}>
+          <Grid sx={{ textAlign: 'start', paddingLeft: '40px', fontSize: '22px' }} xs={4}>
+            {rank}
+          </Grid>
+          <Grid sx={{ textAlign: 'start' }} xs={4}>
+            {user.userNickname}
+          </Grid>
+          <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
+        </Item>
+      );
+    case 2:
+      return (
+        <Item
+          sx={{ border: 'silver 3px solid', display: 'flex', height: '83px', alignItems: 'center', fontWeight: 'bold' }}
+          elevation={4}>
+          <Grid sx={{ textAlign: 'start', paddingLeft: '40px', fontSize: '20px' }} xs={4}>
+            {rank}
+          </Grid>
+          <Grid sx={{ textAlign: 'start' }} xs={4}>
+            {user.userNickname}
+          </Grid>
+          <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
+        </Item>
+      );
+    case 3:
+      return (
+        <Item
+          sx={{
+            border: '#CD7F32 2px solid',
+            display: 'flex',
+            height: '80px',
+            alignItems: 'center',
+            fontWeight: 'bold',
+          }}
+          elevation={4}>
+          <Grid sx={{ textAlign: 'start', paddingLeft: '40px', fontSize: '18px' }} xs={4}>
+            {rank}
+          </Grid>
+          <Grid sx={{ textAlign: 'start' }} xs={4}>
+            {user.userNickname}
+          </Grid>
+          <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
+        </Item>
+      );
+    default:
+      return (
+        <Item sx={{ display: 'flex', height: '80px', alignItems: 'center' }} elevation={4}>
+          <Grid sx={{ textAlign: 'start', paddingLeft: '40px' }} xs={4}>
+            {rank}
+          </Grid>
+          <Grid sx={{ textAlign: 'start' }} xs={4}>
+            {user.userNickname}
+          </Grid>
+          <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
+        </Item>
+      );
+  }
 }

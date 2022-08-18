@@ -34,30 +34,31 @@ const logout = createAsyncThunk('logout', async (arg, { rejectWithValue }) => {
   }
 });
 
-const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (arg, { rejectWithValue }) => {
+const fetchFollowingList = createAsyncThunk('fetchFollowingList', async (nickname, { rejectWithValue }) => {
   try {
-    const res = await axios.get(api.fetchFollowingList(), setConfig());
+    const res = await axios.get(api.fetchFollowingList(nickname), setConfig());
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
   }
 });
 
-const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (arg, { rejectWithValue }) => {
+const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (nickname, { rejectWithValue }) => {
   try {
-    const res = await axios.get(api.fetchFollowerList(), setConfig());
+    const res = await axios.get(api.fetchFollowerList(nickname), setConfig());
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
   }
 });
 
-const kakaoLogin = createAsyncThunk('kakaoLogin', async (payload, { rejectWithValue }) => {
-  console.log(payload);
+const kakaoLogin = createAsyncThunk('kakaoLogin', async (code, { rejectWithValue }) => {
   try {
-    const res = await axios.post(api.kakao(), payload);
-    console.log(res);
-    return res;
+    const res = await axios.post(api.kakao(), {}, { params: { code } });
+    setAccessToken(res.data.accessToken);
+    setRefreshToken(res.data.refreshToken);
+    setCurrentUser(decodeAccessToken(res.data.accessToken));
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
   }
@@ -92,19 +93,20 @@ const initialState = {
     role: '',
   },
   kakaoInfo: {
-    exist_user: false,
+    existUser: true,
     accessToken: '',
+    refreshToken: '',
   },
   followingList: [
     {
-      nickname: '',
-      loginState: false,
+      // nickname: '',
+      // loginState: false,
     },
   ],
   followerList: [
     {
-      nickname: '',
-      loginState: false,
+      // nickname: '',
+      // loginState: false,
     },
   ],
   isLoding: false,
@@ -146,6 +148,8 @@ export const UserSlice = createSlice({
     },
     [kakaoLogin.fulfilled]: (state, action) => {
       state.kakaoInfo = action.payload;
+      state.isAuthenticated = true;
+      state.currentUser = getCurrentUser();
     },
     [signout.fulfilled]: state => {
       state.isAuthenticated = false;

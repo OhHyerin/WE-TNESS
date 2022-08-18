@@ -8,13 +8,14 @@ import { getAccessToken } from '../../features/Token';
 const List = styled.div`
   display: flex;
   flex-wrap: wrap;
+  padding-top: 50px;
+  gap: 20px;
 `;
 
 export default function RoomList() {
   const rooms = useSelector(state => state.room.rooms);
   const showPrivate = useSelector(state => state.room.showPrivate);
   const workout = useSelector(state => state.room.workout);
-  const isRoomsLoaded = useSelector(state => state.room.isRoomsLoaded);
 
   const dispatch = useDispatch();
 
@@ -27,22 +28,20 @@ export default function RoomList() {
 
   return (
     <div>
-      {isRoomsLoaded ? (
+      {
         // 룸 리스트가 로드된 경우 => 룸 리스트 개수에 따라서 처리
         rooms.length === 0 ? (
           <NoRoom content={'진행중인 방이 없습니다.'} />
         ) : (
           <List>
             {rooms.map((room, i) =>
-              (room.scope === 'public' || showPrivate) && (workout === '전체' ? true : workout === room.workout) ? (
+              room.locked === showPrivate && (workout === 0 ? true : workout === room.workoutId) ? (
                 <RoomCard key={i} room={room} />
               ) : null
             )}
           </List>
         )
-      ) : (
-        <NoRoom content={'로그인 후 이용해주세요.'} />
-      )}
+      }
     </div>
   );
 }

@@ -11,7 +11,6 @@ import SignupPage from './pages/accounts/SignupPage';
 import LoginPage from './pages/accounts/LoginPage';
 import KakaoLoginPage from './pages/accounts/KakaoLoginPage';
 import HistoryPage from './pages/accounts/HistoryPage';
-import MyPage from './pages/accounts/MyPage';
 import EditPage from './pages/accounts/EditPage';
 import TutorialPage from './pages/common/TutorialPage';
 import NotFoundPage from './pages/common/NotFoundPage';

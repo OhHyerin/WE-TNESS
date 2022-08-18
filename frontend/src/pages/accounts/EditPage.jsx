@@ -6,7 +6,7 @@ import { Box, Button, Modal } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { checkNickname } from '../../features/user/SignupSlice';
+import { checkEditNickname } from '../../features/user/SignupSlice';
 import { signout } from '../../features/user/UserSlice';
 import { fetchUserInfo, edit, changePassword, fetchNickname } from '../../features/user/EditSlice';
 import SubmitBtn from '../../components/common/SubmitBtn';
@@ -18,6 +18,8 @@ import AddressForm from '../../components/common/auth/AddressForm';
 import GenderForm from '../../components/common/auth/GenderForm';
 import BodyForm from '../../components/common/auth/BodyForm';
 import CheckBtn from '../../components/common/CheckBtn';
+import { fetchCurrentUser } from '../../features/user/UserSlice';
+import { getCurrentUser } from '../../features/Token';
 
 const MySwal = withReactContent(Swal);
 
@@ -59,6 +61,7 @@ export default function EditPage() {
   const pwdVerify = useSelector(state => state.signup.userInfo.pwdVerify);
   const isPossibleNickname = useSelector(state => state.signup.isPossibleNickname);
 
+  const [isCheckingNN, setIsCheckingNN] = useState(false);
   const [isCheckNN, setIsCheckNN] = useState(false);
   const [isPasswordEdit, setIsPasswordEdit] = useState(false);
 
@@ -68,14 +71,16 @@ export default function EditPage() {
   const handleClose = () => setIsPasswordEdit(false);
 
   const onNicknameHandler = e => {
+    setIsCheckingNN(true);
     dispatch(fetchNickname(e.target.value));
   };
 
   function onCheckNicknameHandler(e) {
     e.preventDefault();
     const payload = userInfo.nickname;
+    setIsCheckingNN(false);
     setIsCheckNN(true);
-    dispatch(checkNickname(payload));
+    dispatch(checkEditNickname(payload));
   }
 
   function onSubmitHandler(e) {
@@ -90,11 +95,13 @@ export default function EditPage() {
     console.log(payload);
     dispatch(edit(payload))
       .then(() => {
+        dispatch(fetchCurrentUser(getCurrentUser()));
         MySwal.fire({
           title: <p>회원정보 변경</p>,
           titleText: <p>변경되었습니다.</p>,
           icon: 'success',
         });
+        navigate('/');
       })
       .catch(err => {
         console.log(err);
@@ -179,7 +186,9 @@ export default function EditPage() {
               <AddressForm />
             </InputBox>
             <BodyForm></BodyForm>
-            <SubmitBtn disabled={!isCheckNN || !isPossibleNickname} deactive={!isCheckNN || !isPossibleNickname}>
+            <SubmitBtn
+              disabled={isCheckingNN || (isCheckNN && !isPossibleNickname)}
+              deactive={isCheckingNN || (isCheckNN && !isPossibleNickname)}>
               수정하기
             </SubmitBtn>
           </SignupForm>

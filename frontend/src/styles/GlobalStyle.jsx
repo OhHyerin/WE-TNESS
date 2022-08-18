@@ -14,6 +14,7 @@ const GlobalStyle = createGlobalStyle`
   padding: 0;
   box-sizing: border-box;
   font: inherit;
+  font-family: 'Regular';
   color: inherit;
   /* flex-shrink: 0; */
 }

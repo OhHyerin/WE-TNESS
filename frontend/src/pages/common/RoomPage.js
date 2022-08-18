@@ -37,7 +37,13 @@ import './RoomPage.css';
 // 효과음
 import squat from '../../assets/video/squat.mp4';
 import pushup from '../../assets/video/pushup.mp4';
-import startSound from '../../assets/sound/startSound.wav';
+import burpee from '../../assets/video/burpee.mp4';
+import lunge from '../../assets/video/lunge.mp4';
+import startSound from '../../assets/sound/startSound.mp3';
+import endSound from '../../assets/sound/endSound.wav';
+import gameSound from '../../assets/sound/gameSound.mp3';
+
+const gameMusic = new Audio(gameSound);
 
 // docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
 // url :
@@ -46,6 +52,7 @@ const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 const Container = styled.div`
   padding: 0;
+  background-color: ${props => (props.myRank === 1 ? '#fffaf0' : '#f5f5f5')};
   width: 100%;
   max-width: 100%;
   > * {
@@ -120,9 +127,6 @@ class RoomClass extends Component {
 
       isGaming: undefined,
       isFinish: false,
-      isReady: undefined,
-      readyState: new Map(),
-      isPossibleStart: true,
 
       gameId: undefined,
       count: 0,
@@ -139,11 +143,8 @@ class RoomClass extends Component {
 
     // 커스텀
     this.init = this.init.bind(this);
-    this.join = this.join.bind(this);
     this.startSignal = this.startSignal.bind(this);
     this.start = this.start.bind(this);
-    this.readySignal = this.readySignal.bind(this);
-    this.checkPossibleStart = this.checkPossibleStart.bind(this);
     this.setFinish = this.setFinish.bind(this);
     this.setIsRankView = this.setIsRankView.bind(this);
     this.getMyRank = this.getMyRank.bind(this);
@@ -153,6 +154,9 @@ class RoomClass extends Component {
     this.loop = this.loop.bind(this);
     this.countSignal = this.countSignal.bind(this);
     this.squatPredict = this.squatPredict.bind(this);
+    this.pushupPredict = this.pushupPredict.bind(this);
+    this.burpeePredict = this.burpeePredict.bind(this);
+    this.lungePredict = this.lungePredict.bind(this);
   }
 
   // state 업데이트 => 모델 생성 & 세션 입장 (백에서 받은 token으로 입장)
@@ -174,11 +178,11 @@ class RoomClass extends Component {
       this.joinSession(sessionInfo.token);
     }, 1000);
     this.init();
+    gameMusic.currentTime = 0;
   }
 
   componentWillUnmount() {
     this.leaveSession();
-    console.log('leave Session');
     window.removeEventListener('beforeunload', this.onbeforeunload);
   }
 
@@ -230,16 +234,14 @@ class RoomClass extends Component {
         mySession.on('streamDestroyed', event => {
           // Remove the stream from 'subscribers' array
           this.deleteSubscriber(event.stream.streamManager);
+          if (this.state.managerNickname === JSON.parse(event.stream.streamManager.stream.connection.data).nickname) {
+            this.props.navigate('/');
+          }
         });
 
         // On every asynchronous exception...
         mySession.on('exception', exception => {
           console.warn(exception);
-        });
-
-        // 입장 신호 수신
-        mySession.on('signal:join', event => {
-          this.state.readyState.set(event.data, false);
         });
 
         // 시작 신호 수신
@@ -248,13 +250,6 @@ class RoomClass extends Component {
             gameId: event.data,
           });
           this.start();
-        });
-
-        // 준비 신호 수신
-        mySession.on('signal:ready', event => {
-          const data = event.data.split(',');
-          this.readyState.set(data[0], data[1]);
-          this.checkPossibleStart();
         });
 
         // 모든 유저 1회 추가마다 수신
@@ -285,7 +280,6 @@ class RoomClass extends Component {
           .connect(token)
           // , { clientData: this.state.myUserName }
           .then(async () => {
-            this.join();
             const devices = await this.OV.getDevices();
             const videoDevices = devices.filter(device => device.kind === 'videoinput');
 
@@ -326,40 +320,6 @@ class RoomClass extends Component {
     );
   }
 
-  join() {
-    const mySession = this.state.session;
-    if (this.state.myUserName !== this.state.managerNickname) {
-      mySession.signal({
-        data: this.state.myUserName,
-        type: 'join',
-      });
-    }
-  }
-
-  readySignal() {
-    const mySession = this.state.session;
-
-    this.setState({
-      isReady: !this.state.isReady,
-    });
-
-    mySession.signal({
-      data: `${this.state.myUserName},${this.state.isReady}`,
-      type: 'ready',
-    });
-  }
-
-  // 레디가 다 되었는지 확인
-  checkPossibleStart() {
-    if (this.myUserName === this.managerNickname) {
-      if (this.readyState.every((value, key) => value)) {
-        this.setState({
-          isPossibleStart: true,
-        });
-      }
-    }
-  }
-
   startSignal() {
     const mySession = this.state.session;
 
@@ -377,7 +337,6 @@ class RoomClass extends Component {
       title,
       createDate,
     };
-    console.log(payload);
     axios
       .post(api.start(), payload, setConfig())
       .then(res => {
@@ -392,9 +351,16 @@ class RoomClass extends Component {
   }
 
   start() {
-    console.log('게임 시작!');
     new Audio(startSound).play();
-    this.setState({ isStart: true });
+    this.setState({
+      isFinish: false,
+      isStart: true,
+      isGaming: false,
+      count: 0,
+      countList: new Map(),
+      rankList: [],
+      countdown: 3,
+    });
     const countdown = setInterval(() => {
       if (this.state.countdown <= 0) {
         clearInterval(countdown);
@@ -403,19 +369,18 @@ class RoomClass extends Component {
       }
     }, 1000);
     setTimeout(() => {
+      gameMusic.play();
       this.setState({
         isStart: false,
         isGaming: true,
-        rank: [],
       });
+      this.countSignal();
       window.requestAnimationFrame(this.loop);
     }, 3000);
   }
 
   // 모션 비디오
   async init() {
-    console.log('학습 비디오 생성!');
-
     const size = 200;
     const flip = true; // whether to flip the webcam
     // eslint-disable-next-line no-undef
@@ -429,14 +394,13 @@ class RoomClass extends Component {
 
   // 모델 생성
   async setModel() {
-    console.log('모델 생성!');
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
-        Url = 'https://teachablemachine.withgoogle.com/models/TBUb4jY4b/';
+        Url = 'https://teachablemachine.withgoogle.com/models/EGjcTW3dg/';
         break;
       case 2: // 푸쉬업
-        Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
+        Url = 'https://teachablemachine.withgoogle.com/models/rlT_xgNAW/';
         break;
       case 3: // 버피
         Url = 'https://teachablemachine.withgoogle.com/models/759k-ZvHL/';
@@ -505,9 +469,11 @@ class RoomClass extends Component {
 
   // 게임 종료 정보 전달
   setFinish() {
-    console.log('게임 끝!');
+    gameMusic.pause();
+    new Audio(endSound).play();
     this.setState({
       isFinish: true,
+      isGaming: false,
     });
 
     const data = new Date();
@@ -528,15 +494,10 @@ class RoomClass extends Component {
       score: this.state.count,
       rank,
     };
-    console.log(payload);
     axios
       .post(api.end(), payload, setConfig())
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+      .then(res => {})
+      .catch(err => {});
   }
 
   setIsRankView() {
@@ -560,7 +521,7 @@ class RoomClass extends Component {
         });
         setTimeout(() => {
           this.countSignal();
-        }, 10);
+        }, 0);
       }
     } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -632,15 +593,15 @@ class RoomClass extends Component {
 
   leaveSession() {
     // --- 7) Leave the session by calling 'disconnect' method over the Session object ---
+    gameMusic.pause();
 
     const mySession = this.state.session;
-
     if (mySession) {
       mySession.disconnect();
     }
 
     axios
-      .patch(
+      .put(
         api.quit(),
         {
           nickname: this.state.myUserName,
@@ -662,7 +623,7 @@ class RoomClass extends Component {
         this.props.navigate('/');
       })
       .catch(err => {
-        console.log(err);
+        this.props.navigate('/');
       });
   }
 
@@ -713,8 +674,6 @@ class RoomClass extends Component {
       myUserName,
       isGaming,
       managerNickname,
-      isPossibleStart,
-      isReady,
       count,
       rankList,
     } = this.state;
@@ -726,7 +685,7 @@ class RoomClass extends Component {
       return <div>올바르게 방입장했는지 확인좀요 ㅎㅎ</div>;
     }
     return (
-      <Container>
+      <Container myRank={this.getMyRank()}>
         {this.state.session === undefined ? (
           <Box
             sx={{
@@ -748,7 +707,7 @@ class RoomClass extends Component {
             </Modal>
 
             {/* 화면 위 쪽 UI */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '30px' }}>
               <Grid container spacing={2} sx={HeaderBoxStyle}>
                 <Grid
                   item
@@ -757,19 +716,15 @@ class RoomClass extends Component {
                   {/* 타이머 & 시작 준비 종료 버튼 */}
                   <TimeBox>
                     {isFinish ? (
-                      <SubmitBtn disabled={true} deactive={true}>
-                        게임 종료!
-                      </SubmitBtn>
+                      <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
                     ) : (
                       <>
                         {isGaming ? (
                           <Timer setFinish={this.setFinish} isFinish={this.state.isFinish}></Timer>
                         ) : myUserName === managerNickname ? (
-                          <SubmitBtn onClick={this.startSignal} disabled={!isPossibleStart} deactive={!isPossibleStart}>
-                            시작!
-                          </SubmitBtn>
+                          <SubmitBtn onClick={this.startSignal}>시작!</SubmitBtn>
                         ) : (
-                          <SubmitBtn onClick={this.readySignal}>{isReady ? '취소' : '준비'}</SubmitBtn>
+                          <SubmitBtn deactive>{'대기 중'}</SubmitBtn>
                         )}
                       </>
                     )}
@@ -947,8 +902,8 @@ const MicVideoBtn = styled.ul`
 
 const countDownStyle = {
   position: 'absolute',
-  top: '50%',
-  left: '50%',
+  top: '47%',
+  left: '47%',
   transform: 'translate(-30%, -30%)',
 };
 
@@ -995,8 +950,15 @@ const TimerBox = styled.div`
   flex-direction: column;
 `;
 
+const TimeValue = styled.p`
+  font-size: 30px;
+  padding-left: 5px;
+  text-align: center;
+  color: ${props => (props.value <= 10 ? 'red' : 'black')};
+`;
+
 const Timer = ({ setFinish, isFinish }) => {
-  const [value, setValue] = useState(5);
+  const [value, setValue] = useState(30);
   const getValue = function () {
     return parseInt(value, 10);
   };
@@ -1004,7 +966,7 @@ const Timer = ({ setFinish, isFinish }) => {
     if (!isFinish) {
       const myInterval = setInterval(() => {
         if (value > 0) {
-          setValue(value - 0.1);
+          setValue(value - 0.12);
         }
         if (value <= 0) {
           setFinish();
@@ -1019,7 +981,16 @@ const Timer = ({ setFinish, isFinish }) => {
 
   return (
     <TimerBox>
-      <div style={{ alignSelf: 'center' }}>남은 시간 : {getValue()}</div>
+      <div
+        style={{
+          alignSelf: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: '20px',
+        }}>
+        남은 시간<TimeValue value={value}> {getValue()}</TimeValue>
+      </div>
       <div>
         <CustomizedProgressBars value={value}></CustomizedProgressBars>
       </div>
@@ -1039,18 +1010,6 @@ const HurryLinearProgress = styledC(LinearProgress)(({ theme }) => ({
   },
 }));
 
-const WarnLinearProgress = styledC(LinearProgress)(({ theme }) => ({
-  height: 20,
-  borderRadius: 5,
-  [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
-  },
-  [`& .${linearProgressClasses.bar}`]: {
-    borderRadius: 5,
-    backgroundColor: theme.palette.mode === 'light' ? '#f5e23d' : '#f5e23d',
-  },
-}));
-
 const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
   height: 20,
   borderRadius: 5,
@@ -1062,12 +1021,10 @@ const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
 function CustomizedProgressBars(props) {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {props.value <= 5 ? (
-        <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
-      ) : props.value < 20 ? (
-        <WarnLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      {props.value <= 10 ? (
+        <HurryLinearProgress variant="determinate" value={(props.value * 100) / 30} />
       ) : (
-        <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+        <BorderLinearProgress variant="determinate" value={(props.value * 100) / 30} />
       )}
     </Box>
   );
@@ -1120,7 +1077,7 @@ function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
 
   return (
     <MyBox>
-      <WorkoutTitle>{workoutName()} - 1분</WorkoutTitle>
+      <WorkoutTitle>{workoutName()} - 30초</WorkoutTitle>
       <MyRank>
         <div>나의 운동 횟수</div>
         <div>{count}개</div>
@@ -1153,7 +1110,7 @@ function LiveRank({ rankList }) {
             ) : i === 1 ? (
               <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'silver' }} />
             ) : i === 2 ? (
-              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'bronze' }} />
+              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: '#CD7F32' }} />
             ) : (
               <p>{i + 1}</p>
             )}
@@ -1167,7 +1124,7 @@ function LiveRank({ rankList }) {
   return (
     <LiveBox>
       <p>실시간 랭킹 !!</p>
-      <List>{rankListLi}</List>
+      <List style={{ display: 'flex' }}>{rankListLi}</List>
     </LiveBox>
   );
 }
@@ -1179,6 +1136,11 @@ const ArrowsBox = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+const arrowStyle = {
+  fontSize: '80px',
+};
+
 function Animation({ check, isGaming, workoutId }) {
   const workoutAnimation = function () {
     switch (workoutId) {
@@ -1187,9 +1149,9 @@ function Animation({ check, isGaming, workoutId }) {
       case 2:
         return <video loop autoPlay src={pushup} type="video/mp4" />;
       case 3:
-        return <video loop autoPlay src={pushup} type="video/mp4" />;
+        return <video loop autoPlay src={burpee} type="video/mp4" />;
       case 4:
-        return <video loop autoPlay src={pushup} type="video/mp4" />;
+        return <video loop autoPlay src={lunge} type="video/mp4" />;
       default:
         return null;
     }
@@ -1198,23 +1160,23 @@ function Animation({ check, isGaming, workoutId }) {
     <Grid container>
       {isGaming ? (
         <>
-          <Grid item xs={8}>
-            <video loop autoPlay muted>
+          <Grid item style={{ display: 'flex', alignItems: 'center' }} xs={8}>
+            <video loop autoPlay muted style={{}}>
               <source src={squat} type="video/mp4" />
             </video>
           </Grid>
-          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'start', alignItems: 'start' }}>
             {check ? (
               <ArrowsBox className="arrows">
-                <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
-                <KeyboardArrowUpRoundedIcon fontSize="large" className="a2" />
-                <KeyboardArrowUpRoundedIcon fontSize="large" className="a1" />
+                <KeyboardArrowUpRoundedIcon sx={arrowStyle} className="a3" />
+                <KeyboardArrowUpRoundedIcon sx={arrowStyle} className="a2" />
+                <KeyboardArrowUpRoundedIcon sx={arrowStyle} className="a1" />
               </ArrowsBox>
             ) : (
               <ArrowsBox className="arrows">
-                <KeyboardArrowDownRoundedIcon fontSize="large" className="a1" />
-                <KeyboardArrowDownRoundedIcon fontSize="large" className="a2" />
-                <KeyboardArrowDownRoundedIcon fontSize="large" className="a3" />
+                <KeyboardArrowDownRoundedIcon sx={arrowStyle} className="a1" />
+                <KeyboardArrowDownRoundedIcon sx={arrowStyle} className="a2" />
+                <KeyboardArrowDownRoundedIcon sx={arrowStyle} className="a3" />
               </ArrowsBox>
             )}
           </Grid>
@@ -1257,7 +1219,7 @@ function RankResult({ rankList, isRankView, setIsRankView }) {
           ) : i === 1 ? (
             <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'silver' }} />
           ) : i === 2 ? (
-            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'bronze' }} />
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: '#CD7F32' }} />
           ) : (
             <p>{i + 1}</p>
           )}
@@ -1270,7 +1232,7 @@ function RankResult({ rankList, isRankView, setIsRankView }) {
     <LiveBox>
       <h2>최종 순위</h2>
       {!isRankView ? <button onClick={setIsRankView}>전체 순위 보기</button> : null}
-      <List>{rankListLi}</List>
+      <List style={{ display: 'flex' }}>{rankListLi}</List>
     </LiveBox>
   );
 }

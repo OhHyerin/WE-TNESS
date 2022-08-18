@@ -16,12 +16,7 @@ export default function RoomFilter2() {
   return (
     <>
       <FormGroup>
-        <FormControlLabel
-          control={<Switch defaultChecked />}
-          onChange={handleChange}
-          label="비밀방 보기"
-          labelPlacement="start"
-        />
+        <FormControlLabel control={<Switch />} onChange={handleChange} label="비밀방 보기" labelPlacement="start" />
       </FormGroup>
     </>
   );

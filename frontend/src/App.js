@@ -13,6 +13,13 @@ import SearchUser from '../src/components/search/SearchUser';
 import SearchRoomList from '../src/components/search/SearchRoomList';
 import RoomFilter1 from '../src/components/home/RoomFilter1';
 import RoomFilter2 from '../src/components/home/RoomFilter2';
+import './styles/App.css';
+import styled from 'styled-components';
+
+const RoomTitle = styled.p`
+  font-size: 30px;
+  padding: 30px;
+`;
 
 function App() {
   const dispatch = useDispatch();
@@ -26,7 +33,7 @@ function App() {
       dispatch(checkLogin());
     }
     dispatch(toggleIsLoding());
-  }, [dispatch]);
+  }, [token, dispatch]);
 
   const isSearched = useSelector(state => state.room.isSearched);
   const location = useLocation();
@@ -34,7 +41,7 @@ function App() {
   useEffect(() => {
     dispatch(setIsSearch(false));
     dispatch(setKeyword(''));
-  }, [location]);
+  }, [dispatch, location]);
 
   if (isLoding) {
     return (
@@ -47,6 +54,7 @@ function App() {
             {isSearched ? (
               <div>
                 <SearchUser />
+                <RoomTitle>검색된 방 목록</RoomTitle>
                 <RoomFilter1 />
                 <RoomFilter2 />
                 <SearchRoomList />

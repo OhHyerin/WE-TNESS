@@ -1,43 +1,54 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
-import MenuItem from '@mui/material/MenuItem';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import { useSelector, useDispatch } from 'react-redux';
-import { Link } from 'react-router-dom';
-import { logout } from '../../features/user/UserSlice';
+import { useDispatch } from 'react-redux';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import awards from './../../assets/data/awardItems';
+import styled from 'styled-components';
+import { Divider, MenuItem } from '@mui/material';
+import { checkNotice, fetchNotice } from '../../features/notice/NoticeSlice';
 
-const MySwal = withReactContent(Swal);
+const Tile = styled.div`
+  display: flex;
+  flex-direction: column;
 
-export default function Notifications() {
-  const userNickname = useSelector(state => state.user.currentUser.nickname);
+  .title {
+    font-size: 20px;
+  }
+
+  .text {
+    font-size: 12px;
+  }
+`;
+
+export default function Notifications(props) {
   const dispatch = useDispatch();
+
   const [anchorEl, setAnchorEl] = React.useState(null);
+
   const open = Boolean(anchorEl);
   const handleClick = event => {
-    setAnchorEl(event.currentTarget);
+    if (props.notices.length > 0) setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleNoticeCheck = e => {
+    const payload = { notificationId: e.id };
+    dispatch(checkNotice(payload)).then(() => dispatch(fetchNotice()));
+  };
   return (
     <React.Fragment>
-      <Tooltip title={`Signed in as ${userNickname}`}>
-        <IconButton
-          onClick={handleClick}
-          size="small"
-          sx={{ ml: 2 }}
-          aria-controls={open ? 'account-menu' : undefined}
-          aria-haspopup="true"
-          aria-expanded={open ? 'true' : undefined}>
-          <NotificationsIcon />
-        </IconButton>
-      </Tooltip>
+      <IconButton
+        onClick={handleClick}
+        size="small"
+        sx={{ ml: 2 }}
+        aria-controls={open ? 'account-menu' : undefined}
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}>
+        <NotificationsIcon />
+      </IconButton>
       <Menu
         anchorEl={anchorEl}
         id="account-menu"
@@ -72,29 +83,31 @@ export default function Notifications() {
         }}
         transformOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}>
-        <Link to={`/history/${userNickname}`}>
-          <MenuItem>내 운동 현황</MenuItem>
-        </Link>
-        <Link to="/ranking">
-          <MenuItem>랭킹 페이지</MenuItem>
-        </Link>
-        <Link to={`/mypage`}>
-          <MenuItem>마이 페이지</MenuItem>
-        </Link>
-        <Link to={`/admin/user`}>
-          <MenuItem>관리자 페이지</MenuItem>
-        </Link>
-        <MenuItem
-          onClick={() => {
-            dispatch(logout()).then(() => {
-              MySwal.fire({
-                title: <p>로그아웃</p>,
-                icon: 'success',
-              });
-            });
-          }}>
-          로그아웃
-        </MenuItem>
+        {props.notices.map((notice, idx) => (
+          <div key={idx}>
+            <MenuItem onClick={() => handleNoticeCheck(notice)}>
+              {notice.type === 'invite' ? (
+                <Tile>
+                  <div className="title">초대 알림</div>
+                  <div className="text">
+                    - {notice.sender}님이 {notice.roomCode}번 방으로 초대
+                  </div>
+                </Tile>
+              ) : notice.type === 'follow' ? (
+                <Tile>
+                  <div className="title">팔로우 알림 </div>
+                  <div className="text">- {notice.sender}님이 팔로우 요청</div>
+                </Tile>
+              ) : (
+                <Tile>
+                  <div className="title">도전과제 알림 </div>
+                  <div className="text">- {awards[notice.badge - 1].description}</div>
+                </Tile>
+              )}
+            </MenuItem>
+            {props.notices.length - 1 === idx ? null : <Divider />}
+          </div>
+        ))}
       </Menu>
     </React.Fragment>
   );

@@ -69,7 +69,17 @@ public class UserController {
         return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
     }
 
-    @PatchMapping
+    @GetMapping("/login/duplicate-nickname/{nickname}")
+    @ApiOperation(value = "닉네임 중복확인")
+    public ResponseEntity<DuplicateCheckResDto> duplicatedLoginNickname(@AuthenticationPrincipal UserDetailsImpl userDetails,
+                                                                        @PathVariable String nickname) {
+        if (userDetails.getNickname().equals(nickname)) {
+            return ResponseEntity.ok().body(new DuplicateCheckResDto(false));
+        }
+        return ResponseEntity.ok().body(new DuplicateCheckResDto(userService.checkNicknameDuplicate(nickname)));
+    }
+
+    @PutMapping
     @ApiOperation(value = "회원정보 수정")
     public ResponseEntity<?> updateUser(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                         @RequestBody UpdateUserDto updateUserDto) {
@@ -82,7 +92,7 @@ public class UserController {
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
-    @PatchMapping("/pw")
+    @PutMapping("/pw")
     @ApiOperation(value = "비밀번호 수정")
     public ResponseEntity<BaseResponseEntity> updateUserPassword(@AuthenticationPrincipal UserDetailsImpl userDetails,
                                                                  @Valid @RequestBody PasswordDto passwordDto) {
@@ -134,15 +144,13 @@ public class UserController {
 
     @PostMapping("/login/kakao")
     @ApiOperation(value = "소셜 로그인")
-    public ResponseEntity<?> loginSocial(@RequestParam(value = "code") String code) throws IOException {
-        System.out.println("aaaaaaaaaaaaaaa");
+    public ResponseEntity<?> loginSocial(@RequestParam String code) throws IOException {
+
+        System.out.println(code);
         String token = userService.getSocialAccessToken(code);
-        System.out.println("bbbbbbbbbbbbbbb");
         // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
         Map<String, Object> data = userService.getUserInfo(token);
-        System.out.println("ccccccccccccccc");
         Optional<User> userOpt = userService.socialLogin(data);
-        System.out.println("ddddddddddddddd");
         // 유저가 db에 있다면
         if (userOpt.isPresent()) {
             User user = userOpt.get();

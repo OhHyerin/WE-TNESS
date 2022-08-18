@@ -46,7 +46,7 @@ public class RoomService {
     private Map<String, Map<String, Connection>> mapSessionNamesConnections = new ConcurrentHashMap<>();
 
 
-    public void generateRoom(UserDetailsImpl userDetails, MakeRoomReq req) throws OpenViduJavaClientException, OpenViduHttpException {
+    public void generateRoom(UserDetailsImpl userDetails, MakeRoomReq req) throws Exception {
 
         // DB에 저장할 방 만듦
         Room room = Room.builder()
@@ -58,6 +58,11 @@ public class RoomService {
                 .managerId(userDetails.getId())
                 .build();
 
+        for(String title : this.mapSessions.keySet()){
+
+            if(req.getTitle().equals(title)) throw new Exception("이미 같은 제목의 방이 있습니다");
+        }
+
         // DB에 새로 생성된 방 저장
         room = roomRepository.save(room);
          
@@ -66,11 +71,12 @@ public class RoomService {
         // 방을 만들고
         Session session = this.openVidu.createSession();
 
-        mapSessions.put(roomTitle,new MapSessionRoom(room,session));
+        this.mapSessions.put(roomTitle,new MapSessionRoom(room,session));
+        this.mapSessionNamesConnections.put(roomTitle, new ConcurrentHashMap<>());
 
     }
 
-    public EnterRoomRes makeToken(UserDetailsImpl userDetails, EnterRoomReq enterRoomReq) throws OpenViduJavaClientException, OpenViduHttpException {
+    public EnterRoomRes makeToken(UserDetailsImpl userDetails, EnterRoomReq enterRoomReq) throws Exception {
 
         // 다른 참가자가 나를 닉네임으로 판변하기 위한 데이터
         String userData = "{\"nickname\": \"" + userDetails.getNickname() + "\"}";
@@ -82,7 +88,6 @@ public class RoomService {
                                 .role(OpenViduRole.PUBLISHER).build();
 
         MapSessionRoom mapSessionRoom = this.mapSessions.get(enterRoomReq.getTitle());
-
         Room room = mapSessionRoom.getRoom();
         // 방이 잠겨있는데 비밀번호가 다르다면
         if(room.isLocked()&&!(room.getPassword().equals(enterRoomReq.getPassword()))) {
@@ -91,9 +96,6 @@ public class RoomService {
         Connection connection = mapSessionRoom.getSession()
                                 .createConnection(connectionProperties);
 
-        if(!this.mapSessionNamesConnections.containsKey(enterRoomReq.getTitle())){
-            this.mapSessionNamesConnections.put(enterRoomReq.getTitle(), new ConcurrentHashMap<>());
-        }
         this.mapSessionNamesConnections.get(enterRoomReq.getTitle()).put(userDetails.getNickname(), connection);
 
         roomUserRepository.save(RoomUser.builder()
@@ -125,15 +127,8 @@ public class RoomService {
             this.mapSessions.remove(sessionName);
             this.mapSessionNamesConnections.remove(sessionName);
         }
-
         else{
-            //방장이 나갔다면 세션 종료
-            if(user.getId().equals(room.getManagerId())){
-                session.close();
-                // 방장이 아니라면 세션으로의 커넥션 정보만 제거
-            }else{
-                sessionInfo.remove(req.getNickname());
-            }
+            sessionInfo.remove(req.getNickname());
         }
         // room_user 테이블에서 방을 나간 시간 설정
         RoomUser roomUser = roomUserRepository.findByRoomIdAndUserId(room.getId(), user.getId());
@@ -145,7 +140,7 @@ public class RoomService {
 
         List<RoomListRes> list = new ArrayList<>();
 
-        for(String key : mapSessions.keySet()){
+        for(String key : this.mapSessions.keySet()){
 
             list.add(getRoomListResutil(key));
         }
@@ -158,7 +153,7 @@ public class RoomService {
         List<RoomListRes> list = new ArrayList<>();
 
         // 방 제목에서 찾기
-        for(String key : mapSessions.keySet()){
+        for(String key : this.mapSessions.keySet()){
 
             if(key.contains(keyword)){
 
@@ -167,9 +162,9 @@ public class RoomService {
         }
 
         // 방안에 있는 유저 중 찾기
-        for(String key : mapSessionNamesConnections.keySet()){
+        for(String key : this.mapSessionNamesConnections.keySet()){
 
-            Map<String,Connection> tmp = mapSessionNamesConnections.get(key);
+            Map<String,Connection> tmp = this.mapSessionNamesConnections.get(key);
             for(String nickname : tmp.keySet()){
 
                 if(nickname.contains(keyword)){
@@ -183,9 +178,9 @@ public class RoomService {
 
     private RoomListRes getRoomListResutil(String title){
 
-        MapSessionRoom tmp = mapSessions.get(title);
+        MapSessionRoom tmp = this.mapSessions.get(title);
         Room room = tmp.getRoom();
-        int headcount = mapSessionNamesConnections.get(title).size();
+        int headcount = this.mapSessionNamesConnections.get(title).size();
         boolean isGaming = !gameRepository.findByRoomIdAndIsPlaying(room.getId(),true).isEmpty();
 
         return RoomListRes.builder()
@@ -196,5 +191,10 @@ public class RoomService {
                 .managerNickname(userRepository.getOne(room.getManagerId()).getNickname())
                 .isGaming(isGaming)
                 .build();
+    }
+
+    public Room getRoomByTitle(String title){
+
+        return this.mapSessions.get(title).getRoom();
     }
 }

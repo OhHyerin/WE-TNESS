@@ -8,12 +8,13 @@ const initialState = {
   rooms: [],
   searchRoomResult: [],
   searchUserResult: [],
-  workout: '전체',
-  showPrivate: true,
+  workout: 0,
+  showPrivate: false,
   isRoomsLoaded: false,
   isWorkoutsLoaded: false,
   isSearched: false,
   isLoading: false,
+  isCreate: false,
 
   // 방 생성 관련
   roomInfo: {
@@ -43,7 +44,6 @@ const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWith
 const getWorksouts = createAsyncThunk('getWorkouts', async (state, { rejectWithValue }) => {
   try {
     const response = await axios.get(`/workouts`);
-    console.log(response);
     return response;
   } catch (error) {
     return rejectWithValue(error);
@@ -51,7 +51,6 @@ const getWorksouts = createAsyncThunk('getWorkouts', async (state, { rejectWithV
 });
 
 const searchRooms = createAsyncThunk('searchRooms', async (arg, { rejectWithValue }) => {
-  console.log(arg);
   try {
     const res = await axios.get(api.searchRooms(arg.keyword), setConfig());
     return res.data;
@@ -120,6 +119,9 @@ export const RoomSlice = createSlice({
     setNowRoom: (state, action) => {
       state.nowRoom = action.payload;
     },
+    createModal: (state, action) => {
+      state.isCreate = action.payload;
+    },
   },
   extraReducers: {
     [fetchRoomList.pending]: state => {
@@ -169,6 +171,7 @@ export const {
   fetchWorkoutId,
   fetchTitle,
   fetchPassword,
+  createModal,
 } = RoomSlice.actions;
 
 export default RoomSlice.reducer;
