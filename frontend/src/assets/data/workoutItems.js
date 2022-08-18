@@ -1,6 +1,6 @@
 import squat from '../images/workout/squatImg.png';
 import pushup from '../images/workout/pushupImg.png';
-
+import burpee from '../images/workout/burpeeImg.png';
 import lunge from '../images/workout/lungeImg.png';
 
 const workoutItems = [
@@ -21,6 +21,7 @@ const workoutItems = [
   {
     id: 3,
     name: '버피',
+    img: burpee,
   },
   {
     id: 4,
