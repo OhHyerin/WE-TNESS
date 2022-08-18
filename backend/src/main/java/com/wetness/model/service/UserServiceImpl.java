@@ -20,6 +20,7 @@ import net.bytebuddy.utility.RandomString;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -55,7 +56,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-
+    @Value("${login.kakao.clientId}")
+    private String kakaoClientId;
+    @Value("${login.kakao.redirectUri}")
+    private String kakaoRedirectUri;
 
     @Override
     @Transactional
@@ -254,9 +258,9 @@ public class UserServiceImpl implements UserService {
             StringBuilder sb = new StringBuilder();
             sb.append("grant_type=authorization_code");
             // Client_id = REST_API_KEY 수정 필요
-            sb.append("&client_id=376a57e7cef85c6560a77351c93a9b1f");
+            sb.append("&client_id=" + kakaoClientId);
             // 초기 프론트에서 설정한 Redirect_uri
-            sb.append("&redirect_uri=https://i7a205.p.ssafy.io/login/kakao");
+            sb.append("&redirect_uri="+kakaoRedirectUri);
             sb.append("&code=" + code);
 
             bw.write(sb.toString());
