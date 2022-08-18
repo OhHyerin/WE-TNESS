@@ -31,11 +31,10 @@ export default function SearchRoomList() {
       keyword,
     };
     dispatch(searchRooms(payload));
-  }, [keyword]);
+  }, [dispatch, keyword]);
 
   return (
     <div>
-      <h2>검색된 방 목록</h2>
       {searchRoomResult.length > 0 ? (
         <List>
           {searchRoomResult.map((room, i) =>

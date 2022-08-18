@@ -40,6 +40,19 @@ const ArrowBtn = styled.div`
   justify-content: end;
 `;
 
+const UserTitle = styled.p`
+  font-size: 30px;
+  padding: 30px;
+`;
+
+const NoUserBox = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  font-size: large;
+`;
+
 export default function SearchRoomList() {
   const searchUserResult = useSelector(state => state.room.searchUserResult);
   const keyword = useSelector(state => state.room.keyword);
@@ -48,12 +61,20 @@ export default function SearchRoomList() {
 
   useEffect(() => {
     dispatch(searchUser({ keyword }));
-    console.log(searchUserResult);
-  }, [keyword]);
+  }, [keyword, dispatch]);
+
+  if (!searchUserResult.length) {
+    return (
+      <div>
+        <UserTitle>검색된 유저 목록</UserTitle>
+        <NoUserBox>검색된 유저가 없습니다.</NoUserBox>
+      </div>
+    );
+  }
 
   return (
     <div>
-      <h2>검색된 유저 목록</h2>
+      <UserTitle>검색된 유저 목록</UserTitle>
       <List>
         {searchUserResult.map((user, idx) => (
           <NameTag key={idx} onClick={() => navigate(`/history/${user.nickname}`)}>

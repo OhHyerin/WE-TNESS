@@ -58,15 +58,66 @@ const Item = styledC(Paper)(({ theme }) => ({
 }));
 
 function RankItem({ user, rank }) {
-  return (
-    <Item sx={{ display: 'flex', height: '80px', alignItems: 'center' }} elevation={4}>
-      <Grid sx={{ textAlign: 'start', paddingLeft: '40px' }} xs={4}>
-        {rank}
-      </Grid>
-      <Grid sx={{ textAlign: 'start' }} xs={4}>
-        {user.userNickname}
-      </Grid>
-      <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
-    </Item>
-  );
+  switch (rank) {
+    case 1:
+      return (
+        <Item
+          sx={{ border: 'gold 3px solid', display: 'flex', height: '85px', alignItems: 'center', fontWeight: 'bold' }}
+          elevation={4}>
+          <Grid sx={{ textAlign: 'start', paddingLeft: '40px', fontSize: '22px' }} xs={4}>
+            {rank}
+          </Grid>
+          <Grid sx={{ textAlign: 'start' }} xs={4}>
+            {user.userNickname}
+          </Grid>
+          <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
+        </Item>
+      );
+    case 2:
+      return (
+        <Item
+          sx={{ border: 'silver 3px solid', display: 'flex', height: '83px', alignItems: 'center', fontWeight: 'bold' }}
+          elevation={4}>
+          <Grid sx={{ textAlign: 'start', paddingLeft: '40px', fontSize: '20px' }} xs={4}>
+            {rank}
+          </Grid>
+          <Grid sx={{ textAlign: 'start' }} xs={4}>
+            {user.userNickname}
+          </Grid>
+          <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
+        </Item>
+      );
+    case 3:
+      return (
+        <Item
+          sx={{
+            border: '#CD7F32 2px solid',
+            display: 'flex',
+            height: '80px',
+            alignItems: 'center',
+            fontWeight: 'bold',
+          }}
+          elevation={4}>
+          <Grid sx={{ textAlign: 'start', paddingLeft: '40px', fontSize: '18px' }} xs={4}>
+            {rank}
+          </Grid>
+          <Grid sx={{ textAlign: 'start' }} xs={4}>
+            {user.userNickname}
+          </Grid>
+          <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
+        </Item>
+      );
+    default:
+      return (
+        <Item sx={{ display: 'flex', height: '80px', alignItems: 'center' }} elevation={4}>
+          <Grid sx={{ textAlign: 'start', paddingLeft: '40px' }} xs={4}>
+            {rank}
+          </Grid>
+          <Grid sx={{ textAlign: 'start' }} xs={4}>
+            {user.userNickname}
+          </Grid>
+          <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
+        </Item>
+      );
+  }
 }

@@ -96,6 +96,13 @@ const renderActiveShape = props => {
   );
 };
 
+const MatchTitle = styled.p`
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 60px 0px 20px;
+`;
+
 export default function MatchList() {
   // 차트 관련
   const [charState, setCharState] = useState({
@@ -119,7 +126,7 @@ export default function MatchList() {
 
   return (
     <div>
-      <h2>내 전적</h2>
+      <MatchTitle>내 전적</MatchTitle>
       <List>
         <Profile>
           <MatchTile>
