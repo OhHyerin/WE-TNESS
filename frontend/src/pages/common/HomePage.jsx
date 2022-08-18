@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { Box, Modal, TextField, Fab, Grid, styled as styledC, Paper, Tooltip } from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ClearIcon from '@mui/icons-material/Clear';
 import Banner from '../../components/home/Banner';
@@ -24,6 +25,12 @@ import {
 } from '../../features/room/RoomSlice';
 import { removeSessionInfo } from '../../features/Token';
 import workoutItems from '../../assets/data/workoutItems';
+import IconTextField from '../../components/common/IconTextField';
+import CheckBtn from '../../components/common/CheckBtn';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const HomeBox = styled.div`
   padding-top: 40px;
@@ -38,7 +45,8 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 800,
+  width: 400,
+  height: 400,
   bgcolor: 'background.paper',
   border: '1px solid var(--primary-color)',
   borderRadius: '10px',
@@ -66,7 +74,7 @@ const SubmitForm = styled.form`
   justify-content: center;
   align-items: center;
   padding: 10px;
-  gap: 10px;
+  gap: 40px;
 `;
 
 const fabStyle = {
@@ -191,10 +199,13 @@ export default function Home() {
 
   function onSubmitHandler(e) {
     e.preventDefault();
-    const payload = nickname;
-    console.log(payload);
-    dispatch(addInfo(payload))
-      .then(() => {})
+    dispatch(addInfo(nickname))
+      .then(() => {
+        MySwal.fire({
+          title: <p>환영합니다.</p>,
+          icon: 'success',
+        });
+      })
       .catch(err => {
         console.log(err);
       });
@@ -222,10 +233,20 @@ export default function Home() {
           <ClearIcon sx={closeStyle} onClick={handleClose}></ClearIcon>
           <FormBox>
             <SubmitForm onSubmit={onSubmitHandler}>
-              <h1>추가 정보 입력</h1>
+              <p style={{ fontSize: '25px' }}>추가 정보 입력</p>
               <InputBox>
-                <TextField
+                <IconTextField
                   error={isCheckNN && !isPossibleNickname}
+                  iconStart={<AccountCircle />}
+                  iconEnd={
+                    nickname ? (
+                      <CheckBtn onClick={onCheckNicknameHandler}>확인</CheckBtn>
+                    ) : (
+                      <CheckBtn disabled deactive={!nickname}>
+                        확인
+                      </CheckBtn>
+                    )
+                  }
                   label="*닉네임"
                   value={nickname}
                   onChange={onNicknameHandler}
@@ -234,13 +255,6 @@ export default function Home() {
                   }
                 />
               </InputBox>
-              {nickname ? (
-                <SubmitBtn onClick={onCheckNicknameHandler}>닉네임 확인</SubmitBtn>
-              ) : (
-                <SubmitBtn disabled deactive={!nickname}>
-                  닉네임확인
-                </SubmitBtn>
-              )}
               <SubmitBtn disabled={!isCheckNN || !isPossibleNickname} deactive={!isCheckNN || !isPossibleNickname}>
                 제출
               </SubmitBtn>

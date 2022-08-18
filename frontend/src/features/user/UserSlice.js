@@ -15,7 +15,6 @@ import setConfig from '../authHeader';
 
 const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => {
   try {
-    console.log(payload);
     const res = await axios.post(api.login(), payload, {});
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
@@ -54,14 +53,12 @@ const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (nickname,
 });
 
 const kakaoLogin = createAsyncThunk('kakaoLogin', async (code, { rejectWithValue }) => {
-  console.log(code);
-  const payload = {
-    code,
-  };
   try {
-    const res = await axios.post(api.kakao(), payload);
-    console.log(res);
-    return res;
+    const res = await axios.post(api.kakao(), {}, { params: { code } });
+    setAccessToken(res.data.accessToken);
+    setRefreshToken(res.data.refreshToken);
+    setCurrentUser(decodeAccessToken(res.data.accessToken));
+    return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
   }
@@ -96,8 +93,9 @@ const initialState = {
     role: '',
   },
   kakaoInfo: {
-    exist_user: false,
+    existUser: true,
     accessToken: '',
+    refreshToken: '',
   },
   followingList: [
     {
@@ -150,6 +148,8 @@ export const UserSlice = createSlice({
     },
     [kakaoLogin.fulfilled]: (state, action) => {
       state.kakaoInfo = action.payload;
+      state.isAuthenticated = true;
+      state.currentUser = getCurrentUser();
     },
     [signout.fulfilled]: state => {
       state.isAuthenticated = false;
