@@ -28,7 +28,7 @@ public class JwtUtilImpl implements JwtUtil {
     private int jwtExpirationMs;
 
     // token 유효기간 2시간
-    private static final int EXPIRE_MINUTES = 1000 * 60 * 60 * 2;
+    private static final int EXPIRE_MINUTES = 1000 * 60 * 60 * 20;
 
     // refresh token 유효기간 일주일
     private static final int REFRESH_EXPIRE_MINUTES = 1000 * 60 * 60 * 24 * 7;
