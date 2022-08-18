@@ -179,6 +179,7 @@ public class GameServiceImpl implements GameService{
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore() * (double)(1/60);
 
+        System.out.println(calorie+" ==============================================");
 
         User user = userRepo.findById(gameRecord.getUser().getId()).get();
 
