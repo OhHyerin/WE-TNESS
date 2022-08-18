@@ -24,7 +24,7 @@ root.render(
           <Route path="" element={<HomePage />}></Route>
           <Route path="signup" element={<SignupPage />}></Route>
           <Route path="login" element={<LoginPage />}></Route>
-          <Route path="user/login/kakao" element={<KakaoLoginPage />}></Route>
+          <Route path="/login/kakao" element={<KakaoLoginPage />}></Route>
           <Route path="history/:userNickname" element={<HistoryPage />}></Route>
           <Route path="room" element={<RoomPage />}></Route>
           <Route path="ranking" element={<RankPage />}></Route>
