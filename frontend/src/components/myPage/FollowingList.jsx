@@ -1,101 +1,61 @@
-import { useState } from 'react';
-import Paper from '@mui/material/Paper';
-import Table from '@mui/material/Table';
-import TableHead from '@mui/material/TableHead';
-import TableBody from '@mui/material/TableBody';
-import TableRow from '@mui/material/TableRow';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import styled from 'styled-components';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
-export default function FollowingList({ followingList }) {
-  return (
-    <div>
-      {/* {followingList} */}
-      <ColumnGroupingTable></ColumnGroupingTable>
-    </div>
-  );
-}
+const MySwal = withReactContent(Swal);
 
-const columns = [
-  { id: 'nickname', label: '닉네임' },
-  {
-    id: 'loginState',
-    label: '상태',
-    format: value => {
-      if (value) return '온라인';
-      return '오프라인';
-    },
-  },
-  // { id: 'name', label: '' },
-  // { id: 'user', label: 'User', minWidth: 50 },
-  // {
-  //   id: 'calories',
-  //   label: 'Calories\u00a0(kcal)',
-  //   minWidth: 130,
-  //   align: 'right',
-  //   format: value => value.toLocaleString('en-US'),
-  // },
-  // {
-  //   id: 'state',
-  //   label: 'State',
-  //   minWidth: 100,
-  //   align: 'right',
-  //   format: value => value.toFixed(2),
-  // },
-];
+const FollowingBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  border-bottom: 1px solid;
+`;
 
-// function createData(name, user, calories, state) {
-//   return { name, user, calories, state };
-// }
+const FollowingTitle = styled.p`
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 20px 0px;
+`;
 
-// const rows = [
-//   createData('avt', 'wdsaf', 1324171354, 'o'),
-//   createData('avt', 'wdsaf', 1403500365, 'o'),
-//   createData('avt', 'wdsaf', 60483973, 'o'),
-//   createData('avt aw', 'wdsaf', 327167434, 'o'),
-//   createData('avt', 'wdsaf', 37602103, 'o'),
-//   createData('avt', 'wdsaf', 25475400, 'o'),
-//   createData('avt', 'wdsaf', 83019200, 'o'),
-// ];
+const UserBox = styled.p`
+  display: flex;
+  justify-content: space-between;
+  padding: 5px;
+  border-top: 1px solid;
+  > .nickname:hover {
+    cursor: pointer;
+  }
+  > .nickname {
+    color: ${props => (props.isLogin ? 'blue' : 'red')};
+  }
+`;
 
-function ColumnGroupingTable() {
-  const rows = useSelector(state => state.user.followingList);
+export default function FollowingList({ followingList, handleCloseFollowing }) {
+  const navigate = useNavigate();
 
   return (
-    <Paper>
-      <TableContainer>
-        <Table stickyHeader>
-          <TableHead>
-            <TableRow>
-              <TableCell align="right" colSpan={5}>
-                Following
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              {columns.map(column => (
-                <TableCell key={column.id} align={column.align} style={{ top: 57, minWidth: column.minWidth }}>
-                  {column.label}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map((row, i) => (
-              <TableRow hover role="checkbox" tabIndex={-1} key={i}>
-                {columns.map(column => {
-                  const value = row[column.id];
-                  return (
-                    <TableCell key={column.id} align={column.align}>
-                      {column.format ? column.format(value) : value}
-                    </TableCell>
-                  );
-                })}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Paper>
+    <FollowingBox>
+      <FollowingTitle>Following</FollowingTitle>
+      {followingList.map((item, i) => {
+        return (
+          <UserBox key={i} isLogin={item.loginState}>
+            <div
+              onClick={() => {
+                handleCloseFollowing();
+                navigate(`/history/:${item.nickname}`);
+                MySwal.fire({
+                  title: <p>{item.nickname}님의 기록 페이지로 이동합니다.</p>,
+                  icon: 'success',
+                });
+              }}
+              className="nickname">
+              {item.nickname}
+            </div>
+            <p>{item.loginState ? '로그인' : '로그아웃'}</p>
+          </UserBox>
+        );
+      })}
+    </FollowingBox>
   );
 }

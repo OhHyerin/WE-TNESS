@@ -119,18 +119,8 @@ const initialState = {
     accessToken: '',
     refreshToken: '',
   },
-  followingList: [
-    {
-      // nickname: '',
-      // loginState: false,
-    },
-  ],
-  followerList: [
-    {
-      // nickname: '',
-      // loginState: false,
-    },
-  ],
+  followingList: [],
+  followerList: [],
   isLoding: false,
   followState: false,
 };
