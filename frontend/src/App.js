@@ -13,6 +13,7 @@ import SearchUser from '../src/components/search/SearchUser';
 import SearchRoomList from '../src/components/search/SearchRoomList';
 import RoomFilter1 from '../src/components/home/RoomFilter1';
 import RoomFilter2 from '../src/components/home/RoomFilter2';
+import './styles/App.css';
 
 function App() {
   const dispatch = useDispatch();
@@ -26,7 +27,7 @@ function App() {
       dispatch(checkLogin());
     }
     dispatch(toggleIsLoding());
-  }, [dispatch]);
+  }, [token, dispatch]);
 
   const isSearched = useSelector(state => state.room.isSearched);
   const location = useLocation();
@@ -34,7 +35,7 @@ function App() {
   useEffect(() => {
     dispatch(setIsSearch(false));
     dispatch(setKeyword(''));
-  }, [location]);
+  }, [dispatch, location]);
 
   if (isLoding) {
     return (

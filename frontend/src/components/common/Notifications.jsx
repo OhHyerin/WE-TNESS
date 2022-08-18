@@ -1,14 +1,7 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
-import { useSelector, useDispatch } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
-import { logout } from '../../features/user/UserSlice';
+import { useDispatch } from 'react-redux';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 import awards from './../../assets/data/awardItems';
 import styled from 'styled-components';
@@ -28,12 +21,8 @@ const Tile = styled.div`
   }
 `;
 
-const MySwal = withReactContent(Swal);
-
 export default function Notifications(props) {
-  const userNickname = useSelector(state => state.user.currentUser.nickname);
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const [anchorEl, setAnchorEl] = React.useState(null);
 
