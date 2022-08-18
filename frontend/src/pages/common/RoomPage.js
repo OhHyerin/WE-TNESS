@@ -356,7 +356,6 @@ class RoomClass extends Component {
       isFinish: false,
       isStart: true,
       count: 0,
-      check: undefined,
       countList: new Map(),
       rankList: [],
       countdown: 3,
@@ -373,8 +372,8 @@ class RoomClass extends Component {
       this.setState({
         isStart: false,
         isGaming: true,
-        rank: [],
       });
+      this.countSignal();
       window.requestAnimationFrame(this.loop);
     }, 3000);
   }
@@ -527,7 +526,7 @@ class RoomClass extends Component {
         });
         setTimeout(() => {
           this.countSignal();
-        }, 10);
+        }, 0);
       }
     } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -1129,7 +1128,7 @@ function LiveRank({ rankList }) {
   return (
     <LiveBox>
       <p>실시간 랭킹 !!</p>
-      <List>{rankListLi}</List>
+      <List style={{ display: 'flex' }}>{rankListLi}</List>
     </LiveBox>
   );
 }
