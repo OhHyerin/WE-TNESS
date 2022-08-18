@@ -142,9 +142,11 @@ public class UserController {
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
-    @PostMapping("/login/kakao/{code}")
+    @PostMapping("/login/kakao")
     @ApiOperation(value = "소셜 로그인")
-    public ResponseEntity<?> loginSocial(@PathVariable String code) throws IOException {
+    public ResponseEntity<?> loginSocial(@RequestBody String code) throws IOException {
+        System.out.println("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+        System.out.println(code);
         System.out.println("aaaaaaaaaaaaaaa");
         String token = userService.getSocialAccessToken(code);
         System.out.println("bbbbbbbbbbbbbbb");
