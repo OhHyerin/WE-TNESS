@@ -153,6 +153,12 @@ export const UserSlice = createSlice({
       removeRefreshToken();
       removeCurrentUser();
     },
+    [logout.rejected]: state => {
+      state.isAuthenticated = false;
+      removeAccessToken();
+      removeRefreshToken();
+      removeCurrentUser();
+    },
     [fetchFollowingList.fulfilled]: (state, action) => {
       state.followingList = action.payload.followList;
     },
