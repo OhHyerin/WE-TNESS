@@ -4,6 +4,7 @@ import com.wetness.db.entity.Follow;
 import com.wetness.db.entity.User;
 import com.wetness.db.repository.FollowRepository;
 import com.wetness.db.repository.UserRepository;
+import com.wetness.exception.FollowFailException;
 import com.wetness.model.dto.response.FollowDto;
 import com.wetness.model.dto.response.FollowUserResDto;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     @Transactional
-    public boolean registerFollow(String followerNickname, String followingNickname) {
+    public boolean registerAndDeleteFollow(String followerNickname, String followingNickname) {
         User follower = userRepository.findByNickname(followerNickname);
         User following = userRepository.findByNickname(followingNickname);
         if (follower != null && following != null && !followerNickname.equals(followingNickname)) {
@@ -50,9 +51,24 @@ public class FollowServiceImpl implements FollowService {
                 notificationService.registerFollowMessage(followerNickname, followingNickname);
 
                 return true;
+            } else {
+                followRepository.delete(follow);
+                return false;
             }
         }
-        return false;
+        throw new FollowFailException();
+    }
+
+    @Override
+    @Transactional
+    public boolean checkFollowState(String followerNickname, String followingNickname) {
+        User follower = userRepository.findByNickname(followerNickname);
+        User following = userRepository.findByNickname(followingNickname);
+        if (follower != null && following != null && !followerNickname.equals(followingNickname)) {
+            Follow follow = followRepository.findByFollowerIdAndFollowingId(follower.getId(), following.getId());
+            return follow != null;
+        }
+        throw new FollowFailException();
     }
 
     @Override
