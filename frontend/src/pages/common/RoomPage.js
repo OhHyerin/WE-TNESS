@@ -52,6 +52,8 @@ const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 const Container = styled.div`
   padding: 0;
+  background-color: ${props =>
+    props.myRank === 1 ? '#f4f1d6' : props.myRank === 2 ? '#fdfa87' : props.myRank === 3 ? '#c4f4fe' : '#fffff0'};
   width: 100%;
   max-width: 100%;
   > * {
@@ -355,6 +357,7 @@ class RoomClass extends Component {
     this.setState({
       isFinish: false,
       isStart: true,
+      isGaming: false,
       count: 0,
       countList: new Map(),
       rankList: [],
@@ -402,7 +405,7 @@ class RoomClass extends Component {
         Url = 'https://teachablemachine.withgoogle.com/models/EGjcTW3dg/';
         break;
       case 2: // 푸쉬업
-        Url = 'https://teachablemachine.withgoogle.com/models/5upYUPYme/';
+        Url = 'https://teachablemachine.withgoogle.com/models/rlT_xgNAW/';
         break;
       case 3: // 버피
         Url = 'https://teachablemachine.withgoogle.com/models/759k-ZvHL/';
@@ -475,6 +478,7 @@ class RoomClass extends Component {
     new Audio(endSound).play();
     this.setState({
       isFinish: true,
+      isGaming: false,
     });
 
     const data = new Date();
@@ -690,7 +694,7 @@ class RoomClass extends Component {
       return <div>올바르게 방입장했는지 확인좀요 ㅎㅎ</div>;
     }
     return (
-      <Container>
+      <Container myRank={this.getMyRank()}>
         {this.state.session === undefined ? (
           <Box
             sx={{
@@ -712,7 +716,7 @@ class RoomClass extends Component {
             </Modal>
 
             {/* 화면 위 쪽 UI */}
-            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', paddingTop: '30px' }}>
               <Grid container spacing={2} sx={HeaderBoxStyle}>
                 <Grid
                   item
@@ -956,6 +960,13 @@ const TimerBox = styled.div`
   flex-direction: column;
 `;
 
+const TimeValue = styled.p`
+  font-size: 30px;
+  padding-left: 5px;
+  text-align: center;
+  color: ${props => (props.value <= 10 ? 'red' : 'black')};
+`;
+
 const Timer = ({ setFinish, isFinish }) => {
   const [value, setValue] = useState(30);
   const getValue = function () {
@@ -965,7 +976,7 @@ const Timer = ({ setFinish, isFinish }) => {
     if (!isFinish) {
       const myInterval = setInterval(() => {
         if (value > 0) {
-          setValue(value - 0.1);
+          setValue(value - 0.12);
         }
         if (value <= 0) {
           setFinish();
@@ -980,7 +991,16 @@ const Timer = ({ setFinish, isFinish }) => {
 
   return (
     <TimerBox>
-      <div style={{ alignSelf: 'center' }}>남은 시간 : {getValue()}</div>
+      <div
+        style={{
+          alignSelf: 'center',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          paddingBottom: '20px',
+        }}>
+        남은 시간<TimeValue value={value}> {getValue()}</TimeValue>
+      </div>
       <div>
         <CustomizedProgressBars value={value}></CustomizedProgressBars>
       </div>
@@ -1000,18 +1020,6 @@ const HurryLinearProgress = styledC(LinearProgress)(({ theme }) => ({
   },
 }));
 
-const WarnLinearProgress = styledC(LinearProgress)(({ theme }) => ({
-  height: 20,
-  borderRadius: 5,
-  [`&.${linearProgressClasses.colorPrimary}`]: {
-    backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 200 : 800],
-  },
-  [`& .${linearProgressClasses.bar}`]: {
-    borderRadius: 5,
-    backgroundColor: theme.palette.mode === 'light' ? '#f5e23d' : '#f5e23d',
-  },
-}));
-
 const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
   height: 20,
   borderRadius: 5,
@@ -1023,12 +1031,10 @@ const BorderLinearProgress = styledC(LinearProgress)(({ theme }) => ({
 function CustomizedProgressBars(props) {
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {props.value <= 5 ? (
-        <HurryLinearProgress variant="determinate" value={(props.value * 100) / 60} />
-      ) : props.value < 20 ? (
-        <WarnLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+      {props.value <= 10 ? (
+        <HurryLinearProgress variant="determinate" value={(props.value * 100) / 30} />
       ) : (
-        <BorderLinearProgress variant="determinate" value={(props.value * 100) / 60} />
+        <BorderLinearProgress variant="determinate" value={(props.value * 100) / 30} />
       )}
     </Box>
   );
@@ -1081,7 +1087,7 @@ function MyWorkoutInfo({ rankList, count, workoutId, myUserName }) {
 
   return (
     <MyBox>
-      <WorkoutTitle>{workoutName()} - 1분</WorkoutTitle>
+      <WorkoutTitle>{workoutName()} - 30초</WorkoutTitle>
       <MyRank>
         <div>나의 운동 횟수</div>
         <div>{count}개</div>
@@ -1114,7 +1120,7 @@ function LiveRank({ rankList }) {
             ) : i === 1 ? (
               <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'silver' }} />
             ) : i === 2 ? (
-              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'bronze' }} />
+              <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: '#CD7F32' }} />
             ) : (
               <p>{i + 1}</p>
             )}
@@ -1142,7 +1148,7 @@ const ArrowsBox = styled.div`
 `;
 
 const arrowStyle = {
-  fontSize: '100px',
+  fontSize: '80px',
 };
 
 function Animation({ check, isGaming, workoutId }) {
@@ -1169,7 +1175,7 @@ function Animation({ check, isGaming, workoutId }) {
               <source src={squat} type="video/mp4" />
             </video>
           </Grid>
-          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'start', alignItems: 'start' }}>
             {check ? (
               <ArrowsBox className="arrows">
                 <KeyboardArrowUpRoundedIcon sx={arrowStyle} className="a3" />
@@ -1219,11 +1225,11 @@ function RankResult({ rankList, isRankView, setIsRankView }) {
       <ListItem key={i}>
         <ListItemAvatar>
           {i === 0 ? (
-            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: '#D5A11E' }} />
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'gold' }} />
           ) : i === 1 ? (
-            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: '#A3A3A3' }} />
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'silver' }} />
           ) : i === 2 ? (
-            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: ' #CD7F32' }} />
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: '#CD7F32' }} />
           ) : (
             <p>{i + 1}</p>
           )}
@@ -1236,7 +1242,7 @@ function RankResult({ rankList, isRankView, setIsRankView }) {
     <LiveBox>
       <h2>최종 순위</h2>
       {!isRankView ? <button onClick={setIsRankView}>전체 순위 보기</button> : null}
-      <List>{rankListLi}</List>
+      <List style={{ display: 'flex' }}>{rankListLi}</List>
     </LiveBox>
   );
 }
