@@ -142,17 +142,15 @@ public class UserController {
         return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
-    @PostMapping("/login/kakao/{code}")
+    @PostMapping("/login/kakao")
     @ApiOperation(value = "소셜 로그인")
-    public ResponseEntity<?> loginSocial(@PathVariable String code) throws IOException {
-        System.out.println("aaaaaaaaaaaaaaa");
+    public ResponseEntity<?> loginSocial(@RequestParam String code) throws IOException {
+
+        System.out.println(code);
         String token = userService.getSocialAccessToken(code);
-        System.out.println("bbbbbbbbbbbbbbb");
         // 토큰에 해당하는 회원정보 있다면 토큰 만들고 Response
         Map<String, Object> data = userService.getUserInfo(token);
-        System.out.println("ccccccccccccccc");
         Optional<User> userOpt = userService.socialLogin(data);
-        System.out.println("ddddddddddddddd");
         // 유저가 db에 있다면
         if (userOpt.isPresent()) {
             User user = userOpt.get();

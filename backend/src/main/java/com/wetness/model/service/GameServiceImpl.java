@@ -127,7 +127,7 @@ public class GameServiceImpl implements GameService{
         LocalDate regDate = LocalDate.now();
         User user = gameRecord.getUser();
         Double weight = (user.getWeight()!=null)? user.getWeight():0;
-        Double calorie = weight * gameRecord.getWorkout().getMet() * gameRecord.getScore();
+        Double calorie = weight * gameRecord.getWorkout().getMet() * gameRecord.getScore() * (1/(double)60);
 
         if(!fitRepo.findByUserAndRegDate(user, regDate).isPresent()){
             FitnessRecord fitness = new FitnessRecord(0, user, 1, calorie, regDate);
@@ -175,10 +175,16 @@ public class GameServiceImpl implements GameService{
 
         if(gameRecord.getUser().getWeight()==null) return; //weight 정보 없음
 
+        System.out.println(gameRecord.getUser().getWeight()+" weight==============================================");
+        System.out.println(gameRecord.getWorkout().getMet()+" met ==============================================");
+        System.out.println(gameRecord.getScore()+" score ==============================================");
+         
+
         //칼로리 계산식 리팩토링 필요
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
-                * gameRecord.getScore();
+                * gameRecord.getScore() * (1/(double)60);
 
+        System.out.println(calorie+" ==============================================");
 
         User user = userRepo.findById(gameRecord.getUser().getId()).get();
 
