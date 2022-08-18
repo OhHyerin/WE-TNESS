@@ -5,6 +5,6 @@ const InputBox = styled.div`
   flex-direction: column;
   justify-content: center;
   gap: 10px;
-`
+`;
 
 export default InputBox;

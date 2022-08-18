@@ -11,7 +11,6 @@ import SignupPage from './pages/accounts/SignupPage';
 import LoginPage from './pages/accounts/LoginPage';
 import KakaoLoginPage from './pages/accounts/KakaoLoginPage';
 import HistoryPage from './pages/accounts/HistoryPage';
-import MyPage from './pages/accounts/MyPage';
 import EditPage from './pages/accounts/EditPage';
 import TutorialPage from './pages/common/TutorialPage';
 import NotFoundPage from './pages/common/NotFoundPage';
@@ -25,7 +24,7 @@ root.render(
           <Route path="" element={<HomePage />}></Route>
           <Route path="signup" element={<SignupPage />}></Route>
           <Route path="login" element={<LoginPage />}></Route>
-          <Route path="login/kakao" element={<KakaoLoginPage />}></Route>
+          <Route path="user/login/kakao" element={<KakaoLoginPage />}></Route>
           <Route path="history/:userNickname" element={<HistoryPage />}></Route>
           <Route path="room" element={<RoomPage />}></Route>
           <Route path="ranking" element={<RankPage />}></Route>
