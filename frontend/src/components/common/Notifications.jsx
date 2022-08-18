@@ -1,4 +1,7 @@
 import * as React from 'react';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import Menu from '@mui/material/Menu';
 import IconButton from '@mui/material/IconButton';
 import { useDispatch } from 'react-redux';
@@ -19,12 +22,18 @@ const Tile = styled.div`
   .text {
     font-size: 12px;
   }
+
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 export default function Notifications(props) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const userNickname = useSelector(state => state.user.currentUser.nickname);
 
   const open = Boolean(anchorEl);
   const handleClick = event => {
@@ -94,12 +103,18 @@ export default function Notifications(props) {
                   </div>
                 </Tile>
               ) : notice.type === 'follow' ? (
-                <Tile>
+                <Tile
+                  onClick={() => {
+                    navigate(`/history/${notice.sender}`);
+                  }}>
                   <div className="title">팔로우 알림 </div>
                   <div className="text">- {notice.sender}님이 팔로우 요청</div>
                 </Tile>
               ) : (
-                <Tile>
+                <Tile
+                  onClick={() => {
+                    navigate(`/history/${userNickname}`);
+                  }}>
                   <div className="title">도전과제 알림 </div>
                   <div className="text">- {awards[notice.badge - 1].description}</div>
                 </Tile>
