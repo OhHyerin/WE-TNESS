@@ -2,7 +2,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Avatar, Modal } from '@mui/material';
 import styled from 'styled-components';
-import { fetchFollowerList, fetchFollowingList } from '../../features/user/UserSlice';
+import { fetchFollowerList, fetchFollowingList, fetchFollowState, toggleFollow } from '../../features/user/UserSlice';
 import FollowerList from './FollowerList';
 import FollowingList from './FollowingList';
 
@@ -69,11 +69,13 @@ export default function UserProfile(props) {
   useEffect(() => {
     dispatch(fetchFollowerList(props.userNickname));
     dispatch(fetchFollowingList(props.userNickname));
-  }, [dispatch]);
+    dispatch(fetchFollowState(props.userNickname));
+  }, [dispatch, props.userNickname]);
 
   const followerList = useSelector(state => state.user.followerList);
   const followingList = useSelector(state => state.user.followingList);
   const matches = useSelector(state => state.history.matches);
+  const followState = useSelector(state => state.user.followState);
 
   const [openFollower, setOpenFollower] = useState(false);
   const [openFollowing, setOpenFollowing] = useState(false);
@@ -88,9 +90,14 @@ export default function UserProfile(props) {
   // 팔로잉 핸들러
   const handleOpenFollowing = () => {
     setOpenFollowing(true);
-    console.log(followingList);
   };
   const handleCloseFollowing = () => setOpenFollowing(false);
+
+  function toggleFollowState() {
+    dispatch(toggleFollow(props.userNickname));
+  }
+
+  const myNickname = useSelector(state => state.user.currentUser.nickname);
 
   return (
     <>
@@ -101,6 +108,9 @@ export default function UserProfile(props) {
           <>
             <FollowBtn onClick={handleOpenFollower}>팔로워 {followerList.length}</FollowBtn>
             <FollowBtn onClick={handleOpenFollowing}>팔로잉 {followingList.length}</FollowBtn>
+            {myNickname === props.userNickname ? null : (
+              <button onClick={() => toggleFollowState()}>{followState ? '언팔로우' : '팔로우'}</button>
+            )}
           </>
           <MatchTile>
             <TotalMatch>

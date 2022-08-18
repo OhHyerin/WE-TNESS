@@ -3,10 +3,9 @@ import axios from 'axios';
 import api from '../../api';
 import setConfig from '../authHeader';
 
-const fetchNotice = createAsyncThunk('fetchNotice', async (payload, { rejectWithValue }) => {
+const fetchNotice = createAsyncThunk('fetchNotice', async (arg, { rejectWithValue }) => {
   try {
     const res = await axios.get(api.fetchNotice(), setConfig());
-    console.log(res.data);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -15,10 +14,8 @@ const fetchNotice = createAsyncThunk('fetchNotice', async (payload, { rejectWith
 });
 
 const checkNotice = createAsyncThunk('checkNotice', async (payload, { rejectWithValue }) => {
-  console.log(payload);
   try {
     const res = await axios.post(api.checkNotice(), payload, setConfig());
-    console.log(res.data);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -45,22 +42,16 @@ export const NoticeSlice = createSlice({
   reducers: {},
   extraReducers: {
     [fetchNotice.fulfilled]: (state, action) => {
-      console.log('hi');
       state.notices = action.payload.notices;
     },
     [checkNotice.fulfilled]: (state, action) => {
       if (action.payload.status === 200) {
-        console.log('success');
         fetchNotice();
-      } else {
-        console.log('fail');
       }
     },
   },
 });
 
 export { fetchNotice, checkNotice };
-
-export const {} = NoticeSlice.actions;
 
 export default NoticeSlice.reducer;
