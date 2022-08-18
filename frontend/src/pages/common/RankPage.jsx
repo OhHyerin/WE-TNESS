@@ -112,7 +112,7 @@ export default function RankPage() {
               onClick={() => {
                 setPlank(!plank);
               }}>
-              플랭크
+              런지
             </Button>
           </BtnBox>
           <FormGroup>
