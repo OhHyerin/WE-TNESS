@@ -34,10 +34,4 @@ public class UserExceptionHandler {
         return new ResponseEntity<BaseResponseEntity>(
                 new BaseResponseEntity(401, "drop User"), HttpStatus.BAD_REQUEST);
     }
-
-    @ExceptionHandler(FollowFailException.class)
-    public ResponseEntity<?> FollowFailException(FollowFailException e) {
-        return new ResponseEntity<BaseResponseEntity>(
-                new BaseResponseEntity(401, "follow User"), HttpStatus.BAD_REQUEST);
-    }
 }

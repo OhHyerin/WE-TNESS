@@ -3,7 +3,6 @@ package com.wetness.controller;
 import com.wetness.db.entity.User;
 import com.wetness.model.dto.request.FollowReqDto;
 import com.wetness.model.dto.response.BaseResponseEntity;
-import com.wetness.model.dto.response.FollowCheckResDto;
 import com.wetness.model.dto.response.FollowUserResDto;
 import com.wetness.model.service.FollowService;
 import com.wetness.model.service.UserDetailsImpl;
@@ -25,15 +24,11 @@ public class FollowController {
     private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<?> registerOrDeleteFollow(@RequestBody FollowReqDto followReqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        boolean result = followService.registerAndDeleteFollow(userDetails.getNickname(), followReqDto.getNickname());
-        return ResponseEntity.ok().body(new FollowCheckResDto(result));
-    }
-
-    @GetMapping("/state")
-    public ResponseEntity<?> getFollowState(@RequestBody FollowReqDto followReqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        boolean result = followService.checkFollowState(userDetails.getNickname(), followReqDto.getNickname());
-        return ResponseEntity.ok().body(new FollowCheckResDto(result));
+    public ResponseEntity<?> registerFollow(@RequestBody FollowReqDto followReqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        if (followService.registerFollow(userDetails.getNickname(), followReqDto.getNickname())) {
+            return ResponseEntity.ok().body(new BaseResponseEntity(200, "Success"));
+        }
+        return ResponseEntity.badRequest().body(new BaseResponseEntity(400, "Fail"));
     }
 
     @DeleteMapping

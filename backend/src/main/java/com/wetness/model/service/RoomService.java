@@ -39,7 +39,7 @@ public class RoomService {
     private String OPENVIDU_URL;
     @Value("${wetness.openvidu.secret}")
     private String SECRET;
-    private final OpenVidu openVidu = new OpenVidu("https://localhost:4443/","WETNESS");
+    private OpenVidu openVidu = new OpenVidu("https://localhost:8443/","WETNESS");
     // 운동종류(int) : {방제목 : 세션+방}
     private Map<String, MapSessionRoom> mapSessions = new ConcurrentHashMap<>();
     // 방 제목 : {유저 닉네임 : 커넥션}
