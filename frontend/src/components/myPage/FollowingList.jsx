@@ -18,7 +18,7 @@ const FollowingTitle = styled.p`
   padding: 20px 0px;
 `;
 
-const UserBox = styled.p`
+const UserBox = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 5px;
@@ -43,7 +43,7 @@ export default function FollowingList({ followingList, handleCloseFollowing }) {
             <div
               onClick={() => {
                 handleCloseFollowing();
-                navigate(`/history/:${item.nickname}`);
+                navigate(`/history/${item.nickname}`);
                 MySwal.fire({
                   title: <p>{item.nickname}님의 기록 페이지로 이동합니다.</p>,
                   icon: 'success',
