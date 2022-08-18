@@ -12,6 +12,7 @@ import com.wetness.model.dto.response.RankResultResDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
+import springfox.documentation.schema.Entry;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -73,13 +74,32 @@ public class RankServiceImpl implements RankService {
             //workoutId가 선택 됐을 때
 
             List<Rank> newList = new ArrayList<>();
-            for (int i = 0; i < ranks.size(); i++) {
-                if ((ranks.get(i).getWorkoutId() | workout) <= workout) {
-//                    System.out.println("getWorkoutId랑 workout 비트마스크 일치");
-                    Rank get = ranks.get(i);
-                    newList.add(get);
+//            for (int i = 0; i < ranks.size(); i++) {
+//                if ((ranks.get(i).getWorkoutId() | workout) <= workout) {
+////                    System.out.println("getWorkoutId랑 workout 비트마스크 일치");
+//                    Rank get = ranks.get(i);
+//                    newList.add(get);
+//                }
+//            }
+            HashMap<Long, Rank> hashMap = new HashMap<>();
+            for(int i=0;i<ranks.size();i++){
+                if((ranks.get(i).getWorkoutId() | workout) <= workout){
+                    long curUserId = ranks.get(i).getUser().getId();
+                    Rank cur = ranks.get(i);
+                    if(hashMap.containsKey(curUserId)){  //이미 이 유저가 랭크에 존재하면
+                        cur.setCalorie(Math.max(hashMap.get(curUserId).getCalorie(), ranks.get(i).getCalorie()));
+                        hashMap.put(curUserId, cur);  //hashMap에 해당 유저의 칼로리 갱신 (최댓값으로)
+                    }
+                    else{
+                        hashMap.put(curUserId, cur);
+                    }
                 }
             }
+
+            for(Rank r : hashMap.values()){
+                newList.add(r);
+            }
+
 
             Collections.sort(newList, new Comparator<Rank>() {
                 @Override
@@ -151,12 +171,31 @@ public class RankServiceImpl implements RankService {
                 //workoutId가 선택 됐을 때
 
                 List<Rank> newList = new ArrayList<>();
-                for (int i = 0; i < ranks.size(); i++) {
-                    if ((ranks.get(i).getWorkoutId() | workout) <= workout) {
-                        System.out.println("getWorkoutId랑 workout 비트마스크 일치");
-                        Rank get = ranks.get(i);
-                        newList.add(get);
+//                for (int i = 0; i < ranks.size(); i++) {
+//                    if ((ranks.get(i).getWorkoutId() | workout) <= workout) {
+//                        System.out.println("getWorkoutId랑 workout 비트마스크 일치");
+//                        Rank get = ranks.get(i);
+//                        newList.add(get);
+//                    }
+//                }
+
+                HashMap<Long, Rank> hashMap = new HashMap<>();
+                for(int i=0;i<ranks.size();i++){
+                    if((ranks.get(i).getWorkoutId() | workout) <= workout){
+                        long curUserId = ranks.get(i).getUser().getId();
+                        Rank cur = ranks.get(i);
+                        if(hashMap.containsKey(curUserId)){  //이미 이 유저가 랭크에 존재하면
+                            cur.setCalorie(Math.max(hashMap.get(curUserId).getCalorie(), ranks.get(i).getCalorie()));
+                            hashMap.put(curUserId, cur);  //hashMap에 해당 유저의 칼로리 갱신 (최댓값으로)
+                        }
+                        else{
+                            hashMap.put(curUserId, cur);
+                        }
                     }
+                }
+
+                for(Rank r : hashMap.values()){
+                    newList.add(r);
                 }
 
                 Collections.sort(newList, new Comparator<Rank>() {
