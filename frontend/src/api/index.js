@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'https://i7a205.p.ssafy.io:5000/api';
+const API_BASE_URL = 'https://i7a205.p.ssafy.io:5000/api';
 
 const USER_URL = '/user';
 const RANK_URL = '/rank';
@@ -19,6 +19,7 @@ const SEARCH_USER = '/info?keyword=';
 
 const FOLLOWING_LIST_URL = '/following';
 const FOLLOWER_LIST_URL = '/follower';
+const STATE_URL = '/state';
 
 const FETCH_USER_INFO_URL = '/me';
 const CHANGE_PASSWORD = '/pw';
@@ -35,7 +36,7 @@ const FETCH_DIARY = '/diary';
 
 const CHECK_NOTICE = '/check';
 
-export default {
+const api = {
   checkNickname: nickname => API_BASE_URL + USER_URL + CHECK_NICKNAME_URL + `/${nickname}`,
   checkEditNickname: nickname => API_BASE_URL + USER_URL + LOGIN_URL + CHECK_NICKNAME_URL + `/${nickname}`,
   checkEmail: email => API_BASE_URL + USER_URL + CHECK_EMAIL_URL + `/${email}`,
@@ -46,8 +47,12 @@ export default {
   findPassword: () => API_BASE_URL + USER_URL + FIND_PASSWORD,
   kakao: () => API_BASE_URL + USER_URL + LOGIN_URL + KAKAO_URL,
   addInfo: () => API_BASE_URL + USER_URL + ADD_INFO_URL,
+
   fetchFollowingList: nickname => API_BASE_URL + FOLLOW_URL + FOLLOWING_LIST_URL + `/${nickname}`,
   fetchFollowerList: nickname => API_BASE_URL + FOLLOW_URL + FOLLOWER_LIST_URL + `/${nickname}`,
+  toggleFollow: () => API_BASE_URL + FOLLOW_URL,
+  fetchFollowState: nickname => API_BASE_URL + FOLLOW_URL + STATE_URL + `/${nickname}`,
+
   fetchUserInfo: () => API_BASE_URL + USER_URL + FETCH_USER_INFO_URL,
   edit: () => API_BASE_URL + USER_URL,
   changePassword: () => API_BASE_URL + USER_URL + CHANGE_PASSWORD,
@@ -68,3 +73,5 @@ export default {
   fetchNotice: () => API_BASE_URL + NOTICE_URL,
   checkNotice: () => API_BASE_URL + NOTICE_URL + CHECK_NOTICE,
 };
+
+export default api;
