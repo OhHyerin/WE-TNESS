@@ -4,6 +4,7 @@ import com.wetness.model.dto.request.DisconnectionReq;
 import com.wetness.model.dto.request.EnterRoomReq;
 import com.wetness.model.dto.request.MakeRoomReq;
 import com.wetness.model.dto.response.EnterRoomRes;
+import com.wetness.model.dto.response.RoomListRes;
 import com.wetness.model.service.RoomService;
 import com.wetness.model.service.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;

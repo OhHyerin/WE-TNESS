@@ -175,6 +175,11 @@ public class GameServiceImpl implements GameService{
 
         if(gameRecord.getUser().getWeight()==null) return; //weight 정보 없음
 
+        System.out.println(gameRecord.getUser().getWeight()+" weight==============================================");
+        System.out.println(gameRecord.getWorkout().getMet()+" met ==============================================");
+        System.out.println(gameRecord.getScore()+" score ==============================================");
+         
+
         //칼로리 계산식 리팩토링 필요
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore() * (1/(double)60);
@@ -188,9 +193,11 @@ public class GameServiceImpl implements GameService{
 
         int N = gameRecord.getWorkout().getId()-1;
 
-        if(!rankRepo.findByUserIdAndWorkoutIdAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isEmpty()){
-            List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
 
+        if(!rankRepo.findByUserIdAndWorkoutIdAndDateGreaterThanEqual(user.getId(), (1<<N), regDate).isEmpty()){
+
+
+            List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);
                 if((old.getWorkoutId() & (1<<N) )== 0) continue;
@@ -202,6 +209,7 @@ public class GameServiceImpl implements GameService{
             newList.add(new Rank(0L, user, (1<<N), user.getSidoCode(), user.getGugunCode(), calorie, regDate));
 
             List<Rank> oldList = rankRepo.findByUserIdAndDateGreaterThanEqual(user.getId(), regDate);
+
             for(int i=0; i<oldList.size(); i++){
                 Rank old = oldList.get(i);
                 newList.add(new Rank(0L, user, (old.getWorkoutId()|(1<<N)),user.getSidoCode(),
