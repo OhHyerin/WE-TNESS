@@ -66,7 +66,7 @@ function RankItem({ user, rank }) {
       <Grid sx={{ textAlign: 'start' }} xs={4}>
         {user.userNickname}
       </Grid>
-      <Grid xs={4}>{user.calorie} kcal</Grid>
+      <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
     </Item>
   );
 }
