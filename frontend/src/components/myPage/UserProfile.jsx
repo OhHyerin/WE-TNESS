@@ -83,7 +83,6 @@ export default function UserProfile(props) {
   // 팔로워 핸들러
   const handleOpenFollower = () => {
     setOpenFollower(true);
-    console.log(followerList);
   };
   const handleCloseFollower = () => setOpenFollower(false);
 

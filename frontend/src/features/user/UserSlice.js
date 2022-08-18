@@ -58,7 +58,6 @@ const toggleFollow = createAsyncThunk('toggleFollow', async (nickname, { rejectW
   };
   try {
     const res = await axios.post(api.toggleFollow(), payload, setConfig());
-    console.log(res.data);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
