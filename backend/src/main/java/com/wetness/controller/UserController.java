@@ -144,7 +144,7 @@ public class UserController {
 
     @PostMapping("/login/kakao")
     @ApiOperation(value = "소셜 로그인")
-    public ResponseEntity<?> loginSocial(@RequestBody String code) throws IOException {
+    public ResponseEntity<?> loginSocial(@RequestParam String code) throws IOException {
         System.out.println("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
         System.out.println(code);
         System.out.println("aaaaaaaaaaaaaaa");
