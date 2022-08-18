@@ -337,7 +337,6 @@ class RoomClass extends Component {
       title,
       createDate,
     };
-    console.log(payload);
     axios
       .post(api.start(), payload, setConfig())
       .then(res => {
@@ -382,8 +381,6 @@ class RoomClass extends Component {
 
   // 모션 비디오
   async init() {
-    console.log('학습 비디오 생성!');
-
     const size = 200;
     const flip = true; // whether to flip the webcam
     // eslint-disable-next-line no-undef
@@ -397,7 +394,6 @@ class RoomClass extends Component {
 
   // 모델 생성
   async setModel() {
-    console.log('모델 생성!');
     let Url = '1';
     switch (this.state.workoutId) {
       case 1: // 스쿼트
@@ -500,12 +496,8 @@ class RoomClass extends Component {
     };
     axios
       .post(api.end(), payload, setConfig())
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
+      .then(res => {})
+      .catch(err => {});
   }
 
   setIsRankView() {
@@ -937,7 +929,6 @@ const TimeBox = styled.div`
 
 function CountDownIcon({ countdown }) {
   const viewIcon = function () {
-    console.log(countdown);
     switch (countdown) {
       case 1:
         return <LooksOneOutlinedIcon sx={countDownIconStyle}></LooksOneOutlinedIcon>;
