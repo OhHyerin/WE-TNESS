@@ -17,14 +17,18 @@ const NoRankBox = styled.div`
 `;
 
 export default function RankList({ isRegion }) {
-  const ranks = useSelector(state => state.rank.ranks);
-  const ranksLength = ranks?.length;
-
-  const message = useSelector(state => state.rank.message);
+  const ranks = useSelector(state => state.rank.rankList.ranks);
+  const message = useSelector(state => state.rank.rankList.message);
 
   return (
     <div style={{ width: '100%' }}>
-      {ranksLength ? (
+      {message === 'NO_GUGUN_INFO' ? (
+        <NoRankBox>
+          <div>지역정보 없음</div>
+          <div>지역을 등록하여 같은 지역 주민들과 경쟁해보세요!</div>
+          <Link to="/edit">정보 수정하기</Link>
+        </NoRankBox>
+      ) : ranks.length ? (
         <Grid container spacing={1}>
           <Grid xs={12}>
             <Box
@@ -41,12 +45,6 @@ export default function RankList({ isRegion }) {
             </Box>
           </Grid>
         </Grid>
-      ) : message === 'NO_GUGUN_INFO' ? (
-        <NoRankBox>
-          <div>지역정보 없음</div>
-          <div>지역을 등록하여 같은 지역 주민들과 경쟁해보세요!</div>
-          <Link to="/edit">정보 수정하기</Link>
-        </NoRankBox>
       ) : (
         <NoRankBox>랭킹정보 없음</NoRankBox>
       )}
