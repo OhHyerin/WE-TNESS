@@ -44,7 +44,6 @@ const fetchRoomList = createAsyncThunk('fetchRoomList', async (arg, { rejectWith
 const getWorksouts = createAsyncThunk('getWorkouts', async (state, { rejectWithValue }) => {
   try {
     const response = await axios.get(`/workouts`);
-    console.log(response);
     return response;
   } catch (error) {
     return rejectWithValue(error);
@@ -52,7 +51,6 @@ const getWorksouts = createAsyncThunk('getWorkouts', async (state, { rejectWithV
 });
 
 const searchRooms = createAsyncThunk('searchRooms', async (arg, { rejectWithValue }) => {
-  console.log(arg);
   try {
     const res = await axios.get(api.searchRooms(arg.keyword), setConfig());
     return res.data;

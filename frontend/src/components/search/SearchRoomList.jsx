@@ -24,7 +24,7 @@ export default function SearchRoomList() {
       {searchRoomResult.length > 0 ? (
         <List>
           {searchRoomResult.map(room =>
-            (room.scope === 'public' || showPrivate) && (workout === '전체' ? true : workout === room.workout) ? (
+            room.locked === showPrivate && (workout === 0 ? true : workout === room.workoutId) ? (
               <RoomCard room={room} />
             ) : null
           )}

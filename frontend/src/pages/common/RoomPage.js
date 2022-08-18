@@ -52,8 +52,7 @@ const OPENVIDU_SERVER_SECRET = 'WETNESS';
 
 const Container = styled.div`
   padding: 0;
-  background-color: ${props =>
-    props.myRank === 1 ? '#f4f1d6' : props.myRank === 2 ? '#fdfa87' : props.myRank === 3 ? '#c4f4fe' : '#fffff0'};
+  background-color: ${props => (props.myRank === 1 ? '#fffaf0' : '#f5f5f5')};
   width: 100%;
   max-width: 100%;
   > * {
@@ -911,8 +910,8 @@ const MicVideoBtn = styled.ul`
 
 const countDownStyle = {
   position: 'absolute',
-  top: '50%',
-  left: '50%',
+  top: '47%',
+  left: '47%',
   transform: 'translate(-30%, -30%)',
 };
 
