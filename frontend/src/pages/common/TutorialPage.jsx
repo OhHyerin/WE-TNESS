@@ -5,7 +5,14 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import camSet1 from '../../assets/images/tutorial/camSet1.PNG';
 import camSet2 from '../../assets/images/tutorial/camSet2.PNG';
-import test from '../../assets/images/tutorial/test.PNG';
+import camSet3 from '../../assets/images/tutorial/camSet3.PNG';
+import camSet4 from '../../assets/images/tutorial/camSet4.PNG';
+import camSet5 from '../../assets/images/tutorial/camSet5.PNG';
+import camSet6 from '../../assets/images/tutorial/camSet6.PNG';
+import squat from '../../assets/images/tutorial/squat.PNG';
+import pushup from '../../assets/images/tutorial/pushup.PNG';
+import burpee from '../../assets/images/tutorial/burpee.PNG';
+import lunge from '../../assets/images/tutorial/lunge.PNG';
 
 const Box = styled.div`
   display: flex;
@@ -42,13 +49,8 @@ const ImgCard = styled.div`
 `;
 
 const tittle = ['Camera Setting', 'Posture'];
-const workout = ['스쿼트', '팔굽혀펴기', '버피', '런지'];
-const article = [
-  [camSet1, test, '스쿼트3', '스쿼트4'],
-  [camSet2, '팔굽2'],
-  [camSet1, '버피2'],
-  [camSet1, '런지2'],
-];
+const workout = ['준비', '스쿼트', '팔굽혀펴기', '버피', '런지'];
+const article = [[camSet1, camSet2, camSet3, camSet4, camSet5, camSet6], [squat], [pushup], [burpee], [lunge]];
 
 export default function TutorialPage() {
   const [nowIdx, setNowIdx] = useState(0);
@@ -88,7 +90,7 @@ export default function TutorialPage() {
           )}
         </ButtonGroup>
       </div>
-      {nowIdx <= 0 ? <Tittle>{tittle[0]}</Tittle> : <Tittle>{tittle[1]}</Tittle>}
+      {nowWorkout <= 0 ? <Tittle>{tittle[0]}</Tittle> : <Tittle>{tittle[1]}</Tittle>}
       <Buttons>
         <Button onClick={() => handlePrev()}>
           <ArrowBackIosNewIcon />
