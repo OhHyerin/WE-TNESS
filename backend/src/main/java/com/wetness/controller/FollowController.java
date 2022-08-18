@@ -55,18 +55,22 @@ public class FollowController {
         FollowUserResDto followUserResDto = followService.getFollowings(userDetails.getId());
         return ResponseEntity.ok().body(followUserResDto);
     }
-
+    //getFollowerByNickname, getFollowingByNickname 프론트 요청으로 긴급 수정 :
     @GetMapping("/follower/{nickname}")
     public ResponseEntity<?> getFollowerByNickname(@PathVariable String nickname) {
         User target = userService.findByNickname(nickname);
-        FollowUserResDto followUserResDto = followService.getFollowers(target.getId());
+        //FollowUserResDto followUserResDto = followService.getFollowers(target.getId());
+        FollowUserResDto followUserResDto = followService.getFollowings(target.getId());
+
         return ResponseEntity.ok().body(followUserResDto);
     }
 
     @GetMapping("/following/{nickname}")
     public ResponseEntity<?> getFollowingByNickname(@PathVariable String nickname) {
         User target = userService.findByNickname(nickname);
-        FollowUserResDto followUserResDto = followService.getFollowings(target.getId());
+        //FollowUserResDto followUserResDto = followService.getFollowings(target.getId());
+        FollowUserResDto followUserResDto = followService.getFollowers(target.getId());
+
         return ResponseEntity.ok().body(followUserResDto);
     }
 }
