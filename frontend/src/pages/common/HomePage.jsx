@@ -93,6 +93,7 @@ const closeStyle = {
 
 const WorkoutImgBox = styled.div`
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   > img:hover {
     cursor: pointer;
@@ -101,6 +102,7 @@ const WorkoutImgBox = styled.div`
 
 const WorkoutImg = styled.img`
   width: 50%;
+  height: 40%;
   border: ${props => (props.active ? '5px double var(--primary-color)' : '')};
   filter: ${props => (props.active ? '' : 'blur(2px) grayscale(90%)')};
   border-radius: 5px;
@@ -137,6 +139,7 @@ export default function Home() {
       title: roomInfo.title,
       password: roomInfo.password,
     };
+    dispatch(createModal(false));
     dispatch(createRoom(payload)).then(res => navigate('/room'));
   }
 

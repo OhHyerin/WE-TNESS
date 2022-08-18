@@ -18,6 +18,17 @@ const Header = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
+  width: 100%;
+  height: 60px;
+  background: var(--prim-bg-color);
+  font-weight: 700;
+`;
+
+const RoomHeader = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
   height: 60px;
   background: var(--prim-bg-color);
   font-weight: 700;
@@ -55,6 +66,15 @@ const Logo = styled.div`
   }
 `;
 
+const RoomTitle = styled.div`
+  padding-left: 30px;
+  margin-right: 300px;
+`;
+
+const OutBtn = styled.div`
+  justify-self: end;
+`;
+
 export default function NavBar() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -75,61 +95,58 @@ export default function NavBar() {
     if (token) {
       dispatch(fetchNotice());
     }
-  }, [location]);
+  }, [dispatch, location]);
 
   const handleGoOut = () => {
-    // 방나가는 로직 (게임방 삭제)
-    // dispatch(setIsRoom(false));
     navigate('/');
   };
 
   return (
     <div id="nav">
-      <Header>
-        {/* null 자리에 방정보, 나가는 버튼 넣기 */}
-        {isRoom ? (
-          <>
-            <Logo>
-              <img style={{ marginLeft: '20px' }} src={navLogo} alt="Logo" width={'150px'} height={'auto'} />
-            </Logo>
-            <div>
-              {nowRoom.locked ? <LockIcon fontSize="small" /> : null} [
-              {nowRoom.workout === 1 ? '운동1' : nowRoom.workout === 2 ? '운동2' : '운동3'}] {nowRoom.title}{' '}
-            </div>
+      {isRoom ? (
+        <RoomHeader>
+          <Logo>
+            <img style={{ marginLeft: '20px' }} src={navLogo} alt="Logo" width={'150px'} height={'auto'} />
+          </Logo>
+          <RoomTitle>
+            {nowRoom.locked ? <LockIcon fontSize="small" /> : null} [
+            {nowRoom.workout === 1 ? '운동1' : nowRoom.workout === 2 ? '운동2' : '운동3'}] {nowRoom.title}{' '}
+          </RoomTitle>
+          <OutBtn>
             <Button id="goOutBtn" variant="contained" color="error" onClick={handleGoOut}>
               나가기
             </Button>
-          </>
-        ) : (
-          <>
-            <Logo>
-              <Link to="/">
-                <img style={{ marginLeft: '20px' }} src={navLogo} alt="Logo" width={'150px'} height={'auto'} />
-              </Link>
-            </Logo>
+          </OutBtn>
+        </RoomHeader>
+      ) : (
+        <Header>
+          <Logo>
+            <Link to="/">
+              <img style={{ marginLeft: '20px' }} src={navLogo} alt="Logo" width={'150px'} height={'auto'} />
+            </Link>
+          </Logo>
 
-            <SearchForm />
+          <SearchForm />
 
-            <div>
-              {isAuthenticated ? (
-                <LoginMenu>
-                  {/* 알림 - 임시 & 수정 필요 */}
-                  <Badge badgeContent={notices.length} color="error">
-                    <Notifications notices={notices} />
-                  </Badge>
-                  {/* 계정 버튼 - 드롭다운 */}
-                  <AccountMenu />
-                </LoginMenu>
-              ) : (
-                <LoginMenu>
-                  <Link to="/signup">회원가입</Link>
-                  <Link to="/login">로그인</Link>
-                </LoginMenu>
-              )}
-            </div>
-          </>
-        )}
-      </Header>
+          <div>
+            {isAuthenticated ? (
+              <LoginMenu>
+                {/* 알림 - 임시 & 수정 필요 */}
+                <Badge badgeContent={notices.length} color="error">
+                  <Notifications notices={notices} />
+                </Badge>
+                {/* 계정 버튼 - 드롭다운 */}
+                <AccountMenu />
+              </LoginMenu>
+            ) : (
+              <LoginMenu>
+                <Link to="/signup">회원가입</Link>
+                <Link to="/login">로그인</Link>
+              </LoginMenu>
+            )}
+          </div>
+        </Header>
+      )}
 
       {isRoom ? null : (
         <Nav>
