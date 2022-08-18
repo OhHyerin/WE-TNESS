@@ -175,6 +175,11 @@ public class GameServiceImpl implements GameService{
 
         if(gameRecord.getUser().getWeight()==null) return; //weight 정보 없음
 
+        System.out.println(gameRecord.getUser().getWeight()+" weight==============================================");
+        System.out.println(gameRecord.getWorkout().getMet()+" met ==============================================");
+        System.out.println(gameRecord.getScore()+" score ==============================================");
+         
+
         //칼로리 계산식 리팩토링 필요
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore() * (double)(1/60);
