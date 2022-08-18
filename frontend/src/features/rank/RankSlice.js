@@ -104,6 +104,4 @@ export {
   fetchLungeRanking,
 };
 
-export const {} = RankSlice.actions;
-
 export default RankSlice.reducer;
