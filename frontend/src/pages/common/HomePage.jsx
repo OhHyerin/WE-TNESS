@@ -14,7 +14,14 @@ import FormBox from '../../components/common/auth/FormBox';
 import InputBox from '../../components/common/auth/InputBox';
 import SubmitBtn from '../../components/common/SubmitBtn';
 import { checkNickname, addInfo, toggleIsModal } from '../../features/user/SignupSlice';
-import { fetchTitle, fetchPassword, createRoom, fetchWorkoutId, setNowRoom } from '../../features/room/RoomSlice';
+import {
+  fetchTitle,
+  fetchPassword,
+  createRoom,
+  fetchWorkoutId,
+  setNowRoom,
+  createModal,
+} from '../../features/room/RoomSlice';
 import { removeSessionInfo } from '../../features/Token';
 import workoutItems from '../../assets/data/workoutItems';
 
@@ -134,13 +141,13 @@ export default function Home() {
   }
 
   // 방 생성 관련
-  const [isAddRoom, setIsAddRoom] = useState(false);
+  const isCreate = useSelector(state => state.room.isCreate);
   const roomInfo = useSelector(state => state.room.roomInfo);
   function onOpen(e) {
-    setIsAddRoom(true);
+    dispatch(createModal(true));
   }
   function onClose(e) {
-    setIsAddRoom(false);
+    dispatch(createModal(false));
   }
   function onTitleHandler(e) {
     e.preventDefault();
@@ -240,7 +247,7 @@ export default function Home() {
       </Modal>
 
       {/* 방 생성 모달 */}
-      <Modal open={isAddRoom} onClose={onClose}>
+      <Modal open={isCreate} onClose={onClose}>
         <Box sx={addStyle}>
           <ClearIcon sx={closeStyle} onClick={onClose}></ClearIcon>
           <FormBox>
