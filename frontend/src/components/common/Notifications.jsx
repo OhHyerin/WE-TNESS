@@ -39,7 +39,7 @@ export default function Notifications(props) {
 
   const open = Boolean(anchorEl);
   const handleClick = event => {
-    setAnchorEl(event.currentTarget);
+    if (props.notices.length > 0) setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
