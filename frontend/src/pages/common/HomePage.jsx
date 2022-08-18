@@ -27,6 +27,10 @@ import { removeSessionInfo } from '../../features/Token';
 import workoutItems from '../../assets/data/workoutItems';
 import IconTextField from '../../components/common/IconTextField';
 import CheckBtn from '../../components/common/CheckBtn';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
+const MySwal = withReactContent(Swal);
 
 const HomeBox = styled.div`
   padding-top: 40px;
@@ -195,9 +199,13 @@ export default function Home() {
 
   function onSubmitHandler(e) {
     e.preventDefault();
-    const payload = nickname;
-    dispatch(addInfo(payload))
-      .then(() => {})
+    dispatch(addInfo(nickname))
+      .then(() => {
+        MySwal.fire({
+          title: <p>환영합니다.</p>,
+          icon: 'success',
+        });
+      })
       .catch(err => {
         console.log(err);
       });
