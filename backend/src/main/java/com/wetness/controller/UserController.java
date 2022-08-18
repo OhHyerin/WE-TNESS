@@ -144,8 +144,9 @@ public class UserController {
 
     @PostMapping("/login/kakao")
     @ApiOperation(value = "소셜 로그인")
-    public ResponseEntity<?> loginSocial(@RequestParam String code) throws IOException {
+    public ResponseEntity<?> loginSocial(@RequestBody Map<String,String> req) throws IOException {
         System.out.println("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr");
+        String code = req.get("code");
         System.out.println(code);
         System.out.println("aaaaaaaaaaaaaaa");
         String token = userService.getSocialAccessToken(code);
