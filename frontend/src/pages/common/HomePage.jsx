@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Box, Modal, TextField, Fab, Grid, styled as styledC, Paper } from '@mui/material';
+import { Box, Modal, TextField, Fab, Grid, styled as styledC, Paper, Tooltip } from '@mui/material';
 import SportsEsportsIcon from '@mui/icons-material/SportsEsports';
 import ClearIcon from '@mui/icons-material/Clear';
 import Banner from '../../components/home/Banner';
@@ -93,6 +93,7 @@ const closeStyle = {
 
 const WorkoutImgBox = styled.div`
   display: flex;
+  align-items: center;
   flex-wrap: wrap;
   > img:hover {
     cursor: pointer;
@@ -101,6 +102,7 @@ const WorkoutImgBox = styled.div`
 
 const WorkoutImg = styled.img`
   width: 50%;
+  height: 40%;
   border: ${props => (props.active ? '5px double var(--primary-color)' : '')};
   filter: ${props => (props.active ? '' : 'blur(2px) grayscale(90%)')};
   border-radius: 5px;
@@ -137,6 +139,7 @@ export default function Home() {
       title: roomInfo.title,
       password: roomInfo.password,
     };
+    dispatch(createModal(false));
     dispatch(createRoom(payload)).then(res => navigate('/room'));
   }
 
@@ -260,13 +263,14 @@ export default function Home() {
                       {workoutItems.map(workout => {
                         if (workout.id !== 0 && workout.img) {
                           return (
-                            <WorkoutImg
-                              key={workout.id}
-                              src={workout.img}
-                              alt="workout.id번 운동"
-                              onClick={() => onWorkoutHandler(workout.id)}
-                              active={workout.id === roomInfo.workoutId}
-                            />
+                            <Tooltip key={workout.id} title={workout.name} followCursor>
+                              <WorkoutImg
+                                src={workout.img}
+                                alt="workout.id번 운동"
+                                onClick={() => onWorkoutHandler(workout.id)}
+                                active={workout.id === roomInfo.workoutId}
+                              />
+                            </Tooltip>
                           );
                         } else {
                           return null;

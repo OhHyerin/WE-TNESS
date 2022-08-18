@@ -37,6 +37,7 @@ import './RoomPage.css';
 // 효과음
 import squat from '../../assets/video/squat.mp4';
 import pushup from '../../assets/video/pushup.mp4';
+import burpee from '../../assets/video/burpee.mp4';
 import lunge from '../../assets/video/lunge.mp4';
 import startSound from '../../assets/sound/startSound.mp3';
 import endSound from '../../assets/sound/endSound.wav';
@@ -355,7 +356,6 @@ class RoomClass extends Component {
       isFinish: false,
       isStart: true,
       count: 0,
-      check: undefined,
       countList: new Map(),
       rankList: [],
       countdown: 3,
@@ -372,8 +372,8 @@ class RoomClass extends Component {
       this.setState({
         isStart: false,
         isGaming: true,
-        rank: [],
       });
+      this.countSignal();
       window.requestAnimationFrame(this.loop);
     }, 3000);
   }
@@ -526,7 +526,7 @@ class RoomClass extends Component {
         });
         setTimeout(() => {
           this.countSignal();
-        }, 10);
+        }, 0);
       }
     } else if (prediction[1].probability.toFixed(2) > 0.99) {
       this.setState({ check: true });
@@ -1128,7 +1128,7 @@ function LiveRank({ rankList }) {
   return (
     <LiveBox>
       <p>실시간 랭킹 !!</p>
-      <List>{rankListLi}</List>
+      <List style={{ display: 'flex' }}>{rankListLi}</List>
     </LiveBox>
   );
 }
@@ -1140,6 +1140,11 @@ const ArrowsBox = styled.div`
   justify-content: center;
   align-items: center;
 `;
+
+const arrowStyle = {
+  fontSize: '100px',
+};
+
 function Animation({ check, isGaming, workoutId }) {
   const workoutAnimation = function () {
     switch (workoutId) {
@@ -1148,7 +1153,7 @@ function Animation({ check, isGaming, workoutId }) {
       case 2:
         return <video loop autoPlay src={pushup} type="video/mp4" />;
       case 3:
-        return <video loop autoPlay src={pushup} type="video/mp4" />;
+        return <video loop autoPlay src={burpee} type="video/mp4" />;
       case 4:
         return <video loop autoPlay src={lunge} type="video/mp4" />;
       default:
@@ -1159,23 +1164,23 @@ function Animation({ check, isGaming, workoutId }) {
     <Grid container>
       {isGaming ? (
         <>
-          <Grid item xs={8}>
-            <video loop autoPlay muted>
+          <Grid item style={{ display: 'flex', alignItems: 'center' }} xs={8}>
+            <video loop autoPlay muted style={{}}>
               <source src={squat} type="video/mp4" />
             </video>
           </Grid>
           <Grid item xs={4} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             {check ? (
               <ArrowsBox className="arrows">
-                <KeyboardArrowUpRoundedIcon fontSize="large" className="a3" />
-                <KeyboardArrowUpRoundedIcon fontSize="large" className="a2" />
-                <KeyboardArrowUpRoundedIcon fontSize="large" className="a1" />
+                <KeyboardArrowUpRoundedIcon sx={arrowStyle} className="a3" />
+                <KeyboardArrowUpRoundedIcon sx={arrowStyle} className="a2" />
+                <KeyboardArrowUpRoundedIcon sx={arrowStyle} className="a1" />
               </ArrowsBox>
             ) : (
               <ArrowsBox className="arrows">
-                <KeyboardArrowDownRoundedIcon fontSize="large" className="a1" />
-                <KeyboardArrowDownRoundedIcon fontSize="large" className="a2" />
-                <KeyboardArrowDownRoundedIcon fontSize="large" className="a3" />
+                <KeyboardArrowDownRoundedIcon sx={arrowStyle} className="a1" />
+                <KeyboardArrowDownRoundedIcon sx={arrowStyle} className="a2" />
+                <KeyboardArrowDownRoundedIcon sx={arrowStyle} className="a3" />
               </ArrowsBox>
             )}
           </Grid>
@@ -1214,11 +1219,11 @@ function RankResult({ rankList, isRankView, setIsRankView }) {
       <ListItem key={i}>
         <ListItemAvatar>
           {i === 0 ? (
-            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'gold' }} />
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: '#D5A11E' }} />
           ) : i === 1 ? (
-            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'silver' }} />
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: '#A3A3A3' }} />
           ) : i === 2 ? (
-            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: 'bronze' }} />
+            <FontAwesomeIcon icon={faMedal} size="3x" style={{ color: ' #CD7F32' }} />
           ) : (
             <p>{i + 1}</p>
           )}
