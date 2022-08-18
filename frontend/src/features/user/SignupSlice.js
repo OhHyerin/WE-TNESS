@@ -52,12 +52,17 @@ const checkEmail = createAsyncThunk('checkEmail', async (payload, { rejectWithVa
   }
 });
 
-const addInfo = createAsyncThunk('addInfo', async (nickname, { rejectWithValue }) => {
-  const payload = {
-    nickname,
-  };
+const addInfo = createAsyncThunk('addInfo', async (changeNickname, { rejectWithValue }) => {
   try {
-    const res = await axios.post(api.addInfo(), payload, setConfig());
+    const res = await axios.post(
+      api.addInfo(),
+      {},
+      {
+        params: {
+          changeNickname,
+        },
+      }
+    );
     console.log(res);
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
