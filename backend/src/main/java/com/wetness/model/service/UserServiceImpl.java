@@ -56,10 +56,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
-    @Value("${login.kakao.clientId}")
-    private String kakaoClientId;
-    @Value("${login.kakao.redirectUri}")
-    private String kakaoRedirectUri;
+//    @Value("${login.kakao.clientId}")
+    private String kakaoClientId = "376a57e7cef85c6560a77351c93a9b1f";
+//    @Value("${login.kakao.redirectUri}")
+    private String kakaoRedirectUri = "https://i7a205.p.ssafy.io/login/kakao";
 
     @Override
     @Transactional

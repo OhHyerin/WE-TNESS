@@ -34,6 +34,7 @@ const MySwal = withReactContent(Swal);
 
 const HomeBox = styled.div`
   padding-top: 40px;
+  padding-bottom: 200px;
 `;
 
 const ChannelTitle = styled.p`
