@@ -101,6 +101,13 @@ function getDate(e) {
   return edDate;
 }
 
+const RecordTitle = styled.p`
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 20px 0px;
+`;
+
 export default function RecordList() {
   const todayCalorie = useSelector(state => state.history.todayCalorie);
   const heatMapList = useSelector(state => state.history.heatMapList);
@@ -116,7 +123,7 @@ export default function RecordList() {
 
   return (
     <>
-      <h2>운동 기록</h2>
+      <RecordTitle>운동 기록</RecordTitle>
       <RecordBox>
         {/* 칼로리 */}
         <Placer>
