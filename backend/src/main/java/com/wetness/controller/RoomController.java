@@ -4,7 +4,6 @@ import com.wetness.model.dto.request.DisconnectionReq;
 import com.wetness.model.dto.request.EnterRoomReq;
 import com.wetness.model.dto.request.MakeRoomReq;
 import com.wetness.model.dto.response.EnterRoomRes;
-import com.wetness.model.dto.response.RoomListRes;
 import com.wetness.model.service.RoomService;
 import com.wetness.model.service.UserDetailsImpl;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +55,7 @@ public class RoomController {
         }
     }
 
-    @PatchMapping(value = "/disconnect")
+    @PutMapping(value = "/disconnect")
     public ResponseEntity<?> disconnection(@RequestBody DisconnectionReq disconnectionReq) {
         try {
             roomService.disconnect(disconnectionReq);

@@ -46,7 +46,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     UserDetailsServiceImpl userDetailsService;
     private static final String[] Exclude_Paths =
             {"/api", "/api/user/login/**", "/api/user/join", "/api/user/duplicate-email/*", "/api/user/duplicate-nickname/*",
-                    "/api/user/refresh", "/api/room/disconnect", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
+                    "/api/user/refresh", "/api/room/disconnect","/api/room", "/swagger-ui.html", "/webjars/springfox-swagger-ui/**"
                     , "/swagger-resources/**", "/v2/api-docs", "/csrf", "/error", "/api/report", "/api/report/*", "/api/user/send-pw"};
 
     //"/user/duplicate-email/*",

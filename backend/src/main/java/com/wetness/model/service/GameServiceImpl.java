@@ -33,11 +33,12 @@ public class GameServiceImpl implements GameService{
     private final FitnessRecordRepository fitRepo;
     private final AwardRepository awardRepo;
     private final UserAwardRepository userAwardRepo;
+    private final RoomService roomService;
 
     @Override
     public Long startGame(GameReqDto gameReqDto, Long userId) {
 
-        Room room = roomRepo.findByTitle(gameReqDto.getTitle());
+        Room room = roomService.getRoomByTitle(gameReqDto.getTitle());
 
         //userId validation 체크 추가하기 -> Room 생성할 때 생성한 user 정보가 없어서 애매함
         
@@ -177,6 +178,8 @@ public class GameServiceImpl implements GameService{
         //칼로리 계산식 리팩토링 필요
         double calorie = gameRecord.getUser().getWeight() * gameRecord.getWorkout().getMet()
                 * gameRecord.getScore() * (1/(double)60);
+
+        System.out.println(calorie+" ==============================================");
 
         User user = userRepo.findById(gameRecord.getUser().getId()).get();
 
