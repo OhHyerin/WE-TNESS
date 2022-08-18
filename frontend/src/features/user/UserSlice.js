@@ -52,6 +52,28 @@ const fetchFollowerList = createAsyncThunk('fetchFollowerList', async (nickname,
   }
 });
 
+const toggleFollow = createAsyncThunk('toggleFollow', async (nickname, { rejectWithValue }) => {
+  const payload = {
+    nickname,
+  };
+  try {
+    const res = await axios.post(api.toggleFollow(), payload, setConfig());
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data);
+  }
+});
+
+const fetchFollowState = createAsyncThunk('fetchFollowState', async (nickname, { rejectWithValue }) => {
+  try {
+    const res = await axios.get(api.fetchFollowState(nickname), setConfig());
+    console.log(res.data);
+    return res.data;
+  } catch (err) {
+    return rejectWithValue(err.response.data);
+  }
+});
+
 const kakaoLogin = createAsyncThunk('kakaoLogin', async (code, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.kakao(), {}, { params: { code } });
@@ -110,6 +132,7 @@ const initialState = {
     },
   ],
   isLoding: false,
+  followState: false,
 };
 
 export const UserSlice = createSlice({
@@ -134,7 +157,7 @@ export const UserSlice = createSlice({
     [login.rejected]: state => {
       state.isAuthenticated = false;
     },
-    [logout.fulfilled]: (state, action) => {
+    [logout.fulfilled]: state => {
       state.isAuthenticated = false;
       removeAccessToken();
       removeRefreshToken();
@@ -154,10 +177,27 @@ export const UserSlice = createSlice({
     [signout.fulfilled]: state => {
       state.isAuthenticated = false;
     },
+    [toggleFollow.fulfilled]: (state, action) => {
+      state.followState = action.payload.followState;
+    },
+    [fetchFollowState.fulfilled]: (state, action) => {
+      state.followState = action.payload.followState;
+    },
   },
 });
 
-export { login, logout, fetchFollowingList, fetchFollowerList, kakaoLogin, findPassword, signout };
+export {
+  login,
+  logout,
+  fetchFollowingList,
+  fetchFollowerList,
+  kakaoLogin,
+  findPassword,
+  signout,
+  toggleFollow,
+  fetchFollowState,
+};
+
 export const { fetchCurrentUser, checkLogin, toggleIsLoding } = UserSlice.actions;
 
 export default UserSlice.reducer;
