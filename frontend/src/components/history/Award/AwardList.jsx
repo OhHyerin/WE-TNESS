@@ -24,6 +24,13 @@ const ImgTag = styled.img`
   object-fit: contain;
 `;
 
+const AwardTitle = styled.p`
+  text-align: center;
+  font-size: 30px;
+  font-weight: bold;
+  padding: 20px 0px;
+`;
+
 export default function AwardList() {
   const achieveAwards = useSelector(state => state.history.achieveAwards);
   let awardList = [];
@@ -57,7 +64,7 @@ export default function AwardList() {
 
   return (
     <div>
-      <h2>도전과제</h2>
+      <AwardTitle>도전과제</AwardTitle>
       <Carousel
         autoplay={true}
         autoplayInterval={'4000'}
