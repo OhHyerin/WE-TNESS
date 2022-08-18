@@ -37,6 +37,7 @@ import './RoomPage.css';
 // 효과음
 import squat from '../../assets/video/squat.mp4';
 import pushup from '../../assets/video/pushup.mp4';
+import burpee from '../../assets/video/burpee.mp4';
 import lunge from '../../assets/video/lunge.mp4';
 import startSound from '../../assets/sound/startSound.mp3';
 import endSound from '../../assets/sound/endSound.wav';
@@ -1148,7 +1149,7 @@ function Animation({ check, isGaming, workoutId }) {
       case 2:
         return <video loop autoPlay src={pushup} type="video/mp4" />;
       case 3:
-        return <video loop autoPlay src={pushup} type="video/mp4" />;
+        return <video loop autoPlay src={burpee} type="video/mp4" />;
       case 4:
         return <video loop autoPlay src={lunge} type="video/mp4" />;
       default:
