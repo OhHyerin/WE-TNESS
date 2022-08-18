@@ -15,6 +15,7 @@ import setConfig from '../authHeader';
 
 const login = createAsyncThunk('login', async (payload, { rejectWithValue }) => {
   try {
+    console.log(payload);
     const res = await axios.post(api.login(), payload, {});
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);

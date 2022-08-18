@@ -14,6 +14,7 @@ const initialState = {
   isWorkoutsLoaded: false,
   isSearched: false,
   isLoading: false,
+  isCreate: false,
 
   // 방 생성 관련
   roomInfo: {
@@ -120,6 +121,9 @@ export const RoomSlice = createSlice({
     setNowRoom: (state, action) => {
       state.nowRoom = action.payload;
     },
+    createModal: (state, action) => {
+      state.isCreate = action.payload;
+    },
   },
   extraReducers: {
     [fetchRoomList.pending]: state => {
@@ -169,6 +173,7 @@ export const {
   fetchWorkoutId,
   fetchTitle,
   fetchPassword,
+  createModal,
 } = RoomSlice.actions;
 
 export default RoomSlice.reducer;
