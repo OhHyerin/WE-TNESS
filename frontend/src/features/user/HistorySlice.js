@@ -7,10 +7,9 @@ const fetchHistory = createAsyncThunk('fetchHistory', async (payload, { rejectWi
   const { nickname } = payload;
   try {
     const res = await axios.get(api.fetchHistory(nickname), setConfig());
-    console.log(res);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -18,10 +17,9 @@ const fetchDiary = createAsyncThunk('fetchDiary', async (payload, { rejectWithVa
   const { nickname } = payload;
   try {
     const res = await axios.get(api.fetchDiary(nickname), setConfig());
-    console.log(res.data);
     return res.data;
   } catch (err) {
-    return rejectWithValue(err.response);
+    return rejectWithValue(err.response.data);
   }
 });
 
@@ -94,6 +92,5 @@ export const HistorySlice = createSlice({
 });
 
 export { fetchHistory, fetchDiary };
-export const {} = HistorySlice.actions;
 
 export default HistorySlice.reducer;
