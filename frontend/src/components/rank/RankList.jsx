@@ -1,6 +1,6 @@
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Grid } from '@mui/material';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -14,6 +14,13 @@ const NoRankBox = styled.div`
   padding: 80px;
   gap: 20px;
   font-size: large;
+`;
+
+const UserName = styled.p`
+  color: ${props => (props.rank === 1 ? 'gold' : props.rank === 2 ? 'silver' : '#CD7F32')};
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 export default function RankList({ isRegion }) {
@@ -58,6 +65,7 @@ const Item = styledC(Paper)(({ theme }) => ({
 }));
 
 function RankItem({ user, rank }) {
+  const navigate = useNavigate();
   switch (rank) {
     case 1:
       return (
@@ -68,7 +76,13 @@ function RankItem({ user, rank }) {
             {rank}
           </Grid>
           <Grid sx={{ textAlign: 'start' }} xs={4}>
-            {user.userNickname}
+            <UserName
+              onClick={() => {
+                navigate(`history/${user.userNickname}`);
+              }}
+              rank={rank}>
+              {user.userNickname}
+            </UserName>
           </Grid>
           <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
         </Item>
@@ -82,7 +96,13 @@ function RankItem({ user, rank }) {
             {rank}
           </Grid>
           <Grid sx={{ textAlign: 'start' }} xs={4}>
-            {user.userNickname}
+            <UserName
+              onClick={() => {
+                navigate(`history/${user.userNickname}`);
+              }}
+              rank={rank}>
+              {user.userNickname}
+            </UserName>
           </Grid>
           <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
         </Item>
@@ -102,7 +122,13 @@ function RankItem({ user, rank }) {
             {rank}
           </Grid>
           <Grid sx={{ textAlign: 'start' }} xs={4}>
-            {user.userNickname}
+            <UserName
+              onClick={() => {
+                navigate(`history/${user.userNickname}`);
+              }}
+              rank={rank}>
+              {user.userNickname}
+            </UserName>
           </Grid>
           <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
         </Item>
@@ -114,7 +140,12 @@ function RankItem({ user, rank }) {
             {rank}
           </Grid>
           <Grid sx={{ textAlign: 'start' }} xs={4}>
-            {user.userNickname}
+            <UserName
+              onClick={() => {
+                navigate(`history/${user.userNickname}`);
+              }}>
+              {user.userNickname}
+            </UserName>
           </Grid>
           <Grid xs={4}>{user.calorie.toFixed(2)} kcal</Grid>
         </Item>

@@ -18,7 +18,7 @@ const FollowerTitle = styled.p`
   padding: 20px 0px;
 `;
 
-const UserBox = styled.p`
+const UserBox = styled.div`
   display: flex;
   justify-content: space-between;
   padding: 5px;
@@ -43,7 +43,7 @@ export default function FollowingList({ followerList, handleCloseFollower }) {
             <div
               onClick={() => {
                 handleCloseFollower();
-                navigate(`/history/:${item.nickname}`);
+                navigate(`/history/${item.nickname}`);
                 MySwal.fire({
                   title: <p>{item.nickname}님의 기록 페이지로 이동합니다.</p>,
                   icon: 'success',
@@ -52,7 +52,7 @@ export default function FollowingList({ followerList, handleCloseFollower }) {
               className="nickname">
               {item.nickname}
             </div>
-            <p>{item.loginState ? '로그인' : '로그아웃'}</p>
+            {item.loginState ? '로그인' : '로그아웃'}
           </UserBox>
         );
       })}
