@@ -250,6 +250,8 @@ public class UserServiceImpl implements UserService {
 
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
         String token = "";
+        System.out.println("kakao Client Id " + kakaoClientId);
+        System.out.println("redirect url " + kakaoRedirectUri);
         try {
             urlConnection.setRequestMethod("POST");
             urlConnection.setDoOutput(true); // 데이터 기록 알려주기
