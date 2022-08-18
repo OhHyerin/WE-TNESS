@@ -30,9 +30,9 @@ public class FollowController {
         return ResponseEntity.ok().body(new FollowCheckResDto(result));
     }
 
-    @GetMapping("/state")
-    public ResponseEntity<?> getFollowState(@RequestBody FollowReqDto followReqDto, @AuthenticationPrincipal UserDetailsImpl userDetails) {
-        boolean result = followService.checkFollowState(userDetails.getNickname(), followReqDto.getNickname());
+    @GetMapping("/state/{nickname}")
+    public ResponseEntity<?> getFollowState(@PathVariable String nickname, @AuthenticationPrincipal UserDetailsImpl userDetails) {
+        boolean result = followService.checkFollowState(userDetails.getNickname(), nickname);
         return ResponseEntity.ok().body(new FollowCheckResDto(result));
     }
 
