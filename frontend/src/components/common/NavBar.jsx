@@ -6,6 +6,7 @@ import Badge from '@mui/material/Badge';
 import { useEffect, useState } from 'react';
 import { Button } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 import SearchForm from '../search/SearchForm';
 import AccountMenu from './Dropdown';
 import navLogo from '../../assets/images/navLogo.png';
@@ -69,6 +70,9 @@ const Logo = styled.div`
 const RoomTitle = styled.div`
   padding-left: 30px;
   margin-right: 300px;
+  gap: 10px;
+  display: flex;
+  align-items: center;
 `;
 
 const OutBtn = styled.div`
@@ -86,7 +90,7 @@ export default function NavBar() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (!isRoom && location.pathname == '/room') {
+    if (location.pathname === '/room') {
       dispatch(setIsRoom(true));
     } else {
       dispatch(setIsRoom(false));
@@ -109,8 +113,17 @@ export default function NavBar() {
             <img style={{ marginLeft: '20px' }} src={navLogo} alt="Logo" width={'150px'} height={'auto'} />
           </Logo>
           <RoomTitle>
-            {nowRoom.locked ? <LockIcon fontSize="small" /> : null} [
-            {nowRoom.workout === 1 ? '운동1' : nowRoom.workout === 2 ? '운동2' : '운동3'}] {nowRoom.title}{' '}
+            {nowRoom.locked ? <LockIcon fontSize="small" /> : <LockOpenIcon fontSize="small" />}
+            {nowRoom.workout === 1
+              ? '[스쿼트]'
+              : nowRoom.workout === 2
+              ? '[팔굽혀펴기]'
+              : nowRoom.workout === 3
+              ? '[버피]'
+              : nowRoom.workout === 4
+              ? '[런지]'
+              : null}
+            <p>{nowRoom.title}</p>
           </RoomTitle>
           <OutBtn>
             <Button id="goOutBtn" variant="contained" color="error" onClick={handleGoOut}>
