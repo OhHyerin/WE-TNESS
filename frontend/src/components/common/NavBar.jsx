@@ -33,6 +33,7 @@ const RoomHeader = styled.div`
   height: 60px;
   background: var(--prim-bg-color);
   font-weight: 700;
+  border-bottom: 2px solid #9999;
 `;
 
 const Nav = styled.div`
