@@ -8,7 +8,7 @@ import { Button } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import SearchForm from '../search/SearchForm';
 import AccountMenu from './Dropdown';
-import logo from '../../assets/images/logo.jpg';
+import navLogo from '../../assets/images/navLogo.png';
 import { setIsRoom } from '../../features/room/RoomSlice';
 import Notifications from './Notifications';
 import { fetchNotice } from '../../features/notice/NoticeSlice';
@@ -90,7 +90,7 @@ export default function NavBar() {
         {isRoom ? (
           <>
             <Logo>
-              <img src={logo} alt="Logo" width={'40px'} height={'auto'} />
+              <img style={{ marginLeft: '20px' }} src={navLogo} alt="Logo" width={'150px'} height={'auto'} />
             </Logo>
             <div>
               {nowRoom.locked ? <LockIcon fontSize="small" /> : null} [
@@ -104,7 +104,7 @@ export default function NavBar() {
           <>
             <Logo>
               <Link to="/">
-                <img src={logo} alt="Logo" width={'40px'} height={'auto'} />
+                <img style={{ marginLeft: '20px' }} src={navLogo} alt="Logo" width={'150px'} height={'auto'} />
               </Link>
             </Logo>
 
