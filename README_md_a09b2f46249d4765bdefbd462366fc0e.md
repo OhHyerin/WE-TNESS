@@ -36,7 +36,7 @@
 
 ### 게임 화면 - 플레이 화면
 
-![새로운 프로젝트.gif](S07P12A205/README md a09b2f46249d4765bdefbd462366fc0e/_EC_83_88_EB_A1_9C_EC_9A_B4__ED_94_84_EB_A1_9C_EC_A0_9D_ED_8A_B8.gif)
+![_EC_83_88_EB_A1_9C_EC_9A_B4__ED_94_84_EB_A1_9C_EC_A0_9D_ED_8A_B8](/uploads/b485df7cf9311b8b437274397405b813/_EC_83_88_EB_A1_9C_EC_9A_B4__ED_94_84_EB_A1_9C_EC_A0_9D_ED_8A_B8.gif)
 
 ### 운동 - 푸시업
 
