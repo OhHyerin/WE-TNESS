@@ -6,7 +6,6 @@ import setConfig from '../authHeader';
 const fetchRankList = createAsyncThunk('fetchRankList', async (payload, { rejectWithValue }) => {
   try {
     const res = await axios.post(api.fetchRankList(), payload, setConfig());
-    console.log(res.data);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
@@ -74,7 +73,6 @@ export const RankSlice = createSlice({
   reducers: {},
   extraReducers: {
     [fetchRankList.fulfilled]: (state, action) => {
-      console.log(action.payload);
       state.rankList = action.payload;
     },
     [fetchTotalRanking.fulfilled]: (state, action) => {

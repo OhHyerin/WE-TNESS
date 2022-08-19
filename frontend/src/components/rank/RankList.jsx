@@ -98,7 +98,7 @@ function RankItem({ user, rank }) {
           <Grid sx={{ textAlign: 'start' }} xs={4}>
             <UserName
               onClick={() => {
-                navigate(`history/${user.userNickname}`);
+                navigate(`/history/${user.userNickname}`);
               }}
               rank={rank}>
               {user.userNickname}

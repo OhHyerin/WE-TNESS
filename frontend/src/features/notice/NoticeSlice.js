@@ -8,7 +8,6 @@ const fetchNotice = createAsyncThunk('fetchNotice', async (arg, { rejectWithValu
     const res = await axios.get(api.fetchNotice(), setConfig());
     return res.data;
   } catch (err) {
-    console.log(err);
     return rejectWithValue(err.response.data);
   }
 });
@@ -18,7 +17,6 @@ const checkNotice = createAsyncThunk('checkNotice', async (payload, { rejectWith
     const res = await axios.post(api.checkNotice(), payload, setConfig());
     return res.data;
   } catch (err) {
-    console.log(err);
     return rejectWithValue(err.response.data);
   }
 });

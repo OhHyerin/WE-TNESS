@@ -83,9 +83,7 @@ export default function SignupPage() {
           setIsSignupError(true);
         }
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(err => {});
   }
 
   return (

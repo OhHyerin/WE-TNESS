@@ -207,9 +207,7 @@ export default function Home() {
           icon: 'success',
         });
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(err => {});
   }
 
   return (
