@@ -75,7 +75,7 @@ export default function SignupPage() {
         if (res.type === 'signup/fulfilled') {
           MySwal.fire({
             title: <p>환영합니다!</p>,
-            titleText: <p>로그인 해주세요!</p>,
+            text: '로그인 후 정보수정 해주세요!',
             icon: 'success',
           });
           navigate('/login');
