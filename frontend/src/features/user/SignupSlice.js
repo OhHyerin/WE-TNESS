@@ -2,16 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import api from '../../api/index';
 import setConfig from '../authHeader';
-import {
-  setAccessToken,
-  removeAccessToken,
-  setRefreshToken,
-  removeRefreshToken,
-  decodeAccessToken,
-  setCurrentUser,
-  removeCurrentUser,
-  getCurrentUser,
-} from '../Token';
+import { setAccessToken, setRefreshToken, decodeAccessToken, setCurrentUser } from '../Token';
 
 const signup = createAsyncThunk('signup', async (payload, { rejectWithValue }) => {
   try {
@@ -63,7 +54,6 @@ const addInfo = createAsyncThunk('addInfo', async (changeNickname, { rejectWithV
         },
       }
     );
-    console.log(res);
     setAccessToken(res.data.accessToken);
     setRefreshToken(res.data.refreshToken);
     setCurrentUser(decodeAccessToken(res.data.accessToken));

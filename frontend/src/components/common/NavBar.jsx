@@ -1,9 +1,8 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { Link, useLocation, Navigate, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { Button } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
