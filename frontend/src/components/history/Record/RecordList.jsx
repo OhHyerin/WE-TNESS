@@ -112,10 +112,6 @@ export default function RecordList() {
   const todayCalorie = useSelector(state => state.history.todayCalorie);
   const heatMapList = useSelector(state => state.history.heatMapList);
 
-  function onHover(e, v) {
-    console.log(e, v);
-  }
-
   // 출석
   const weeklyAttend = useSelector(state => state.history.weeklyCalories);
   const diary = ['', '월', '화', '수', '목', '금', '토', '일'];
@@ -181,7 +177,6 @@ export default function RecordList() {
               endDate={getDate('end')}
               values={heatMapList}
               showWeekdayLabels={true}
-              onMouseOver={onHover}
             />
           </HeatmapBox>
         </Placer>
