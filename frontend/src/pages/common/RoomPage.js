@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component, useState, useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { OpenVidu } from 'openvidu-browser';
