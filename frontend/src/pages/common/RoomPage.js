@@ -45,11 +45,6 @@ import gameSound from '../../assets/sound/gameSound.mp3';
 
 const gameMusic = new Audio(gameSound);
 
-// docker run -p 4443:4443 --rm -e OPENVIDU_SECRET=WETNESS openvidu/openvidu-server-kms:2.22.0
-// url :
-const OPENVIDU_SERVER_URL = 'https://' + window.location.hostname + ':4443';
-const OPENVIDU_SERVER_SECRET = 'WETNESS';
-
 const Container = styled.div`
   padding: 0;
   background-color: ${props => (props.myRank === 1 ? '#fffaf0' : '#f5f5f5')};
@@ -240,9 +235,7 @@ class RoomClass extends Component {
         });
 
         // On every asynchronous exception...
-        mySession.on('exception', exception => {
-          console.warn(exception);
-        });
+        mySession.on('exception', exception => {});
 
         // 시작 신호 수신
         mySession.on('signal:start', event => {
@@ -345,9 +338,7 @@ class RoomClass extends Component {
           type: 'start',
         });
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(err => {});
   }
 
   start() {
@@ -658,9 +649,7 @@ class RoomClass extends Component {
           });
         }
       }
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) {}
   }
 
   render() {

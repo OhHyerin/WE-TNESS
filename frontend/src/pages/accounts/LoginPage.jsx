@@ -89,9 +89,7 @@ export default function Login() {
           setIsLoginError(true);
         }
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(err => {});
   }
 
   function handleClickShowPassword() {

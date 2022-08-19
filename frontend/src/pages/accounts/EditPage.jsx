@@ -92,7 +92,6 @@ export default function EditPage() {
       height: userInfo.height,
       addressCode,
     };
-    console.log(payload);
     dispatch(edit(payload))
       .then(() => {
         dispatch(fetchCurrentUser(getCurrentUser()));
@@ -103,9 +102,7 @@ export default function EditPage() {
         });
         navigate('/');
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(err => {});
   }
 
   function onChangePassword(e) {
@@ -126,9 +123,7 @@ export default function EditPage() {
           setIsEditError(true);
         }
       })
-      .catch(err => {
-        console.log(err);
-      });
+      .catch(err => {});
   }
 
   // 회원 탈퇴
