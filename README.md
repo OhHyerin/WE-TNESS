@@ -1,5 +1,7 @@
 8# 웹/모바일(웹 기술) 스켈레톤 프로젝트
 
+
+![nike-training-club-app-home-workouts-more](/uploads/5a5539e07636e66a39acd89821cbd68a/nike-training-club-app-home-workouts-more.jpg)
 <!-- 필수 항목 -->
 
 ## 카테고리
