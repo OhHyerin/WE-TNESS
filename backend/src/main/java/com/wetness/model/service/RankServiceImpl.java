@@ -41,7 +41,10 @@ public class RankServiceImpl implements RankService {
             for (int i = 0; i < workoutIds.length; i++) {
                 workout += Math.pow(2, workoutIds[i] - 1);
             }
+        }else{
+            workout = 15;
         }
+
         List<Rank> ranks = new ArrayList<>();
 
         ranks = rankRepository.findByDate(date);
