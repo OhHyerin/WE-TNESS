@@ -1231,7 +1231,7 @@ function RankResult({ rankList, isRankView, setIsRankView }) {
     <LiveBox>
       <h2>최종 순위</h2>
       {!isRankView ? <button onClick={setIsRankView}>전체 순위 보기</button> : null}
-      <List style={{ display: 'flex' }}>{rankListLi}</List>
+      {isRankView ? <List>{rankListLi}</List> : <List style={{ display: 'flex' }}>{rankListLi}</List>}
     </LiveBox>
   );
 }
