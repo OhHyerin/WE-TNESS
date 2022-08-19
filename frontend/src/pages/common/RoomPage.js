@@ -27,6 +27,9 @@ import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgr
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IoMicOutline, IoMicOffOutline, IoVideocamOffOutline, IoVideocamOutline } from 'react-icons/io5';
 import { faMedal } from '@fortawesome/free-solid-svg-icons';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
+
 import OpenViduVideoComponent from './OvVideo';
 import UserVideoComponent from './UserVideoComponent';
 import { getSessionInfo } from '../../features/Token';
@@ -45,6 +48,7 @@ import endSound from '../../assets/sound/endSound.wav';
 import gameSound from '../../assets/sound/gameSound.mp3';
 
 const gameMusic = new Audio(gameSound);
+const MySwal = withReactContent(Swal);
 
 const Container = styled.div`
   padding: 0;
@@ -86,8 +90,13 @@ function RoomPage() {
   if (isAuthenticated) {
     if (sessionInfo) {
       return <RoomClass sessionInfo={sessionInfo} nickname={nickname} navigate={navigate} />;
+    } else {
+      MySwal.fire({
+        title: <p>비밀번호가 틀렸거나 잘못된 입장방식입니다.</p>,
+        icon: 'warning',
+      });
     }
-    return <div>세션정보없음</div>;
+    return <Navigate to="/" />;
   }
   return <Navigate to="/login" />;
 }
