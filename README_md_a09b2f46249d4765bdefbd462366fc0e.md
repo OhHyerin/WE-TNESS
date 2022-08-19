@@ -40,7 +40,7 @@
 
 ### 운동 - 푸시업
 
-![푸시업-min.gif](README%20md%20a09b2f46249d4765bdefbd462366fc0e/%25ED%2591%25B8%25EC%258B%259C%25EC%2597%2585-min.gif)
+![_ED_91_B8_EC_8B_9C_EC_97_85-min](/uploads/2a66ffbbb9d9dd970c86de7accf0b4e8/_ED_91_B8_EC_8B_9C_EC_97_85-min.gif)
 
 ### 운동 - 런지
 
@@ -48,21 +48,21 @@
 
 ### 운동 -스쿼트
 
-![스쿼트-min.gif](README%20md%20a09b2f46249d4765bdefbd462366fc0e/%25EC%258A%25A4%25EC%25BF%25BC%25ED%258A%25B8-min.gif)
+![_EC_8A_A4_EC_BF_BC_ED_8A_B8-min](/uploads/e197dae8fbc924f0bde96e50c8994e10/_EC_8A_A4_EC_BF_BC_ED_8A_B8-min.gif)
 
 ### 운동 - 버피
 
-![버피-min.gif](README%20md%20a09b2f46249d4765bdefbd462366fc0e/%25EB%25B2%2584%25ED%2594%25BC-min.gif)
+![_EB_B2_84_ED_94_BC-min](/uploads/dac453436ea79005a5e51e53c8b9e79d/_EB_B2_84_ED_94_BC-min.gif)
 
 ### Teachable Machine - 버피, 스쿼드, 푸시업, 런지
 
-![버피_모션캡처.gif](README%20md%20a09b2f46249d4765bdefbd462366fc0e/%25EB%25B2%2584%25ED%2594%25BC_%25EB%25AA%25A8%25EC%2585%2598%25EC%25BA%25A1%25EC%25B2%2598.gif)
+![_EB_B2_84_ED_94_BC__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98](/uploads/d3de737643a0f3af72838b7682439c3c/_EB_B2_84_ED_94_BC__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
-![푸시업_모션캡처.gif](README%20md%20a09b2f46249d4765bdefbd462366fc0e/%25ED%2591%25B8%25EC%258B%259C%25EC%2597%2585_%25EB%25AA%25A8%25EC%2585%2598%25EC%25BA%25A1%25EC%25B2%2598.gif)
+![_ED_91_B8_EC_8B_9C_EC_97_85__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98](/uploads/b6f2732d14cdb4163f5267f17b240b62/_ED_91_B8_EC_8B_9C_EC_97_85__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
-![스쿼트_모션캡처.gif](README%20md%20a09b2f46249d4765bdefbd462366fc0e/%25EC%258A%25A4%25EC%25BF%25BC%25ED%258A%25B8_%25EB%25AA%25A8%25EC%2585%2598%25EC%25BA%25A1%25EC%25B2%2598.gif)
+![_EC_8A_A4_EC_BF_BC_ED_8A_B8__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98](/uploads/6d8f6d679b5145afa9a4d3a45a718acd/_EC_8A_A4_EC_BF_BC_ED_8A_B8__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
-![런지_모션캡처.gif](README%20md%20a09b2f46249d4765bdefbd462366fc0e/%25EB%259F%25B0%25EC%25A7%2580_%25EB%25AA%25A8%25EC%2585%2598%25EC%25BA%25A1%25EC%25B2%2598.gif)
+![_EB_9F_B0_EC_A7_80__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98](/uploads/9c31dcaaf15d4b44b116faac27f27c0f/_EB_9F_B0_EC_A7_80__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
 ### 기본기능 및 시연화면
 
@@ -70,23 +70,23 @@
 
 ### 홈 화면 - 현재 생성된 방
 
-![home.png](README%20md%20a09b2f46249d4765bdefbd462366fc0e/home.png)
+![home](/uploads/6fc0655417e4a2f36e5ba3bc4071bd30/home.png)
 
 ### 방 생성 - 게임 종류, 제목 및 암호 설정
 
-![room_create.png](README%20md%20a09b2f46249d4765bdefbd462366fc0e/room_create.png)
+![room_create](/uploads/fc435434194bccdfdd3c921fbadada58/room_create.png)
 
 ### 튜토리얼 - 카메라 세팅 및 운동 별 가이드
 
-[screen-recording (2).webm](README%20md%20a09b2f46249d4765bdefbd462366fc0e/screen-recording_(2).webm)
+![screen-recording__2_](/uploads/45224d5dbe61dbdfc0e4bade546049f6/screen-recording__2_.webm)
 
 ### 랭킹 페이지 - 게임 종류 별(중복 선택 가능) 및 지역 별 랭킹
 
-[screen-recording (1).webm](README%20md%20a09b2f46249d4765bdefbd462366fc0e/screen-recording_(1).webm)
+![screen-recording__1_](/uploads/0ad8cdb61bb5aed0ed4c4a727f43b871/screen-recording__1_.webm)
 
 ### 검색 - 유저, 방 검색 및 유저 운동 기록 조회
 
-[screen-recording.webm](README%20md%20a09b2f46249d4765bdefbd462366fc0e/screen-recording.webm)
+![screen-recording](/uploads/04caf34d0a7eb8146d52af7cd79e1111/screen-recording.webm)
 
 ## 개발환경
 
@@ -129,7 +129,7 @@
 
 ---
 
-![wetness_archi (1).jpg](README%20md%20a09b2f46249d4765bdefbd462366fc0e/wetness_archi_(1).jpg)
+![wetness_archi__1_](/uploads/546abfed1fd1a0dc861352219b1a66db/wetness_archi__1_.jpg)
 
 ## 팀원 소개
 
