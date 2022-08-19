@@ -67,7 +67,6 @@ const toggleFollow = createAsyncThunk('toggleFollow', async (nickname, { rejectW
 const fetchFollowState = createAsyncThunk('fetchFollowState', async (nickname, { rejectWithValue }) => {
   try {
     const res = await axios.get(api.fetchFollowState(nickname), setConfig());
-    console.log(res.data);
     return res.data;
   } catch (err) {
     return rejectWithValue(err.response.data);
