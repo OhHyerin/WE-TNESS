@@ -44,7 +44,7 @@
 
 ### 운동 - 런지
 
-![image](/uploads/e8bd34bf6a68b772fba8c3a19df4fec0/image.png)
+![_EB_9F_B0_EC_A7_80-min](/uploads/33bf6319d58d1d23cf8972e9813aa997/_EB_9F_B0_EC_A7_80-min.gif)
 
 ### 운동 -스쿼트
 
