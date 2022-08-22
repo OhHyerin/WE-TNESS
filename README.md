@@ -158,7 +158,7 @@
 
 - 배준성
     - 프론트엔드
-    - 요구사항 명세서 ?
+    - 요구사항 명세서 작성
     - react-toolkit & react-router-dom 활용 SPA 구현
     - axios 요청을 통한 api 통신
     - 튜토리얼 페이지 제작
