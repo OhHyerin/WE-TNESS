@@ -1,11 +1,11 @@
-# **🥇WE-TNESS🥈**
-#### WebRTC와 모션인식을 활용한 운동 게임 서비스
+# **🥇WE-TNESS (위트니스)🥈**
+### WebRTC와 모션인식을 활용한 운동 게임 서비스
 
 <br>
 <br>
 
 
-## 목차
+## ✨ 목차
 1. 서비스 소개
     1. 주요 기능 및 시연화면
     2. 기본 기능 및 시연화면
@@ -18,7 +18,7 @@
 <br>
 
 
-## 1. 서비스 소개
+## 🔎 서비스 소개
 ![intro](https://user-images.githubusercontent.com/44857166/187242914-c3ef1eeb-936c-4c8b-8719-fac0f7903fba.mp4)
 
 
@@ -35,7 +35,7 @@
 <br>
 <br>
 
-## 주요기능 및 시연화면
+## 💻 주요기능 및 시연화면
 
 <br>
 
@@ -72,7 +72,7 @@
 <br>
 <br>
 
-## 기본기능 및 시연화면
+## 💻 기본기능 및 시연화면
 
 
 ### 홈 화면 - 현재 생성된 방
@@ -100,20 +100,20 @@
 <br>
 
 
-## 개발환경
+## 📃 개발환경
 
 
 ### 시스템 환경
 
 
-- **Frontend**
+- **🔗 Frontend**
     - React v5.0.1
     - node.js v16.14.0
     - npm v8.7.0
     - redux-toolkit v1.8.3
     - styled-components v5.3.5
     
-- **CI/CD & Database**
+- **🔗 CI/CD & Database**
     - AWS ec2 - Ubuntu 20.04.4 LTS
     - Docker 20.10.12
     - Jenkins 2.346.3
@@ -121,16 +121,16 @@
     - MySQL 8.0.30-0ubuntu0.20.04.2
     - certbot 0.40.0
 
-- **Backend**
+- **🔗 Backend**
     - Spring Boot 2.7.1
     - Spring Data JPA 2.7.1
     - Spring Security 5.7.2
     - Spring Cloud 2.2.6
 
-- **Web RTC**
+- **🔗 Web RTC**
     - openVidu 2.22.0
     
-- **Tools**
+- **🔗 Tools**
     - Intellij 2022.2
     - VS Code
     - Google Chrome 104.0.5112.81
@@ -140,7 +140,7 @@
 ![wetness_archi__1_](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/546abfed1fd1a0dc861352219b1a66db/wetness_archi__1_.jpg)
 
 
-## 팀원 소개
+## 🤸‍♀️ 팀원 소개
 
 - 오혜린(팀장)
     - 백엔드
