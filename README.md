@@ -1,13 +1,11 @@
-# README.md
+# **🥇WE-TNESS🥈**
+#### WebRTC와 모션인식을 활용한 운동 게임 서비스
 
-# **WE-TNESS**
+<br>
+<br>
 
----
 
 ## 목차
-
----
-
 1. 서비스 소개
     1. 주요 기능 및 시연화면
     2. 기본 기능 및 시연화면
@@ -16,10 +14,12 @@
     2. Technical Architecture Diagram
 3. 팀원 소개
 
-## 1. 서비스 소개
+<br>
+<br>
 
----
-![intro](/uploads/05b0307805103f41b65b22332033c560/intro.mp4)
+
+## 1. 서비스 소개
+![intro](https://user-images.githubusercontent.com/44857166/187242914-c3ef1eeb-936c-4c8b-8719-fac0f7903fba.mp4)
 
 
 항상 작심 일일을 실행하고 있진 않으신가요?
@@ -32,67 +32,76 @@
 
 위트니스와 함께라면 가능합니다. 
 
-### 주요기능 및 시연화면
+<br>
+<br>
 
----
+## 주요기능 및 시연화면
+
+<br>
 
 ### 게임 화면 - 플레이 화면
 
-![_EC_83_88_EB_A1_9C_EC_9A_B4__ED_94_84_EB_A1_9C_EC_A0_9D_ED_8A_B8](/uploads/b485df7cf9311b8b437274397405b813/_EC_83_88_EB_A1_9C_EC_9A_B4__ED_94_84_EB_A1_9C_EC_A0_9D_ED_8A_B8.gif)
+![게임 화면 - 플레이 화면](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/b485df7cf9311b8b437274397405b813/_EC_83_88_EB_A1_9C_EC_9A_B4__ED_94_84_EB_A1_9C_EC_A0_9D_ED_8A_B8.gif)
 
 ### 운동 - 푸시업
 
-![_ED_91_B8_EC_8B_9C_EC_97_85-min](/uploads/2a66ffbbb9d9dd970c86de7accf0b4e8/_ED_91_B8_EC_8B_9C_EC_97_85-min.gif)
+![운동 - 푸시업](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/2a66ffbbb9d9dd970c86de7accf0b4e8/_ED_91_B8_EC_8B_9C_EC_97_85-min.gif)
 
 ### 운동 - 런지
 
-![_EB_9F_B0_EC_A7_80-min](/uploads/33bf6319d58d1d23cf8972e9813aa997/_EB_9F_B0_EC_A7_80-min.gif)
+![운동 - 런지](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/33bf6319d58d1d23cf8972e9813aa997/_EB_9F_B0_EC_A7_80-min.gif)
 
 ### 운동 -스쿼트
 
-![_EC_8A_A4_EC_BF_BC_ED_8A_B8-min](/uploads/e197dae8fbc924f0bde96e50c8994e10/_EC_8A_A4_EC_BF_BC_ED_8A_B8-min.gif)
+![운동 - 스쿼트](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/e197dae8fbc924f0bde96e50c8994e10/_EC_8A_A4_EC_BF_BC_ED_8A_B8-min.gif)
 
 ### 운동 - 버피
 
-![_EB_B2_84_ED_94_BC-min](/uploads/dac453436ea79005a5e51e53c8b9e79d/_EB_B2_84_ED_94_BC-min.gif)
+![운동 - 버피](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/dac453436ea79005a5e51e53c8b9e79d/_EB_B2_84_ED_94_BC-min.gif)
 
-### Teachable Machine - 버피, 스쿼드, 푸시업, 런지
+### Teachable Machine - 버피, 스쿼트, 푸시업, 런지
 
-![_EB_B2_84_ED_94_BC__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98](/uploads/d3de737643a0f3af72838b7682439c3c/_EB_B2_84_ED_94_BC__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
+![버피](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/d3de737643a0f3af72838b7682439c3c/_EB_B2_84_ED_94_BC__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
-![_ED_91_B8_EC_8B_9C_EC_97_85__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98](/uploads/b6f2732d14cdb4163f5267f17b240b62/_ED_91_B8_EC_8B_9C_EC_97_85__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
+![스쿼트](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/b6f2732d14cdb4163f5267f17b240b62/_ED_91_B8_EC_8B_9C_EC_97_85__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
-![_EC_8A_A4_EC_BF_BC_ED_8A_B8__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98](/uploads/6d8f6d679b5145afa9a4d3a45a718acd/_EC_8A_A4_EC_BF_BC_ED_8A_B8__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
+![푸시업](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/6d8f6d679b5145afa9a4d3a45a718acd/_EC_8A_A4_EC_BF_BC_ED_8A_B8__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
-![_EB_9F_B0_EC_A7_80__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98](/uploads/9c31dcaaf15d4b44b116faac27f27c0f/_EB_9F_B0_EC_A7_80__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
+![런지](/uploads/9c31dcaaf15d4b44b116faac27f27c0f/_EB_9F_B0_EC_A7_80__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
-### 기본기능 및 시연화면
+<br>
+<br>
 
----
+## 기본기능 및 시연화면
+
 
 ### 홈 화면 - 현재 생성된 방
 
-![home](/uploads/6fc0655417e4a2f36e5ba3bc4071bd30/home.png)
+![home](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/6fc0655417e4a2f36e5ba3bc4071bd30/home.png)
 
 ### 방 생성 - 게임 종류, 제목 및 암호 설정
 
-![room_create](/uploads/fc435434194bccdfdd3c921fbadada58/room_create.png)
+![room_create](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/fc435434194bccdfdd3c921fbadada58/room_create.png)
 
 ### 튜토리얼 - 카메라 세팅 및 운동 별 가이드
 
-![screen-recording__2_](/uploads/45224d5dbe61dbdfc0e4bade546049f6/screen-recording__2_.webm)
+![screen-recording__2_](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/45224d5dbe61dbdfc0e4bade546049f6/screen-recording__2_.webm)
 
 ### 랭킹 페이지 - 게임 종류 별(중복 선택 가능) 및 지역 별 랭킹
 
-![screen-recording__1_](/uploads/0ad8cdb61bb5aed0ed4c4a727f43b871/screen-recording__1_.webm)
+![screen-recording__1_](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/0ad8cdb61bb5aed0ed4c4a727f43b871/screen-recording__1_.webm)
 
 ### 검색 - 유저, 방 검색 및 유저 운동 기록 조회
 
-![screen-recording](/uploads/04caf34d0a7eb8146d52af7cd79e1111/screen-recording.webm)
+![screen-recording](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/04caf34d0a7eb8146d52af7cd79e1111/screen-recording.webm)
+
+
+<br>
+<br>
+
 
 ## 개발환경
 
----
 
 ### 시스템 환경
 
@@ -129,20 +138,18 @@
 
 ### Technical Architecture Diagram
 
----
+![wetness_archi__1_](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/546abfed1fd1a0dc861352219b1a66db/wetness_archi__1_.jpg)
 
-![wetness_archi__1_](/uploads/546abfed1fd1a0dc861352219b1a66db/wetness_archi__1_.jpg)
 
 ## 팀원 소개
 
----
-
 - 오혜린(팀장)
     - 백엔드
-    - Rank관련 기능 개발
+    - User, Rank관련 API 구현
     - 데이터베이스 설계
     - Jenkins를 사용한 자동빌드
     - nginx세팅
+    - EC2 서버 환경 세팅 및 배포
     - 최종 발표
     
 - 김윤석
