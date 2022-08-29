@@ -67,7 +67,7 @@
 
 ![푸시업](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/6d8f6d679b5145afa9a4d3a45a718acd/_EC_8A_A4_EC_BF_BC_ED_8A_B8__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
-![런지](/uploads/9c31dcaaf15d4b44b116faac27f27c0f/_EB_9F_B0_EC_A7_80__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
+![런지](https://lab.ssafy.com/s07-webmobile1-sub2/S07P12A205/uploads/9c31dcaaf15d4b44b116faac27f27c0f/_EB_9F_B0_EC_A7_80__EB_AA_A8_EC_85_98_EC_BA_A1_EC_B2_98.gif)
 
 <br>
 <br>
@@ -105,7 +105,6 @@
 
 ### 시스템 환경
 
----
 
 - **Frontend**
     - React v5.0.1
